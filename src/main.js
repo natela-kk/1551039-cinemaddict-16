@@ -3,6 +3,7 @@ import { createFilterTemplate } from './view/filter-view.js';
 import { createCardsTemplate } from './cards-view.js';
 import { createButtonTemplate } from './button-view.js';
 import { createUserNameTemplate } from './view/user-name-view.js';
+import { createPopupTemplate } from './view/popup.js';
 
 const mainElement = document.querySelector('.main');
 const headerElement = document.querySelector('.header');
@@ -23,4 +24,5 @@ renderTemplate(mainElement, createMenuTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(mainElement, createFilterTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(mainElement, createCardsTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(mainElement, createButtonTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(mainElement, createPopupTemplate(), RenderPosition.BEFOREEND);
 
