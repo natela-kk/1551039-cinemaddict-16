@@ -1,5 +1,9 @@
+import { mainElement, RenderPosition, renderTemplate } from './render-data.js';
+import { allMovies } from '/Users/79062/cinemaaddict/src/main.js';
+const allPosts = document.querySelectorAll('.film-card');
+
 const createComment = (comment) => (`<li class="film-details__comment">
-  <span class="film-details__comment-emoji">
+<span class="film-details__comment-emoji">
     <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
   </span>
   <div>
@@ -10,27 +14,94 @@ const createComment = (comment) => (`<li class="film-details__comment">
       <button class="film-details__comment-delete">Delete</button>
     </p>
   </div>
-</li>`);
+  </li>`);
 
-const createCommentList = (comments) => {
-  let documentFragment = '';
+let documentFragment;
+let checkedEmotion;
+let allComments;
+let deleteCommentButtons;
+
+const setCommentsCount = (index) => {
+  allComments = document.querySelectorAll('.film-details__comment');
+  const commentsCount = document.querySelector('.film-details__comments-count');
+  const newCommentsLength =  allComments.length;
+  commentsCount.textContent = newCommentsLength;
+  allPosts[index].querySelector('.film-card__comments').textContent = `${newCommentsLength} comments`;
+};
+
+export const deleteButtonClickHandler = (deleteButton, buttonIndex, index) => {
+  deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
+  allComments = document.querySelectorAll('.film-details__comment');
+  if (allComments.length === 1) {
+    allComments[0].remove();
+    console.log(`удален коммент с индексом ${buttonIndex}`);
+  } else if (allComments.length > 1) {
+    const comment = allComments[buttonIndex];
+    console.log(`удален коммент с индексом ${buttonIndex}`);
+    comment.remove();
+  }
+  setCommentsCount(index);
+};
+
+const deleteComment = (index, deleteButtons) => {
+  deleteButtons.forEach((deleteButton) => {
+    deleteButton.addEventListener('click', (evt) => {
+      console.log('click');
+      //   deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
+      evt.preventDefault();
+    //   deleteButtonClickHandler(deleteButton, buttonIndex, index);
+    });
+  });
+};
+const createNewComment = (index) => {
+  const commentInput = document.querySelector('.film-details__comment-input');
+  const commentList = document.querySelector('.film-details__comments-list');
+  const emotionOptions = document.querySelectorAll('input[type="radio"]');
+  const emotionPreview = document.querySelector('.film-details__add-emoji-label');
+  emotionOptions.forEach((option) => {
+    option.addEventListener('change', () => {
+      checkedEmotion = document.querySelector('input[type="radio"]:checked');
+      const emotionImages = Array.from(emotionPreview.children);
+      if (emotionImages.length > 0) {
+        emotionImages[0].remove();
+      }
+      emotionPreview.insertAdjacentHTML('beforeend', `<img src="./images/emoji/${checkedEmotion.value}.png" width="55" height="55" alt="emoji-${checkedEmotion.value}">`);
+    });
+  });
+
+  document.addEventListener('keydown', (evt) => {
+    if (evt.code === 'Enter') {
+      evt.preventDefault();
+      const newComment = {};
+      newComment.comment = commentInput.value;
+      newComment.id = 1;
+      newComment.author = 'Natela';
+      newComment.date = 'rigth now';
+      newComment.emotion = checkedEmotion.value;
+      const newCommentTemplate = createComment(newComment);
+      commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
+      setCommentsCount(index);
+      deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
+      deleteComment(index, deleteCommentButtons);
+    }
+    return documentFragment;
+  });
+  deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
+  deleteComment(index, deleteCommentButtons);
+};
+
+export const createCommentList = (comments) => {
+  documentFragment = '';
   comments.forEach((comment) => {
     documentFragment += createComment(comment);
   });
   return documentFragment;
 };
 
-const getGenreWord = (genres) => {
-  if (genres.length > 1){
-    return 'Genres';
-  } else {
-    return 'Genre';
-  }
-};
+const getGenreWord = (genres) => genres.length > 1 ? 'Genres' : 'Genre';
 
-export const createPopupTemplate = (popup) => {
-  const {filmInfo, comments} = popup;
-  console.log(popup);
+export const createPopupTemplate = (thePopup) => {
+  const {filmInfo, comments} = thePopup;
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
@@ -144,3 +215,43 @@ export const createPopupTemplate = (popup) => {
 </section>`;
 };
 
+
+let popup;
+let closeButton;
+
+const documentKeydownHandler = (evt) => {
+  if (evt.code === 'Escape') {
+    closePopup();
+  }
+};
+
+const closeButtonClickHandler = () => {
+  closePopup();
+};
+
+function closePopup() {
+  popup.remove();
+  closeButton.removeEventListener('click', closeButtonClickHandler);
+  document.removeEventListener('keydown', documentKeydownHandler);
+}
+
+
+const postClickHandler = (index) => {
+  popup = document.querySelector('.film-details');
+  if (popup !== null) {
+    popup.remove();
+  }
+  renderTemplate(mainElement, createPopupTemplate(allMovies[index]), RenderPosition.BEFOREEND);
+  popup = document.querySelector('.film-details');
+  closeButton = document.querySelector('.film-details__close-btn');
+  closeButton.addEventListener('click', closeButtonClickHandler);
+  document.addEventListener('keydown', documentKeydownHandler);
+};
+
+
+allPosts.forEach((post, index) => {
+  post.addEventListener('click', () => {
+    postClickHandler(index);
+    createNewComment(index);
+  });
+});

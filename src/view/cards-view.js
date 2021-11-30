@@ -8,11 +8,7 @@ export const createCardsContainerTemplate = () => (`<section class="films">
 
 const getFilmDescription = (description) => {
   const text = description.join(' ');
-  if (text.length > 140) {
-    return `${text.substr(0, 139)}...`;
-  } else {
-    return text;
-  }
+  return text.length > 140 ? `${text.substr(0, 139)}...` : text;
 };
 
 
@@ -26,7 +22,7 @@ export const createCardTemplate = (card) => {
           <p class="film-card__info">
             <span class="film-card__year">${filmInfo.release.date.format('YYYY')}</span>
             <span class="film-card__duration">${filmInfo.runtime}</span>
-            <span class="film-card__genre">${filmInfo.genre}</span>
+            <span class="film-card__genre">${filmInfo.genre.join(' ')}</span>
           </p>
           <img src="${filmInfo.poster}" alt="" class="film-card__poster">
           <p class="film-card__description">${getFilmDescription(filmInfo.description)}</p>
