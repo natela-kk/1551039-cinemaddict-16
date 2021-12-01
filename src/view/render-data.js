@@ -3,8 +3,9 @@ import { createFilterTemplate } from './filter-view.js';
 import { createCardsContainerTemplate } from './cards-view.js';
 import { createButtonTemplate } from './button-view.js';
 import { createUserNameTemplate } from './user-name-view.js';
-import { getRandomInteger, getRandomPositiveFloat } from './utils.js';
-import { getRandomDescription, getCommentsList } from './structure.js';
+import { getRandomInteger, getRandomPositiveFloat } from '../mock/utils.js';
+import { getRandomDescription, getCommentsList } from '../mock/structure.js';
+import { createExtraTemplate } from './extra-view.js';
 import dayjs from 'dayjs';
 
 const RANDOM_MIN_DATE = 1;
@@ -99,3 +100,5 @@ renderTemplate(mainElement, createMenuTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(mainElement, createFilterTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(mainElement, createCardsContainerTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(mainElement, createButtonTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(mainElement, createExtraTemplate(), RenderPosition.BEFOREEND);
+

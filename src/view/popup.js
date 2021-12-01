@@ -1,5 +1,5 @@
 import { mainElement, RenderPosition, renderTemplate } from './render-data.js';
-import { allMovies } from '/Users/79062/cinemaaddict/src/main.js';
+import { allMovies } from './cards-list.js';
 const allPosts = document.querySelectorAll('.film-card');
 
 const createComment = (comment) => (`<li class="film-details__comment">
@@ -34,25 +34,31 @@ export const deleteButtonClickHandler = (deleteButton, buttonIndex, index) => {
   allComments = document.querySelectorAll('.film-details__comment');
   if (allComments.length === 1) {
     allComments[0].remove();
-    console.log(`удален коммент с индексом ${buttonIndex}`);
   } else if (allComments.length > 1) {
     const comment = allComments[buttonIndex];
-    console.log(`удален коммент с индексом ${buttonIndex}`);
     comment.remove();
   }
   setCommentsCount(index);
 };
 
 const deleteComment = (index, deleteButtons) => {
-  deleteButtons.forEach((deleteButton) => {
+  deleteButtons.forEach((deleteButton, buttonIndex) => {
     deleteButton.addEventListener('click', (evt) => {
-      console.log('click');
-      //   deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
       evt.preventDefault();
-    //   deleteButtonClickHandler(deleteButton, buttonIndex, index);
+      deleteButtonClickHandler(deleteButton, buttonIndex, index);
     });
   });
 };
+
+const deleteNewComment = (index, deleteButtons) => {
+  const newDeleteButton = deleteButtons[deleteButtons.length - 1];
+  const buttonIndex = deleteButtons.length - 1;
+  newDeleteButton.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    deleteButtonClickHandler(newDeleteButton, buttonIndex, index);
+  });
+};
+
 const createNewComment = (index) => {
   const commentInput = document.querySelector('.film-details__comment-input');
   const commentList = document.querySelector('.film-details__comments-list');
@@ -82,7 +88,7 @@ const createNewComment = (index) => {
       commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
       setCommentsCount(index);
       deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
-      deleteComment(index, deleteCommentButtons);
+      deleteNewComment(index, deleteCommentButtons);
     }
     return documentFragment;
   });
