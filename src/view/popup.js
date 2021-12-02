@@ -1,6 +1,10 @@
 import { mainElement, RenderPosition, renderTemplate } from './render-data.js';
 import { allMovies } from './cards-list.js';
-const allPosts = document.querySelectorAll('.film-card');
+
+const filmcontainers = document.querySelectorAll('.films-list__container');
+const allPosts = filmcontainers[0].querySelectorAll('.film-card');
+const topRatedPosts = filmcontainers[2].querySelectorAll('.film-card');
+const mostCommentedPosts = filmcontainers[3].querySelectorAll('.film-card');
 
 const createComment = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">
@@ -59,41 +63,63 @@ const deleteNewComment = (index, deleteButtons) => {
   });
 };
 
+let emotionImages;
 const createNewComment = (index) => {
-  const commentInput = document.querySelector('.film-details__comment-input');
-  const commentList = document.querySelector('.film-details__comments-list');
   const emotionOptions = document.querySelectorAll('input[type="radio"]');
   const emotionPreview = document.querySelector('.film-details__add-emoji-label');
   emotionOptions.forEach((option) => {
     option.addEventListener('change', () => {
       checkedEmotion = document.querySelector('input[type="radio"]:checked');
-      const emotionImages = Array.from(emotionPreview.children);
+      emotionImages = Array.from(emotionPreview.children);
       if (emotionImages.length > 0) {
         emotionImages[0].remove();
       }
       emotionPreview.insertAdjacentHTML('beforeend', `<img src="./images/emoji/${checkedEmotion.value}.png" width="55" height="55" alt="emoji-${checkedEmotion.value}">`);
     });
   });
+  deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
+  deleteComment(index, deleteCommentButtons);
+};
+let form;
 
+const postForm = ()  => {
+  form = document.querySelector('.film-details__inner');
+  form.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    console.log('submited');
+  });
+  // form.submit((evt) => {
+  //   evt.preventDefault();
+  // });
+};
+
+const postComment = (index) => {
+  form = document.querySelector('.film-details__inner');
+  const commentInput = document.querySelector('.film-details__comment-input');
+  const commentList = document.querySelector('.film-details__comments-list');
   document.addEventListener('keydown', (evt) => {
     if (evt.code === 'Enter') {
-      evt.preventDefault();
-      const newComment = {};
-      newComment.comment = commentInput.value;
-      newComment.id = 1;
-      newComment.author = 'Natela';
-      newComment.date = 'rigth now';
-      newComment.emotion = checkedEmotion.value;
-      const newCommentTemplate = createComment(newComment);
-      commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
-      setCommentsCount(index);
-      deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
-      deleteNewComment(index, deleteCommentButtons);
+      const userEmoji = document.querySelector('.film-details__add-emoji-label').querySelector('img');
+      if (userEmoji !== null) {
+        evt.preventDefault();
+        const newComment = {};
+        newComment.comment = commentInput.value;
+        newComment.id = 1;
+        newComment.author = 'Natela';
+        newComment.date = 'rigth now';
+        newComment.emotion = checkedEmotion.value;
+        const newCommentTemplate = createComment(newComment);
+        commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
+        setCommentsCount(index);
+        form.reset();
+        userEmoji.remove();
+        deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
+        deleteNewComment(index, deleteCommentButtons);
+        postForm();
+      }
     }
     return documentFragment;
   });
-  deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
-  deleteComment(index, deleteCommentButtons);
 };
 
 export const createCommentList = (comments) => {
@@ -106,8 +132,12 @@ export const createCommentList = (comments) => {
 
 const getGenreWord = (genres) => genres.length > 1 ? 'Genres' : 'Genre';
 
+const getWatchlistStatus = (userDetails) => userDetails.watchlist === true ? ('film-details__control-button--active') : '';
+const getWatchedStatus = (userDetails) => userDetails.already_watched === true ? ('film-details__control-button--active') : '';
+const getFavoriteStatus = (userDetails) => userDetails.favorite === true ? ('film-details__control-button--active') : '';
+
 export const createPopupTemplate = (thePopup) => {
-  const {filmInfo, comments} = thePopup;
+  const {filmInfo, comments, userDetails} = thePopup;
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
@@ -172,9 +202,9 @@ export const createPopupTemplate = (thePopup) => {
       </div>
 
       <section class="film-details__controls">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${getWatchlistStatus(userDetails)}" id="watchlist" name="watchlist">Add to watchlist</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watched ${getWatchedStatus(userDetails)}" id="watched" name="watched">Already watched</button>
+        <button type="button" class="film-details__control-button film-details__control-button--favorite  ${getFavoriteStatus(userDetails)}" id="favorite" name="favorite">Add to favorites</button>
       </section>
     </div>
 
@@ -259,5 +289,22 @@ allPosts.forEach((post, index) => {
   post.addEventListener('click', () => {
     postClickHandler(index);
     createNewComment(index);
+    postComment(index);
+  });
+});
+
+topRatedPosts.forEach((post, index) => {
+  post.addEventListener('click', () => {
+    postClickHandler(index);
+    createNewComment(index);
+    postComment(index);
+  });
+});
+
+mostCommentedPosts.forEach((post, index) => {
+  post.addEventListener('click', () => {
+    postClickHandler(index);
+    createNewComment(index);
+    postComment(index);
   });
 });

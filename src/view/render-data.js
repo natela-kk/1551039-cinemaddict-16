@@ -5,7 +5,7 @@ import { createButtonTemplate } from './button-view.js';
 import { createUserNameTemplate } from './user-name-view.js';
 import { getRandomInteger, getRandomPositiveFloat } from '../mock/utils.js';
 import { getRandomDescription, getCommentsList } from '../mock/structure.js';
-import { createExtraTemplate } from './extra-view.js';
+import { createExtraTemplate, createFooterTemplate } from './extra-view.js';
 import dayjs from 'dayjs';
 
 const RANDOM_MIN_DATE = 1;
@@ -18,7 +18,7 @@ const HOUR = 60;
 const MIN_RATING = 0;
 const MAX_RATING = 10;
 const RATING_DIGITS = 1;
-
+const footer = document.querySelector('.footer');
 
 export const mainElement = document.querySelector('.main');
 const headerElement = document.querySelector('.header');
@@ -88,7 +88,7 @@ export const generateMovie = (id) => ({
     'genre': generateGenre(),
     'description': getRandomDescription(),
   },
-  'user_details': {
+  'userDetails': {
     'watchlist': Boolean(getRandomInteger(0, 1)),
     'already_watched': Boolean(getRandomInteger(0, 1)),
     'watching_date': generateDate(),
@@ -101,4 +101,6 @@ renderTemplate(mainElement, createFilterTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(mainElement, createCardsContainerTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(mainElement, createButtonTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(mainElement, createExtraTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(footer, createFooterTemplate(), RenderPosition.BEFOREEND);
+
 
