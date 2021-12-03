@@ -45,21 +45,14 @@ export const deleteButtonClickHandler = (deleteButton, buttonIndex, index) => {
   setCommentsCount(index);
 };
 
-const deleteComment = (index, deleteButtons) => {
-  deleteButtons.forEach((deleteButton, buttonIndex) => {
-    deleteButton.addEventListener('click', (evt) => {
-      evt.preventDefault();
-      deleteButtonClickHandler(deleteButton, buttonIndex, index);
-    });
-  });
-};
-
-const deleteNewComment = (index, deleteButtons) => {
-  const newDeleteButton = deleteButtons[deleteButtons.length - 1];
-  const buttonIndex = deleteButtons.length - 1;
+const deleteNewComment = (index) => {
+  const allPostComments = Array.from(document.querySelectorAll('.film-details__comment'));
+  const createdComment = allPostComments[allPostComments.length - 1];
+  const newDeleteButton = createdComment.querySelector('.film-details__comment-delete');
   newDeleteButton.addEventListener('click', (evt) => {
     evt.preventDefault();
-    deleteButtonClickHandler(newDeleteButton, buttonIndex, index);
+    createdComment.remove();
+    setCommentsCount(index);
   });
 };
 
@@ -78,47 +71,39 @@ const createNewComment = (index) => {
     });
   });
   deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
-  deleteComment(index, deleteCommentButtons);
-};
-let form;
-
-const postForm = ()  => {
-  form = document.querySelector('.film-details__inner');
-  form.addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    console.log('submited');
+  deleteCommentButtons.forEach((deleteButton, buttonIndex) => {
+    deleteButton.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      deleteButtonClickHandler(deleteButton, buttonIndex, index);
+    });
   });
-  // form.submit((evt) => {
-  //   evt.preventDefault();
-  // });
+};
+
+const inputKeydownHandler = (index, evt, commentInput) => {
+  const form = document.querySelector('.film-details__inner');
+  const commentList = document.querySelector('.film-details__comments-list');
+  const userEmoji = document.querySelector('.film-details__add-emoji-label').querySelector('img');
+  if (evt.code === 'Enter' && commentInput.value.trim() !== '' && userEmoji) {
+    evt.preventDefault();
+    const newComment = {};
+    newComment.comment = commentInput.value;
+    newComment.id = 1;
+    newComment.author = 'Natela';
+    newComment.date = 'rigth now';
+    newComment.emotion = checkedEmotion.value;
+    const newCommentTemplate = createComment(newComment);
+    commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
+    setCommentsCount(index);
+    form.reset();
+    userEmoji.remove();
+    deleteNewComment(index);
+  }
 };
 
 const postComment = (index) => {
-  form = document.querySelector('.film-details__inner');
   const commentInput = document.querySelector('.film-details__comment-input');
-  const commentList = document.querySelector('.film-details__comments-list');
-  document.addEventListener('keydown', (evt) => {
-    if (evt.code === 'Enter') {
-      const userEmoji = document.querySelector('.film-details__add-emoji-label').querySelector('img');
-      if (userEmoji !== null) {
-        evt.preventDefault();
-        const newComment = {};
-        newComment.comment = commentInput.value;
-        newComment.id = 1;
-        newComment.author = 'Natela';
-        newComment.date = 'rigth now';
-        newComment.emotion = checkedEmotion.value;
-        const newCommentTemplate = createComment(newComment);
-        commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
-        setCommentsCount(index);
-        form.reset();
-        userEmoji.remove();
-        deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
-        deleteNewComment(index, deleteCommentButtons);
-        postForm();
-      }
-    }
-    return documentFragment;
+  commentInput.addEventListener('keydown', (evt) => {
+    inputKeydownHandler(index, evt, commentInput);
   });
 };
 
@@ -132,9 +117,9 @@ export const createCommentList = (comments) => {
 
 const getGenreWord = (genres) => genres.length > 1 ? 'Genres' : 'Genre';
 
-const getWatchlistStatus = (userDetails) => userDetails.watchlist === true ? ('film-details__control-button--active') : '';
-const getWatchedStatus = (userDetails) => userDetails.already_watched === true ? ('film-details__control-button--active') : '';
-const getFavoriteStatus = (userDetails) => userDetails.favorite === true ? ('film-details__control-button--active') : '';
+const getWatchlistStatus = (userDetails) => userDetails.watchlis ? ('film-details__control-button--active') : '';
+const getWatchedStatus = (userDetails) => userDetails.already_watched ? ('film-details__control-button--active') : '';
+const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details__control-button--active') : '';
 
 export const createPopupTemplate = (thePopup) => {
   const {filmInfo, comments, userDetails} = thePopup;
