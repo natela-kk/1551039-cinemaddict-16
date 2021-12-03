@@ -259,7 +259,7 @@ function closePopup() {
 
 const postClickHandler = (index) => {
   popup = document.querySelector('.film-details');
-  if (popup !== null) {
+  if (popup) {
     popup.remove();
   }
   renderTemplate(mainElement, createPopupTemplate(allMovies[index]), RenderPosition.BEFOREEND);

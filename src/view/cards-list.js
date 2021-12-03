@@ -50,15 +50,15 @@ const historyCount = document.querySelector('a[href="#history"]').querySelector(
 const favoritesCount = document.querySelector('a[href="#favorites"]').querySelector('span');
 
 const watchlistMovies = allMovies.filter((movie) =>
-  movie.userDetails.watchlist === true);
+  movie.userDetails.watchlist);
 watchListCount.textContent = watchlistMovies.length;
 
 const historyMovies = allMovies.filter((movie) =>
-  movie.userDetails.already_watched === true);
+  movie.userDetails.already_watched);
 historyCount.textContent = historyMovies.length;
 
 const favoritesMovies = allMovies.filter((movie) =>
-  movie.userDetails.favorite === true);
+  movie.userDetails.favorite);
 favoritesCount.textContent = favoritesMovies.length;
 
 const extraLists = document.querySelectorAll('.films-list--extra');
