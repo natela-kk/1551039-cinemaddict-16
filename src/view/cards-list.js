@@ -18,31 +18,30 @@ export const allMovies = getMovieList();
 
 const showMoreButton = document.querySelector('.films-list__show-more');
 
-const createCard = (count) => {
-  let start = 0;
+const createCards = (start, end) => {
+  for (let i = start; i < end; i++) {
+    renderTemplate(cardsContainer, createCardTemplate(allMovies[i]), RenderPosition.BEFOREEND);
+  }
+};
+
+const createCard = (start, count) => {
   start += count;
   let end = NEXTPOSTS_COUNT;
   end += count;
-  const createdCards = document.querySelectorAll('.film-card');
-  if (end <= POSTSCOUNT) {
-    for (let i = start; i < end; i++) {
-      renderTemplate(cardsContainer, createCardTemplate(allMovies[i]), RenderPosition.BEFOREEND);
-    }
-  } else {
-    const difference = (POSTSCOUNT - createdCards.length - 1);
-    for (let i = start; i < end + difference; i++) {
-      renderTemplate(cardsContainer, createCardTemplate(allMovies[i]), RenderPosition.BEFOREEND);
-    }
+  if (end > POSTSCOUNT) {
+    createCards(start, POSTSCOUNT);
     showMoreButton.classList.add('visually-hidden');
+  } else {
+    createCards(start, end);
   }
 };
-createCard(0);
+createCard(0,0);
 
 
 let addNumber = 0;
 showMoreButton.addEventListener('click', () => {
   addNumber += NEXTPOSTS_COUNT;
-  createCard(addNumber);
+  createCard(0,addNumber);
 });
 
 const watchListCount = document.querySelector('a[href="#watchlist"]').querySelector('span');
