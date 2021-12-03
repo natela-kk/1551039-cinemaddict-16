@@ -30,7 +30,7 @@ let closeButton;
 
 
 const getGenreWord = (genres) => genres.length > 1 ? 'Genres' : 'Genre';
-const getWatchlistStatus = (userDetails) => userDetails.watchlis ? ('film-details__control-button--active') : '';
+const getWatchlistStatus = (userDetails) => userDetails.watchlist ? ('film-details__control-button--active') : '';
 const getWatchedStatus = (userDetails) => userDetails.already_watched ? ('film-details__control-button--active') : '';
 const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details__control-button--active') : '';
 export const createCommentList = (comments) => {
@@ -187,7 +187,7 @@ const deleteNewComment = (index) => {
   });
 };
 
-const createNewComment = (index) => {
+const addEmojiListener = () => {
   const emotionOptions = document.querySelectorAll('input[type="radio"]');
   const emotionPreview = document.querySelector('.film-details__add-emoji-label');
   emotionOptions.forEach((option) => {
@@ -200,6 +200,9 @@ const createNewComment = (index) => {
       emotionPreview.insertAdjacentHTML('beforeend', `<img src="./images/emoji/${checkedEmotion.value}.png" width="55" height="55" alt="emoji-${checkedEmotion.value}">`);
     });
   });
+};
+
+const addDeleteButtonListeners = (index) => {
   deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
   deleteCommentButtons.forEach((deleteButton, buttonIndex) => {
     deleteButton.addEventListener('click', (evt) => {
@@ -223,9 +226,9 @@ const inputKeydownHandler = (index, evt, commentInput) => {
     newComment.emotion = checkedEmotion.value;
     const newCommentTemplate = createComment(newComment);
     commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
-    setCommentsCount(index);
     form.reset();
     userEmoji.remove();
+    setCommentsCount(index);
     deleteNewComment(index);
   }
 };
@@ -269,7 +272,8 @@ const postClickHandler = (index) => {
 allPosts.forEach((post, index) => {
   post.addEventListener('click', () => {
     postClickHandler(index);
-    createNewComment(index);
+    addEmojiListener();
+    addDeleteButtonListeners(index);
     postComment(index);
   });
 });
@@ -277,7 +281,8 @@ allPosts.forEach((post, index) => {
 topRatedPosts.forEach((post, index) => {
   post.addEventListener('click', () => {
     postClickHandler(index);
-    createNewComment(index);
+    addEmojiListener();
+    addDeleteButtonListeners(index);
     postComment(index);
   });
 });
@@ -285,7 +290,8 @@ topRatedPosts.forEach((post, index) => {
 mostCommentedPosts.forEach((post, index) => {
   post.addEventListener('click', () => {
     postClickHandler(index);
-    createNewComment(index);
+    addEmojiListener();
+    addDeleteButtonListeners(index);
     postComment(index);
   });
 });
