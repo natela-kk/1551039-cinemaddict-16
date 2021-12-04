@@ -18,19 +18,20 @@ export const allMovies = getMovieList();
 
 const showMoreButton = document.querySelector('.films-list__show-more');
 
-allMovies.slice(0, Math.min(allMovies.length, NEXT_POSTS_COUNT))
-  .forEach((movie) => {
-    renderTemplate(cardsContainer, createCardTemplate(movie), RenderPosition.BEFOREEND);
-  });
+const renderMovies = (start, end) => {
+  allMovies.slice(start, end)
+    .forEach((movie) => {
+      renderTemplate(cardsContainer, createCardTemplate(movie), RenderPosition.BEFOREEND);
+    });
+};
+
+renderMovies(0, NEXT_POSTS_COUNT);
 
 let renderedMoviesCount = NEXT_POSTS_COUNT;
 
 showMoreButton.addEventListener('click', (evt) => {
   evt.preventDefault();
-  allMovies.slice(renderedMoviesCount, renderedMoviesCount + NEXT_POSTS_COUNT)
-    .forEach((movie) => {
-      renderTemplate(cardsContainer, createCardTemplate(movie), RenderPosition.BEFOREEND);
-    });
+  renderMovies(renderedMoviesCount, renderedMoviesCount + NEXT_POSTS_COUNT);
   renderedMoviesCount += NEXT_POSTS_COUNT;
   if (renderedMoviesCount >= allMovies.length) {
     showMoreButton.remove();

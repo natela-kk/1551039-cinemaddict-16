@@ -164,15 +164,8 @@ const setCommentsCount = (index) => {
   allPosts[index].querySelector('.film-card__comments').textContent = `${newCommentsLength} comments`;
 };
 
-const deleteButtonClickHandler = (deleteButton, buttonIndex, index) => {
-  deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
-  allComments = document.querySelectorAll('.film-details__comment');
-  if (allComments.length === 1) {
-    allComments[0].remove();
-  } else if (allComments.length > 1) {
-    const comment = allComments[buttonIndex];
-    comment.remove();
-  }
+const deleteButtonClickHandler = (deleteButton, comment, index) => {
+  comment.remove();
   setCommentsCount(index);
 };
 
@@ -182,8 +175,7 @@ const deleteNewComment = (index) => {
   const newDeleteButton = createdComment.querySelector('.film-details__comment-delete');
   newDeleteButton.addEventListener('click', (evt) => {
     evt.preventDefault();
-    createdComment.remove();
-    setCommentsCount(index);
+    deleteButtonClickHandler(newDeleteButton, createdComment, index);
   });
 };
 
@@ -203,11 +195,12 @@ const addEmojiListener = () => {
 };
 
 const addDeleteButtonListeners = (index) => {
+  allComments = document.querySelectorAll('.film-details__comment');
   deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
   deleteCommentButtons.forEach((deleteButton, buttonIndex) => {
     deleteButton.addEventListener('click', (evt) => {
       evt.preventDefault();
-      deleteButtonClickHandler(deleteButton, buttonIndex, index);
+      deleteButtonClickHandler(deleteButton,allComments[buttonIndex], index);
     });
   });
 };
