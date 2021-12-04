@@ -2,7 +2,7 @@ import { createCardTemplate } from './cards-view.js';
 import { generateMovie, renderTemplate, RenderPosition } from './render-data.js';
 import { POSTSCOUNT } from './extra-view.js';
 
-const NEXTPOSTS_COUNT = 5;
+const NEXT_POSTS_COUNT = 5;
 const EXTRA_COUNT = 2;
 
 const getMovieList = () => {
@@ -18,29 +18,23 @@ export const allMovies = getMovieList();
 
 const showMoreButton = document.querySelector('.films-list__show-more');
 
-const createCards = (startFrom, endOn) => {
-  for (let i = startFrom; i < endOn; i++) {
-    renderTemplate(cardsContainer, createCardTemplate(allMovies[i]), RenderPosition.BEFOREEND);
+allMovies.slice(0, Math.min(allMovies.length, NEXT_POSTS_COUNT))
+  .forEach((movie) => {
+    renderTemplate(cardsContainer, createCardTemplate(movie), RenderPosition.BEFOREEND);
+  });
+
+let renderedMoviesCount = NEXT_POSTS_COUNT;
+
+showMoreButton.addEventListener('click', (evt) => {
+  evt.preventDefault();
+  allMovies.slice(renderedMoviesCount, renderedMoviesCount + NEXT_POSTS_COUNT)
+    .forEach((movie) => {
+      renderTemplate(cardsContainer, createCardTemplate(movie), RenderPosition.BEFOREEND);
+    });
+  renderedMoviesCount += NEXT_POSTS_COUNT;
+  if (renderedMoviesCount >= allMovies.length) {
+    showMoreButton.remove();
   }
-};
-
-let start = 0;
-let end = NEXTPOSTS_COUNT;
-
-const createCard = (count) => {
-  start += count;
-  end += count;
-  if (end <= POSTSCOUNT) {
-    createCards(start, end);
-  } else {
-    createCards(start, POSTSCOUNT);
-    showMoreButton.classList.add('visually-hidden');
-  }
-};
-createCard(0);
-
-showMoreButton.addEventListener('click', () => {
-  createCard(NEXTPOSTS_COUNT);
 });
 
 const watchListCount = document.querySelector('a[href="#watchlist"]').querySelector('span');
