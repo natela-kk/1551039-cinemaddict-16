@@ -164,7 +164,7 @@ const setCommentsCount = (index) => {
   allPosts[index].querySelector('.film-card__comments').textContent = `${newCommentsLength} comments`;
 };
 
-const deleteButtonClickHandler = (deleteButton, comment, index) => {
+const addRemoveControlEvent = (deleteButton, comment, index) => {
   deleteButton.addEventListener('click', (evt) => {
     evt.preventDefault();
     comment.remove();
@@ -176,7 +176,7 @@ const deleteNewComment = (index) => {
   const allPostComments = Array.from(document.querySelectorAll('.film-details__comment'));
   const createdComment = allPostComments[allPostComments.length - 1];
   const newDeleteButton = createdComment.querySelector('.film-details__comment-delete');
-  deleteButtonClickHandler(newDeleteButton, createdComment, index);
+  addRemoveControlEvent(newDeleteButton, createdComment, index);
 };
 
 const addEmojiListener = () => {
@@ -198,7 +198,7 @@ const addDeleteButtonListeners = (index) => {
   allComments = document.querySelectorAll('.film-details__comment');
   deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
   deleteCommentButtons.forEach((deleteButton, buttonIndex) => {
-    deleteButtonClickHandler(deleteButton,allComments[buttonIndex], index);
+    addRemoveControlEvent(deleteButton, allComments[buttonIndex], index);
   });
 };
 
