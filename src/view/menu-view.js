@@ -1,4 +1,6 @@
-export const createMenuTemplate = () => (
+import { createElement } from './render.js';
+
+const createMenuTemplate = () => (
   `<nav class="main-navigation">
   <div class="main-navigation__items">
     <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
@@ -10,5 +12,22 @@ export const createMenuTemplate = () => (
 </nav>
 </section>`
 );
-createMenuTemplate();
 
+export default class MenuView {
+#element = null;
+
+get element() {
+  if (!this.#element) {
+    this.#element = createElement(this.template);
+  }
+  return this.#element;
+}
+
+get template() {
+  return createMenuTemplate();
+}
+
+removeElement() {
+  this.#element = null;
+}
+}

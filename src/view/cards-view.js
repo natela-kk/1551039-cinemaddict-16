@@ -1,10 +1,4 @@
-export const createCardsContainerTemplate = () => (`<section class="films">
-  <section class="films-list">
-    <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
-    <div class="films-list__container">
- </div>
- </section>
- </section>`);
+import { createElement } from './render.js';
 
 const getFilmDescription = (description) => {
   const text = description.join(' ');
@@ -16,7 +10,7 @@ const getWatchedStatus = (userDetails) => userDetails.already_watched === true ?
 const getFavoriteStatus = (userDetails) => userDetails.favorite === true ? ('film-card__controls-item--active') : '';
 
 
-export const createCardTemplate = (card) => {
+const createCardTemplate = (card) => {
   const {filmInfo, comments, userDetails} = card;
   return `<article class="film-card">
         <a class="film-card__link">
@@ -38,3 +32,28 @@ export const createCardTemplate = (card) => {
         </div>
       </article>`;
 };
+
+export default class CardsView {
+  #element = null;
+  #card = null;
+
+  constructor(card) {
+    this.#card = card;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
+  get template() {
+    return createCardTemplate(this.#card);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+

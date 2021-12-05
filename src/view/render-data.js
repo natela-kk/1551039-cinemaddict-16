@@ -1,11 +1,14 @@
-import { createMenuTemplate } from './menu-view.js';
-import { createFilterTemplate } from './filter-view.js';
-import { createCardsContainerTemplate } from './cards-view.js';
-import { createButtonTemplate } from './button-view.js';
-import { createUserNameTemplate } from './user-name-view.js';
+import MenuView from './menu-view.js';
+import FilterView from './filter-view.js';
+import CradsContainerView from './cards-container-view.js';
+
+import ButtonView from './button-view.js';
+import AvatarView from './user-name-view.js';
 import { getRandomInteger, getRandomPositiveFloat } from '../mock/utils.js';
 import { getRandomDescription, getCommentsList } from '../mock/structure.js';
-import { createExtraTemplate, createFooterTemplate } from './extra-view.js';
+import ExtraView from './extra-view.js';
+import FooterView from './footer-view.js';
+import { renderElement } from './render.js';
 import dayjs from 'dayjs';
 
 const RANDOM_MIN_DATE = 1;
@@ -33,7 +36,6 @@ export const RenderPosition = {
 export const renderTemplate = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
-
 
 const generateDate = () => {
   const randomNumber = getRandomInteger(RANDOM_MIN_DATE, RANDOM_MAX_DATE);
@@ -95,12 +97,12 @@ export const generateMovie = (id) => ({
     'favorite': Boolean(getRandomInteger(0, 1)),
   }
 });
-renderTemplate(headerElement, createUserNameTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(mainElement, createMenuTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(mainElement, createFilterTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(mainElement, createCardsContainerTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(mainElement, createButtonTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(mainElement, createExtraTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(footer, createFooterTemplate(), RenderPosition.BEFOREEND);
+renderElement(headerElement, new AvatarView().element, RenderPosition.BEFOREEND);
+renderElement(mainElement, new MenuView().element, RenderPosition.BEFOREEND);
+renderElement(mainElement, new FilterView().element, RenderPosition.BEFOREEND);
+renderElement(mainElement, new CradsContainerView().element, RenderPosition.BEFOREEND);
+renderElement(mainElement, new ButtonView().element, RenderPosition.BEFOREEND);
+renderElement(mainElement, new ExtraView().element, RenderPosition.BEFOREEND);
+renderElement(footer, new FooterView().element, RenderPosition.BEFOREEND);
 
 

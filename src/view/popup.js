@@ -1,15 +1,16 @@
-import { mainElement, RenderPosition, renderTemplate } from './render-data.js';
+import { mainElement } from './render-data.js';
 import { allMovies } from './cards-list.js';
+import { createElement } from './render.js';
+// import CardsView from './cards-view.js';
 
 const filmcontainers = document.querySelectorAll('.films-list__container');
 const allPosts = filmcontainers[0].querySelectorAll('.film-card');
-const topRatedPosts = filmcontainers[2].querySelectorAll('.film-card');
-const mostCommentedPosts = filmcontainers[3].querySelectorAll('.film-card');
-
+// const topRatedPosts = filmcontainers[2].querySelectorAll('.film-card');
+// const mostCommentedPosts = filmcontainers[3].querySelectorAll('.film-card');
 const createComment = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">
     <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
-  </span>
+    </span>
   <div>
   <p class="film-details__comment-text">${comment.comment}</p>
   <p class="film-details__comment-info">
@@ -41,15 +42,15 @@ export const createCommentList = (comments) => {
   return documentFragment;
 };
 
-export const createPopupTemplate = (thePopup) => {
+const createPopupTemplate = (thePopup) => {
   const {filmInfo, comments, userDetails} = thePopup;
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
-    <div class="film-details__top-container">
+  <div class="film-details__top-container">
     <div class="film-details__close">
-        <button class="film-details__close-btn" type="button">close</button>
+    <button class="film-details__close-btn" type="button">close</button>
         </div>
-      <div class="film-details__info-wrap">
+        <div class="film-details__info-wrap">
       <div class="film-details__poster">
       <img class="film-details__poster-img" src="${filmInfo.poster}" alt="">
 
@@ -58,7 +59,7 @@ export const createPopupTemplate = (thePopup) => {
 
         <div class="film-details__info">
         <div class="film-details__info-head">
-          <div class="film-details__title-wrap">
+        <div class="film-details__title-wrap">
               <h3 class="film-details__title">${filmInfo.title}</h3>
               <p class="film-details__title-original">Original: ${filmInfo.alternative_title}</p>
               </div>
@@ -66,16 +67,16 @@ export const createPopupTemplate = (thePopup) => {
               <div class="film-details__rating">
               <p class="film-details__total-rating">${filmInfo.total_rating}</p>
               </div>
-          </div>
+              </div>
 
           <table class="film-details__table">
           <tr class="film-details__row">
           <td class="film-details__term">Director</td>
               <td class="film-details__cell">${filmInfo.director}</td>
-            </tr>
+              </tr>
             <tr class="film-details__row">
-              <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${filmInfo.writers}</td>
+            <td class="film-details__term">Writers</td>
+            <td class="film-details__cell">${filmInfo.writers}</td>
             </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
@@ -83,14 +84,14 @@ export const createPopupTemplate = (thePopup) => {
               </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${filmInfo.release.date.format('DD MMMM YYYY')}</td>
-              </tr>
-            <tr class="film-details__row">
-            <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${filmInfo.runtime}</td>
+            <td class="film-details__cell">${filmInfo.release.date.format('DD MMMM YYYY')}</td>
               </tr>
               <tr class="film-details__row">
-              <td class="film-details__term">Country</td>
+            <td class="film-details__term">Runtime</td>
+            <td class="film-details__cell">${filmInfo.runtime}</td>
+            </tr>
+            <tr class="film-details__row">
+            <td class="film-details__term">Country</td>
               <td class="film-details__cell">${filmInfo.release.release_country}</td>
               </tr>
             <tr class="film-details__row">
@@ -104,7 +105,7 @@ export const createPopupTemplate = (thePopup) => {
           ${filmInfo.description}
           </p>
         </div>
-      </div>
+        </div>
 
       <section class="film-details__controls">
       <button type="button" class="film-details__control-button film-details__control-button--watchlist ${getWatchlistStatus(userDetails)}" id="watchlist" name="watchlist">Add to watchlist</button>
@@ -117,21 +118,21 @@ export const createPopupTemplate = (thePopup) => {
       <section class="film-details__comments-wrap">
       <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
-        <ul class="film-details__comments-list">
+      <ul class="film-details__comments-list">
         ${createCommentList(comments)}
         </ul>
 
         <div class="film-details__new-comment">
         <div class="film-details__add-emoji-label"></div>
 
-          <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+        <label class="film-details__comment-label">
+        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
             </label>
 
           <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
             <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
+            <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
             </label>
 
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
@@ -151,10 +152,34 @@ export const createPopupTemplate = (thePopup) => {
           </div>
           </div>
       </section>
-    </div>
+      </div>
     </form>
     </section>`;
 };
+
+class PopupView {
+  #element = null;
+  #popup = null;
+
+  constructor(popupCard) {
+    this.#popup = popupCard;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
+  get template() {
+    return createPopupTemplate(this.#popup);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
 
 const setCommentsCount = (index) => {
   allComments = document.querySelectorAll('.film-details__comment');
@@ -179,7 +204,7 @@ const deleteNewComment = (index) => {
   addRemoveControlEvent(newDeleteButton, createdComment, index);
 };
 
-const addEmojiListener = () => {
+export const addEmojiListener = () => {
   const emotionOptions = document.querySelectorAll('input[type="radio"]');
   const emotionPreview = document.querySelector('.film-details__add-emoji-label');
   emotionOptions.forEach((option) => {
@@ -194,7 +219,7 @@ const addEmojiListener = () => {
   });
 };
 
-const addDeleteButtonListeners = (index) => {
+export const addDeleteButtonListeners = (index) => {
   allComments = document.querySelectorAll('.film-details__comment');
   deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
   deleteCommentButtons.forEach((deleteButton, buttonIndex) => {
@@ -223,7 +248,7 @@ const inputKeydownHandler = (index, evt, commentInput) => {
   }
 };
 
-const postComment = (index) => {
+export const postComment = (index) => {
   const commentInput = document.querySelector('.film-details__comment-input');
   commentInput.addEventListener('keydown', (evt) => {
     inputKeydownHandler(index, evt, commentInput);
@@ -242,46 +267,22 @@ const closeButtonClickHandler = () => {
 };
 
 function closePopup() {
-  popup.remove();
+  mainElement.removeChild(popup);
   closeButton.removeEventListener('click', closeButtonClickHandler);
   document.removeEventListener('keydown', documentKeydownHandler);
+  document.body.classList.remove('hide-overflow');
 }
 
-const postClickHandler = (index) => {
+export const postClickHandler = (index) => {
+  document.body.classList.add('hide-overflow');
   popup = document.querySelector('.film-details');
   if (popup) {
-    popup.remove();
+    mainElement.removeChild(popup);
   }
-  renderTemplate(mainElement, createPopupTemplate(allMovies[index]), RenderPosition.BEFOREEND);
-  popup = document.querySelector('.film-details');
-  closeButton = document.querySelector('.film-details__close-btn');
+  const popupComponent = new PopupView(allMovies[index]);
+  closeButton = popupComponent.element.querySelector('.film-details__close-btn');
   closeButton.addEventListener('click', closeButtonClickHandler);
+  mainElement.appendChild(popupComponent.element);
+  popup = document.querySelector('.film-details');
   document.addEventListener('keydown', documentKeydownHandler);
 };
-
-allPosts.forEach((post, index) => {
-  post.addEventListener('click', () => {
-    postClickHandler(index);
-    addEmojiListener();
-    addDeleteButtonListeners(index);
-    postComment(index);
-  });
-});
-
-topRatedPosts.forEach((post, index) => {
-  post.addEventListener('click', () => {
-    postClickHandler(index);
-    addEmojiListener();
-    addDeleteButtonListeners(index);
-    postComment(index);
-  });
-});
-
-mostCommentedPosts.forEach((post, index) => {
-  post.addEventListener('click', () => {
-    postClickHandler(index);
-    addEmojiListener();
-    addDeleteButtonListeners(index);
-    postComment(index);
-  });
-});
