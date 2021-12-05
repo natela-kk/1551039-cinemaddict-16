@@ -7,7 +7,7 @@ const filmcontainers = document.querySelectorAll('.films-list__container');
 const allPosts = filmcontainers[0].querySelectorAll('.film-card');
 // const topRatedPosts = filmcontainers[2].querySelectorAll('.film-card');
 // const mostCommentedPosts = filmcontainers[3].querySelectorAll('.film-card');
-const createComment = (comment) => (`<li class="film-details__comment">
+const createCommentTemplate = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">
     <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
     </span>
@@ -21,6 +21,40 @@ const createComment = (comment) => (`<li class="film-details__comment">
   </div>
   </li>`);
 
+class CommentView {
+    #element = null;
+#comment = null;
+
+constructor(comment) {
+  this.#comment = comment;
+}
+
+get element() {
+  if (!this.#element) {
+    this.#element = createElement(this.template);
+  }
+  return this.#element;
+}
+
+get template() {
+  return createCommentTemplate(this.#comment);
+}
+
+removeElement() {
+  this.#element = null;
+}
+
+addRemoveControlEvent(commentElement) {
+  const deleteButtonElement = commentElement.querySelector('.film-details__comment-delete');
+  deleteButtonElement.addEventListener('click', (evt) => {
+    console.log('click');
+    evt.preventDefault();
+    commentElement.remove();
+    // setCommentsCount(index);
+  });
+}
+}
+
 let documentFragment;
 let checkedEmotion;
 let allComments;
@@ -29,7 +63,6 @@ let emotionImages;
 let popup;
 let closeButton;
 
-
 const getGenreWord = (genres) => genres.length > 1 ? 'Genres' : 'Genre';
 const getWatchlistStatus = (userDetails) => userDetails.watchlist ? ('film-details__control-button--active') : '';
 const getWatchedStatus = (userDetails) => userDetails.already_watched ? ('film-details__control-button--active') : '';
@@ -37,10 +70,13 @@ const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details
 export const createCommentList = (comments) => {
   documentFragment = '';
   comments.forEach((comment) => {
-    documentFragment += createComment(comment);
+    const commentComponent = new CommentView(comment);
+    documentFragment += commentComponent.template;
+    commentComponent.addRemoveControlEvent(commentComponent.element);
   });
   return documentFragment;
 };
+
 
 const createPopupTemplate = (thePopup) => {
   const {filmInfo, comments, userDetails} = thePopup;
@@ -239,7 +275,7 @@ const inputKeydownHandler = (index, evt, commentInput) => {
     newComment.author = 'Natela';
     newComment.date = 'rigth now';
     newComment.emotion = checkedEmotion.value;
-    const newCommentTemplate = createComment(newComment);
+    const newCommentTemplate = createCommentTemplate(newComment);
     commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
     form.reset();
     userEmoji.remove();
