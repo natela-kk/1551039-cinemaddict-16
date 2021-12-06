@@ -2,7 +2,7 @@ import CardsView from './cards-view.js';
 import { generateMovie, RenderPosition } from './render-data.js';
 import { POSTSCOUNT } from './extra-view.js';
 import { renderElement } from './render.js';
-import { postClickHandler, addEmojiListener, addDeleteButtonListeners, postComment } from './popup.js';
+import { postClickHandler, addEmojiListener } from './popup.js';
 
 const NEXT_POSTS_COUNT = 5;
 const EXTRA_COUNT = 2;
@@ -25,8 +25,8 @@ const addClickHandler = (place, movie, index) => {
   cardComponent.element.querySelector('a').addEventListener('click', () => {
     postClickHandler(index);
     addEmojiListener();
-    addDeleteButtonListeners(index);
-    postComment(index);
+    // addDeleteButtonListeners(index);
+    // postComment(index);
   });
   renderElement(place, cardComponent.element, RenderPosition.BEFOREEND);
 };

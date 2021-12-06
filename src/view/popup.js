@@ -3,8 +3,8 @@ import { allMovies } from './cards-list.js';
 import { createElement } from './render.js';
 // import CardsView from './cards-view.js';
 
-const filmcontainers = document.querySelectorAll('.films-list__container');
-const allPosts = filmcontainers[0].querySelectorAll('.film-card');
+// const filmcontainers = document.querySelectorAll('.films-list__container');
+// const allPosts = filmcontainers[0].querySelectorAll('.film-card');
 // const topRatedPosts = filmcontainers[2].querySelectorAll('.film-card');
 // const mostCommentedPosts = filmcontainers[3].querySelectorAll('.film-card');
 const createCommentTemplate = (comment) => (`<li class="film-details__comment">
@@ -44,21 +44,18 @@ removeElement() {
   this.#element = null;
 }
 
-addRemoveControlEvent(commentElement) {
+addRemoveControlEventR(commentElement) {
   const deleteButtonElement = commentElement.querySelector('.film-details__comment-delete');
   deleteButtonElement.addEventListener('click', (evt) => {
-    console.log('click');
     evt.preventDefault();
     commentElement.remove();
-    // setCommentsCount(index);
+  // setCommentsCount(index);
   });
 }
 }
 
-let documentFragment;
 let checkedEmotion;
-let allComments;
-let deleteCommentButtons;
+// let allComments;
 let emotionImages;
 let popup;
 let closeButton;
@@ -67,16 +64,6 @@ const getGenreWord = (genres) => genres.length > 1 ? 'Genres' : 'Genre';
 const getWatchlistStatus = (userDetails) => userDetails.watchlist ? ('film-details__control-button--active') : '';
 const getWatchedStatus = (userDetails) => userDetails.already_watched ? ('film-details__control-button--active') : '';
 const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details__control-button--active') : '';
-export const createCommentList = (comments) => {
-  documentFragment = '';
-  comments.forEach((comment) => {
-    const commentComponent = new CommentView(comment);
-    documentFragment += commentComponent.template;
-    commentComponent.addRemoveControlEvent(commentComponent.element);
-  });
-  return documentFragment;
-};
-
 
 const createPopupTemplate = (thePopup) => {
   const {filmInfo, comments, userDetails} = thePopup;
@@ -155,7 +142,6 @@ const createPopupTemplate = (thePopup) => {
       <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
       <ul class="film-details__comments-list">
-        ${createCommentList(comments)}
         </ul>
 
         <div class="film-details__new-comment">
@@ -212,33 +198,60 @@ class PopupView {
     return createPopupTemplate(this.#popup);
   }
 
+  getElement(selector) {
+    console.log(this.#element.querySelector(selector));
+    return this.#element.querySelector(selector);
+  }
+
+  inputKeydownHandler (index, evt, commentInput) {
+    const form = document.querySelector('.film-details__inner');
+    const commentList = document.querySelector('.film-details__comments-list');
+    const userEmoji = document.querySelector('.film-details__add-emoji-label').querySelector('img');
+    if (evt.code === 'Enter' && commentInput.value.trim() !== '' && userEmoji) {
+      evt.preventDefault();
+      const newComment = {};
+      newComment.comment = commentInput.value;
+      newComment.id = 1;
+      newComment.author = 'Natela';
+      newComment.date = 'rigth now';
+      newComment.emotion = checkedEmotion.value;
+      const newCommentTemplate = createCommentTemplate(newComment);
+      commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
+      form.reset();
+      userEmoji.remove();
+      // setCommentsCount(index);
+      // deleteNewComment(index);
+    }
+  }
+
   removeElement() {
     this.#element = null;
   }
+
 }
 
-const setCommentsCount = (index) => {
-  allComments = document.querySelectorAll('.film-details__comment');
-  const commentsCount = document.querySelector('.film-details__comments-count');
-  const newCommentsLength =  allComments.length;
-  commentsCount.textContent = newCommentsLength;
-  allPosts[index].querySelector('.film-card__comments').textContent = `${newCommentsLength} comments`;
-};
+// const setCommentsCount = (index) => {
+//   allComments = document.querySelectorAll('.film-details__comment');
+//   const commentsCount = document.querySelector('.film-details__comments-count');
+//   const newCommentsLength =  allComments.length;
+//   commentsCount.textContent = newCommentsLength;
+//   allPosts[index].querySelector('.film-card__comments').textContent = `${newCommentsLength} comments`;
+// };
 
-const addRemoveControlEvent = (deleteButton, comment, index) => {
-  deleteButton.addEventListener('click', (evt) => {
-    evt.preventDefault();
-    comment.remove();
-    setCommentsCount(index);
-  });
-};
+// const addRemoveControlEvent = (deleteButton, comment, index) => {
+//   deleteButton.addEventListener('click', (evt) => {
+//     evt.preventDefault();
+//     comment.remove();
+//     setCommentsCount(index);
+//   });
+// };
 
-const deleteNewComment = (index) => {
-  const allPostComments = Array.from(document.querySelectorAll('.film-details__comment'));
-  const createdComment = allPostComments[allPostComments.length - 1];
-  const newDeleteButton = createdComment.querySelector('.film-details__comment-delete');
-  addRemoveControlEvent(newDeleteButton, createdComment, index);
-};
+// const deleteNewComment = (index) => {
+//   const allPostComments = Array.from(document.querySelectorAll('.film-details__comment'));
+//   const createdComment = allPostComments[allPostComments.length - 1];
+//   const newDeleteButton = createdComment.querySelector('.film-details__comment-delete');
+//   addRemoveControlEvent(newDeleteButton, createdComment, index);
+// };
 
 export const addEmojiListener = () => {
   const emotionOptions = document.querySelectorAll('input[type="radio"]');
@@ -255,42 +268,26 @@ export const addEmojiListener = () => {
   });
 };
 
-export const addDeleteButtonListeners = (index) => {
-  allComments = document.querySelectorAll('.film-details__comment');
-  deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
-  deleteCommentButtons.forEach((deleteButton, buttonIndex) => {
-    addRemoveControlEvent(deleteButton, allComments[buttonIndex], index);
-  });
-};
-
-const inputKeydownHandler = (index, evt, commentInput) => {
-  const form = document.querySelector('.film-details__inner');
-  const commentList = document.querySelector('.film-details__comments-list');
-  const userEmoji = document.querySelector('.film-details__add-emoji-label').querySelector('img');
-  if (evt.code === 'Enter' && commentInput.value.trim() !== '' && userEmoji) {
-    evt.preventDefault();
-    const newComment = {};
-    newComment.comment = commentInput.value;
-    newComment.id = 1;
-    newComment.author = 'Natela';
-    newComment.date = 'rigth now';
-    newComment.emotion = checkedEmotion.value;
-    const newCommentTemplate = createCommentTemplate(newComment);
-    commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
-    form.reset();
-    userEmoji.remove();
-    setCommentsCount(index);
-    deleteNewComment(index);
-  }
-};
-
-export const postComment = (index) => {
-  const commentInput = document.querySelector('.film-details__comment-input');
-  commentInput.addEventListener('keydown', (evt) => {
-    inputKeydownHandler(index, evt, commentInput);
-  });
-};
-
+// const inputKeydownHandler = (index, evt, commentInput) => {
+//   const form = document.querySelector('.film-details__inner');
+//   const commentList = document.querySelector('.film-details__comments-list');
+//   const userEmoji = document.querySelector('.film-details__add-emoji-label').querySelector('img');
+//   if (evt.code === 'Enter' && commentInput.value.trim() !== '' && userEmoji) {
+//     evt.preventDefault();
+//     const newComment = {};
+//     newComment.comment = commentInput.value;
+//     newComment.id = 1;
+//     newComment.author = 'Natela';
+//     newComment.date = 'rigth now';
+//     newComment.emotion = checkedEmotion.value;
+//     const newCommentTemplate = createCommentTemplate(newComment);
+//     commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
+//     form.reset();
+//     userEmoji.remove();
+//     setCommentsCount(index);
+//     deleteNewComment(index);
+//   }
+// };
 
 const documentKeydownHandler = (evt) => {
   if (evt.code === 'Escape') {
@@ -319,6 +316,15 @@ export const postClickHandler = (index) => {
   closeButton = popupComponent.element.querySelector('.film-details__close-btn');
   closeButton.addEventListener('click', closeButtonClickHandler);
   mainElement.appendChild(popupComponent.element);
+  allMovies[index].comments.forEach((comment) => {
+    const commentComponent = new CommentView(comment);
+    popupComponent.getElement('.film-details__comments-list').appendChild(commentComponent.element);
+    commentComponent.addRemoveControlEventR(commentComponent.element);
+  });
+  const commentInput = popupComponent.getElement('.film-details__comment-input');
+  commentInput.addEventListener('keydown', (evt) => {
+    popupComponent.inputKeydownHandler(index, evt, commentInput);
+  });
   popup = document.querySelector('.film-details');
   document.addEventListener('keydown', documentKeydownHandler);
 };
