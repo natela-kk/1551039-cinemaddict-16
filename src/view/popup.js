@@ -1,5 +1,6 @@
 import { mainElement } from './render-data.js';
-import { allMovies } from './cards-list.js';
+// import { allMovies } from './cards-list.js';
+import CommentView from './comment-view.js';
 import { createElement } from './render.js';
 // import CardsView from './cards-view.js';
 
@@ -7,55 +8,9 @@ import { createElement } from './render.js';
 // const allPosts = filmcontainers[0].querySelectorAll('.film-card');
 // const topRatedPosts = filmcontainers[2].querySelectorAll('.film-card');
 // const mostCommentedPosts = filmcontainers[3].querySelectorAll('.film-card');
-const createCommentTemplate = (comment) => (`<li class="film-details__comment">
-<span class="film-details__comment-emoji">
-    <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
-    </span>
-  <div>
-  <p class="film-details__comment-text">${comment.comment}</p>
-  <p class="film-details__comment-info">
-  <span class="film-details__comment-author">${comment.author}</span>
-  <span class="film-details__comment-day">${comment.date}</span>
-  <button class="film-details__comment-delete">Delete</button>
-  </p>
-  </div>
-  </li>`);
 
-class CommentView {
-    #element = null;
-#comment = null;
-
-constructor(comment) {
-  this.#comment = comment;
-}
-
-get element() {
-  if (!this.#element) {
-    this.#element = createElement(this.template);
-  }
-  return this.#element;
-}
-
-get template() {
-  return createCommentTemplate(this.#comment);
-}
-
-removeElement() {
-  this.#element = null;
-}
-
-addRemoveControlEventR(commentElement) {
-  const deleteButtonElement = commentElement.querySelector('.film-details__comment-delete');
-  deleteButtonElement.addEventListener('click', (evt) => {
-    evt.preventDefault();
-    commentElement.remove();
-  // setCommentsCount(index);
-  });
-}
-}
 
 let checkedEmotion;
-// let allComments;
 let emotionImages;
 let popup;
 let closeButton;
@@ -179,7 +134,7 @@ const createPopupTemplate = (thePopup) => {
     </section>`;
 };
 
-class PopupView {
+export default class PopupView {
   #element = null;
   #popup = null;
 
@@ -198,12 +153,7 @@ class PopupView {
     return createPopupTemplate(this.#popup);
   }
 
-  getElement(selector) {
-    console.log(this.#element.querySelector(selector));
-    return this.#element.querySelector(selector);
-  }
-
-  inputKeydownHandler (index, evt, commentInput) {
+  inputKeydownHandler (evt, commentInput, popupComponent, cardComponent) {
     const form = document.querySelector('.film-details__inner');
     const commentList = document.querySelector('.film-details__comments-list');
     const userEmoji = document.querySelector('.film-details__add-emoji-label').querySelector('img');
@@ -215,13 +165,28 @@ class PopupView {
       newComment.author = 'Natela';
       newComment.date = 'rigth now';
       newComment.emotion = checkedEmotion.value;
-      const newCommentTemplate = createCommentTemplate(newComment);
-      commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
+      const newCommentComponent = new CommentView(newComment);
+      commentList.appendChild(newCommentComponent.element);
       form.reset();
       userEmoji.remove();
-      // setCommentsCount(index);
-      // deleteNewComment(index);
+      newCommentComponent.setCommentsCount(newCommentComponent.element, popupComponent, cardComponent);
+      newCommentComponent.addRemoveControlEvent(newCommentComponent.element, popupComponent, cardComponent);
     }
+  }
+
+  addEmojiListener(popop) {
+    const emotionOptions = popop.querySelectorAll('input[type="radio"]');
+    const emotionPreview = popop.querySelector('.film-details__add-emoji-label');
+    emotionOptions.forEach((option) => {
+      option.addEventListener('change', () => {
+        checkedEmotion = popop.querySelector('input[type="radio"]:checked');
+        emotionImages = Array.from(emotionPreview.children);
+        if (emotionImages.length > 0) {
+          emotionImages[0].remove();
+        }
+        emotionPreview.insertAdjacentHTML('beforeend', `<img src="./images/emoji/${checkedEmotion.value}.png" width="55" height="55" alt="emoji-${checkedEmotion.value}">`);
+      });
+    });
   }
 
   removeElement() {
@@ -229,65 +194,6 @@ class PopupView {
   }
 
 }
-
-// const setCommentsCount = (index) => {
-//   allComments = document.querySelectorAll('.film-details__comment');
-//   const commentsCount = document.querySelector('.film-details__comments-count');
-//   const newCommentsLength =  allComments.length;
-//   commentsCount.textContent = newCommentsLength;
-//   allPosts[index].querySelector('.film-card__comments').textContent = `${newCommentsLength} comments`;
-// };
-
-// const addRemoveControlEvent = (deleteButton, comment, index) => {
-//   deleteButton.addEventListener('click', (evt) => {
-//     evt.preventDefault();
-//     comment.remove();
-//     setCommentsCount(index);
-//   });
-// };
-
-// const deleteNewComment = (index) => {
-//   const allPostComments = Array.from(document.querySelectorAll('.film-details__comment'));
-//   const createdComment = allPostComments[allPostComments.length - 1];
-//   const newDeleteButton = createdComment.querySelector('.film-details__comment-delete');
-//   addRemoveControlEvent(newDeleteButton, createdComment, index);
-// };
-
-export const addEmojiListener = () => {
-  const emotionOptions = document.querySelectorAll('input[type="radio"]');
-  const emotionPreview = document.querySelector('.film-details__add-emoji-label');
-  emotionOptions.forEach((option) => {
-    option.addEventListener('change', () => {
-      checkedEmotion = document.querySelector('input[type="radio"]:checked');
-      emotionImages = Array.from(emotionPreview.children);
-      if (emotionImages.length > 0) {
-        emotionImages[0].remove();
-      }
-      emotionPreview.insertAdjacentHTML('beforeend', `<img src="./images/emoji/${checkedEmotion.value}.png" width="55" height="55" alt="emoji-${checkedEmotion.value}">`);
-    });
-  });
-};
-
-// const inputKeydownHandler = (index, evt, commentInput) => {
-//   const form = document.querySelector('.film-details__inner');
-//   const commentList = document.querySelector('.film-details__comments-list');
-//   const userEmoji = document.querySelector('.film-details__add-emoji-label').querySelector('img');
-//   if (evt.code === 'Enter' && commentInput.value.trim() !== '' && userEmoji) {
-//     evt.preventDefault();
-//     const newComment = {};
-//     newComment.comment = commentInput.value;
-//     newComment.id = 1;
-//     newComment.author = 'Natela';
-//     newComment.date = 'rigth now';
-//     newComment.emotion = checkedEmotion.value;
-//     const newCommentTemplate = createCommentTemplate(newComment);
-//     commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
-//     form.reset();
-//     userEmoji.remove();
-//     setCommentsCount(index);
-//     deleteNewComment(index);
-//   }
-// };
 
 const documentKeydownHandler = (evt) => {
   if (evt.code === 'Escape') {
@@ -306,24 +212,25 @@ function closePopup() {
   document.body.classList.remove('hide-overflow');
 }
 
-export const postClickHandler = (index) => {
+export const postClickHandler = (movie, cardComponent) => {
   document.body.classList.add('hide-overflow');
   popup = document.querySelector('.film-details');
   if (popup) {
     mainElement.removeChild(popup);
   }
-  const popupComponent = new PopupView(allMovies[index]);
+  const popupComponent = new PopupView(movie);
   closeButton = popupComponent.element.querySelector('.film-details__close-btn');
   closeButton.addEventListener('click', closeButtonClickHandler);
   mainElement.appendChild(popupComponent.element);
-  allMovies[index].comments.forEach((comment) => {
+  movie.comments.forEach((comment) => {
     const commentComponent = new CommentView(comment);
-    popupComponent.getElement('.film-details__comments-list').appendChild(commentComponent.element);
-    commentComponent.addRemoveControlEventR(commentComponent.element);
+    popupComponent.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
+    commentComponent.addRemoveControlEvent(commentComponent.element, popupComponent, cardComponent);
   });
-  const commentInput = popupComponent.getElement('.film-details__comment-input');
+  popupComponent.addEmojiListener(popupComponent.element);
+  const commentInput = popupComponent.element.querySelector('.film-details__comment-input');
   commentInput.addEventListener('keydown', (evt) => {
-    popupComponent.inputKeydownHandler(index, evt, commentInput);
+    popupComponent.inputKeydownHandler(evt, commentInput, popupComponent, cardComponent);
   });
   popup = document.querySelector('.film-details');
   document.addEventListener('keydown', documentKeydownHandler);

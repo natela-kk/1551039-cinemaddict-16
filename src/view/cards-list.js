@@ -2,7 +2,7 @@ import CardsView from './cards-view.js';
 import { generateMovie, RenderPosition } from './render-data.js';
 import { POSTSCOUNT } from './extra-view.js';
 import { renderElement } from './render.js';
-import { postClickHandler, addEmojiListener } from './popup.js';
+import { postClickHandler } from './popup.js';
 
 const NEXT_POSTS_COUNT = 5;
 const EXTRA_COUNT = 2;
@@ -20,13 +20,10 @@ export const allMovies = getMovieList();
 
 const showMoreButton = document.querySelector('.films-list__show-more');
 
-const addClickHandler = (place, movie, index) => {
+const addClickHandler = (place, movie) => {
   const cardComponent = new CardsView(movie);
   cardComponent.element.querySelector('a').addEventListener('click', () => {
-    postClickHandler(index);
-    addEmojiListener();
-    // addDeleteButtonListeners(index);
-    // postComment(index);
+    postClickHandler(movie, cardComponent);
   });
   renderElement(place, cardComponent.element, RenderPosition.BEFOREEND);
 };
