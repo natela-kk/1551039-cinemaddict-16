@@ -1,21 +1,22 @@
 import { createElement } from './render.js';
+import { POSTSCOUNT } from './extra-view.js';
 
-const createButtonTemplate = () => (
-  '<button class="films-list__show-more">Show more</button>'
+const createFooterTemplate = () => (
+  `<p>${POSTSCOUNT} movies inside</p>`
 );
 
-export default class ButtonView {
+export default class FooterView {
 #element = null;
 
 get element() {
-  if(!this.#element) {
+  if (!this.#element) {
     this.#element = createElement(this.template);
   }
   return this.#element;
 }
 
 get template() {
-  return createButtonTemplate();
+  return createFooterTemplate();
 }
 
 removeElement() {

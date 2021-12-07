@@ -1,6 +1,8 @@
-import { createCardTemplate } from './cards-view.js';
-import { generateMovie, renderTemplate, RenderPosition } from './render-data.js';
+import CardsView from './cards-view.js';
+import { generateMovie, RenderPosition } from './render-data.js';
 import { POSTSCOUNT } from './extra-view.js';
+import { renderElement } from './render.js';
+import { postClickHandler } from './popup.js';
 
 const NEXT_POSTS_COUNT = 5;
 const EXTRA_COUNT = 2;
@@ -18,10 +20,18 @@ export const allMovies = getMovieList();
 
 const showMoreButton = document.querySelector('.films-list__show-more');
 
+const addClickHandler = (place, movie) => {
+  const cardComponent = new CardsView(movie);
+  cardComponent.element.querySelector('a').addEventListener('click', () => {
+    postClickHandler(movie, cardComponent);
+  });
+  renderElement(place, cardComponent.element, RenderPosition.BEFOREEND);
+};
+
 const renderMovies = (start, end) => {
   allMovies.slice(start, end)
-    .forEach((movie) => {
-      renderTemplate(cardsContainer, createCardTemplate(movie), RenderPosition.BEFOREEND);
+    .forEach((movie, index) => {
+      addClickHandler(cardsContainer, movie, index);
     });
 };
 
@@ -56,11 +66,13 @@ favoritesCount.textContent = favoritesMovies.length;
 
 const extraLists = document.querySelectorAll('.films-list--extra');
 const topRated = extraLists[0].querySelector('.films-list__container');
+
 for (let i = 0; i < EXTRA_COUNT; i++) {
-  renderTemplate(topRated, createCardTemplate(allMovies[i]), RenderPosition.BEFOREEND);
+  addClickHandler(topRated, allMovies[i], i);
 }
 const mostCommented = extraLists[1].querySelector('.films-list__container');
 for (let i = 0; i < EXTRA_COUNT; i++) {
-  renderTemplate(mostCommented, createCardTemplate(allMovies[i]), RenderPosition.BEFOREEND);
+  addClickHandler(mostCommented, allMovies[i], i);
 }
+
 

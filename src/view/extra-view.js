@@ -1,6 +1,8 @@
+import { createElement } from './render.js';
+
 export const POSTSCOUNT = 22;
 
-export const createExtraTemplate = () => (
+const createExtraTemplate = () => (
   `<div class="films-list__container">
   <section class="films-list films-list--extra">
   <h2 class="films-list__title">Top rated</h2>
@@ -17,6 +19,21 @@ export const createExtraTemplate = () => (
 </div>`
 );
 
-export const createFooterTemplate = () => (
-  `<p>${POSTSCOUNT} movies inside</p>`
-);
+export default class ExtraView {
+  #element = null;
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
+  get template() {
+    return createExtraTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

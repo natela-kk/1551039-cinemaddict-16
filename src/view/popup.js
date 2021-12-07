@@ -1,55 +1,34 @@
-import { mainElement, RenderPosition, renderTemplate } from './render-data.js';
-import { allMovies } from './cards-list.js';
+import { mainElement } from './render-data.js';
+// import { allMovies } from './cards-list.js';
+import CommentView from './comment-view.js';
+import { createElement } from './render.js';
+// import CardsView from './cards-view.js';
 
-const filmcontainers = document.querySelectorAll('.films-list__container');
-const allPosts = filmcontainers[0].querySelectorAll('.film-card');
-const topRatedPosts = filmcontainers[2].querySelectorAll('.film-card');
-const mostCommentedPosts = filmcontainers[3].querySelectorAll('.film-card');
+// const filmcontainers = document.querySelectorAll('.films-list__container');
+// const allPosts = filmcontainers[0].querySelectorAll('.film-card');
+// const topRatedPosts = filmcontainers[2].querySelectorAll('.film-card');
+// const mostCommentedPosts = filmcontainers[3].querySelectorAll('.film-card');
 
-const createComment = (comment) => (`<li class="film-details__comment">
-<span class="film-details__comment-emoji">
-    <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
-  </span>
-  <div>
-  <p class="film-details__comment-text">${comment.comment}</p>
-  <p class="film-details__comment-info">
-  <span class="film-details__comment-author">${comment.author}</span>
-  <span class="film-details__comment-day">${comment.date}</span>
-  <button class="film-details__comment-delete">Delete</button>
-  </p>
-  </div>
-  </li>`);
 
-let documentFragment;
 let checkedEmotion;
-let allComments;
-let deleteCommentButtons;
 let emotionImages;
 let popup;
 let closeButton;
-
 
 const getGenreWord = (genres) => genres.length > 1 ? 'Genres' : 'Genre';
 const getWatchlistStatus = (userDetails) => userDetails.watchlist ? ('film-details__control-button--active') : '';
 const getWatchedStatus = (userDetails) => userDetails.already_watched ? ('film-details__control-button--active') : '';
 const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details__control-button--active') : '';
-export const createCommentList = (comments) => {
-  documentFragment = '';
-  comments.forEach((comment) => {
-    documentFragment += createComment(comment);
-  });
-  return documentFragment;
-};
 
-export const createPopupTemplate = (thePopup) => {
+const createPopupTemplate = (thePopup) => {
   const {filmInfo, comments, userDetails} = thePopup;
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
-    <div class="film-details__top-container">
+  <div class="film-details__top-container">
     <div class="film-details__close">
-        <button class="film-details__close-btn" type="button">close</button>
+    <button class="film-details__close-btn" type="button">close</button>
         </div>
-      <div class="film-details__info-wrap">
+        <div class="film-details__info-wrap">
       <div class="film-details__poster">
       <img class="film-details__poster-img" src="${filmInfo.poster}" alt="">
 
@@ -58,7 +37,7 @@ export const createPopupTemplate = (thePopup) => {
 
         <div class="film-details__info">
         <div class="film-details__info-head">
-          <div class="film-details__title-wrap">
+        <div class="film-details__title-wrap">
               <h3 class="film-details__title">${filmInfo.title}</h3>
               <p class="film-details__title-original">Original: ${filmInfo.alternative_title}</p>
               </div>
@@ -66,16 +45,16 @@ export const createPopupTemplate = (thePopup) => {
               <div class="film-details__rating">
               <p class="film-details__total-rating">${filmInfo.total_rating}</p>
               </div>
-          </div>
+              </div>
 
           <table class="film-details__table">
           <tr class="film-details__row">
           <td class="film-details__term">Director</td>
               <td class="film-details__cell">${filmInfo.director}</td>
-            </tr>
+              </tr>
             <tr class="film-details__row">
-              <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${filmInfo.writers}</td>
+            <td class="film-details__term">Writers</td>
+            <td class="film-details__cell">${filmInfo.writers}</td>
             </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
@@ -83,14 +62,14 @@ export const createPopupTemplate = (thePopup) => {
               </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${filmInfo.release.date.format('DD MMMM YYYY')}</td>
-              </tr>
-            <tr class="film-details__row">
-            <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${filmInfo.runtime}</td>
+            <td class="film-details__cell">${filmInfo.release.date.format('DD MMMM YYYY')}</td>
               </tr>
               <tr class="film-details__row">
-              <td class="film-details__term">Country</td>
+            <td class="film-details__term">Runtime</td>
+            <td class="film-details__cell">${filmInfo.runtime}</td>
+            </tr>
+            <tr class="film-details__row">
+            <td class="film-details__term">Country</td>
               <td class="film-details__cell">${filmInfo.release.release_country}</td>
               </tr>
             <tr class="film-details__row">
@@ -104,7 +83,7 @@ export const createPopupTemplate = (thePopup) => {
           ${filmInfo.description}
           </p>
         </div>
-      </div>
+        </div>
 
       <section class="film-details__controls">
       <button type="button" class="film-details__control-button film-details__control-button--watchlist ${getWatchlistStatus(userDetails)}" id="watchlist" name="watchlist">Add to watchlist</button>
@@ -117,21 +96,20 @@ export const createPopupTemplate = (thePopup) => {
       <section class="film-details__comments-wrap">
       <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
-        <ul class="film-details__comments-list">
-        ${createCommentList(comments)}
+      <ul class="film-details__comments-list">
         </ul>
 
         <div class="film-details__new-comment">
         <div class="film-details__add-emoji-label"></div>
 
-          <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+        <label class="film-details__comment-label">
+        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
             </label>
 
           <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
             <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
+            <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
             </label>
 
             <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
@@ -151,85 +129,71 @@ export const createPopupTemplate = (thePopup) => {
           </div>
           </div>
       </section>
-    </div>
+      </div>
     </form>
     </section>`;
 };
 
-const setCommentsCount = (index) => {
-  allComments = document.querySelectorAll('.film-details__comment');
-  const commentsCount = document.querySelector('.film-details__comments-count');
-  const newCommentsLength =  allComments.length;
-  commentsCount.textContent = newCommentsLength;
-  allPosts[index].querySelector('.film-card__comments').textContent = `${newCommentsLength} comments`;
-};
+export default class PopupView {
+  #element = null;
+  #popup = null;
 
-const addRemoveControlEvent = (deleteButton, comment, index) => {
-  deleteButton.addEventListener('click', (evt) => {
-    evt.preventDefault();
-    comment.remove();
-    setCommentsCount(index);
-  });
-};
-
-const deleteNewComment = (index) => {
-  const allPostComments = Array.from(document.querySelectorAll('.film-details__comment'));
-  const createdComment = allPostComments[allPostComments.length - 1];
-  const newDeleteButton = createdComment.querySelector('.film-details__comment-delete');
-  addRemoveControlEvent(newDeleteButton, createdComment, index);
-};
-
-const addEmojiListener = () => {
-  const emotionOptions = document.querySelectorAll('input[type="radio"]');
-  const emotionPreview = document.querySelector('.film-details__add-emoji-label');
-  emotionOptions.forEach((option) => {
-    option.addEventListener('change', () => {
-      checkedEmotion = document.querySelector('input[type="radio"]:checked');
-      emotionImages = Array.from(emotionPreview.children);
-      if (emotionImages.length > 0) {
-        emotionImages[0].remove();
-      }
-      emotionPreview.insertAdjacentHTML('beforeend', `<img src="./images/emoji/${checkedEmotion.value}.png" width="55" height="55" alt="emoji-${checkedEmotion.value}">`);
-    });
-  });
-};
-
-const addDeleteButtonListeners = (index) => {
-  allComments = document.querySelectorAll('.film-details__comment');
-  deleteCommentButtons = document.querySelectorAll('.film-details__comment-delete');
-  deleteCommentButtons.forEach((deleteButton, buttonIndex) => {
-    addRemoveControlEvent(deleteButton, allComments[buttonIndex], index);
-  });
-};
-
-const inputKeydownHandler = (index, evt, commentInput) => {
-  const form = document.querySelector('.film-details__inner');
-  const commentList = document.querySelector('.film-details__comments-list');
-  const userEmoji = document.querySelector('.film-details__add-emoji-label').querySelector('img');
-  if (evt.code === 'Enter' && commentInput.value.trim() !== '' && userEmoji) {
-    evt.preventDefault();
-    const newComment = {};
-    newComment.comment = commentInput.value;
-    newComment.id = 1;
-    newComment.author = 'Natela';
-    newComment.date = 'rigth now';
-    newComment.emotion = checkedEmotion.value;
-    const newCommentTemplate = createComment(newComment);
-    commentList.insertAdjacentHTML('beforeend', newCommentTemplate);
-    form.reset();
-    userEmoji.remove();
-    setCommentsCount(index);
-    deleteNewComment(index);
+  constructor(popupCard) {
+    this.#popup = popupCard;
   }
-};
 
-const postComment = (index) => {
-  const commentInput = document.querySelector('.film-details__comment-input');
-  commentInput.addEventListener('keydown', (evt) => {
-    inputKeydownHandler(index, evt, commentInput);
-  });
-};
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
 
+  get template() {
+    return createPopupTemplate(this.#popup);
+  }
+
+  inputKeydownHandler (evt, commentInput, popupComponent, cardComponent) {
+    const form = document.querySelector('.film-details__inner');
+    const commentList = document.querySelector('.film-details__comments-list');
+    const userEmoji = document.querySelector('.film-details__add-emoji-label').querySelector('img');
+    if (evt.code === 'Enter' && commentInput.value.trim() !== '' && userEmoji) {
+      evt.preventDefault();
+      const newComment = {};
+      newComment.comment = commentInput.value;
+      newComment.id = 1;
+      newComment.author = 'Natela';
+      newComment.date = 'rigth now';
+      newComment.emotion = checkedEmotion.value;
+      const newCommentComponent = new CommentView(newComment);
+      commentList.appendChild(newCommentComponent.element);
+      form.reset();
+      userEmoji.remove();
+      newCommentComponent.setCommentsCount(newCommentComponent.element, popupComponent, cardComponent);
+      newCommentComponent.addRemoveControlEvent(newCommentComponent.element, popupComponent, cardComponent);
+    }
+  }
+
+  addEmojiListener(popop) {
+    const emotionOptions = popop.querySelectorAll('input[type="radio"]');
+    const emotionPreview = popop.querySelector('.film-details__add-emoji-label');
+    emotionOptions.forEach((option) => {
+      option.addEventListener('change', () => {
+        checkedEmotion = popop.querySelector('input[type="radio"]:checked');
+        emotionImages = Array.from(emotionPreview.children);
+        if (emotionImages.length > 0) {
+          emotionImages[0].remove();
+        }
+        emotionPreview.insertAdjacentHTML('beforeend', `<img src="./images/emoji/${checkedEmotion.value}.png" width="55" height="55" alt="emoji-${checkedEmotion.value}">`);
+      });
+    });
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+
+}
 
 const documentKeydownHandler = (evt) => {
   if (evt.code === 'Escape') {
@@ -242,46 +206,32 @@ const closeButtonClickHandler = () => {
 };
 
 function closePopup() {
-  popup.remove();
+  mainElement.removeChild(popup);
   closeButton.removeEventListener('click', closeButtonClickHandler);
   document.removeEventListener('keydown', documentKeydownHandler);
+  document.body.classList.remove('hide-overflow');
 }
 
-const postClickHandler = (index) => {
+export const postClickHandler = (movie, cardComponent) => {
+  document.body.classList.add('hide-overflow');
   popup = document.querySelector('.film-details');
   if (popup) {
-    popup.remove();
+    mainElement.removeChild(popup);
   }
-  renderTemplate(mainElement, createPopupTemplate(allMovies[index]), RenderPosition.BEFOREEND);
-  popup = document.querySelector('.film-details');
-  closeButton = document.querySelector('.film-details__close-btn');
+  const popupComponent = new PopupView(movie);
+  closeButton = popupComponent.element.querySelector('.film-details__close-btn');
   closeButton.addEventListener('click', closeButtonClickHandler);
+  mainElement.appendChild(popupComponent.element);
+  movie.comments.forEach((comment) => {
+    const commentComponent = new CommentView(comment);
+    popupComponent.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
+    commentComponent.addRemoveControlEvent(commentComponent.element, popupComponent, cardComponent);
+  });
+  popupComponent.addEmojiListener(popupComponent.element);
+  const commentInput = popupComponent.element.querySelector('.film-details__comment-input');
+  commentInput.addEventListener('keydown', (evt) => {
+    popupComponent.inputKeydownHandler(evt, commentInput, popupComponent, cardComponent);
+  });
+  popup = document.querySelector('.film-details');
   document.addEventListener('keydown', documentKeydownHandler);
 };
-
-allPosts.forEach((post, index) => {
-  post.addEventListener('click', () => {
-    postClickHandler(index);
-    addEmojiListener();
-    addDeleteButtonListeners(index);
-    postComment(index);
-  });
-});
-
-topRatedPosts.forEach((post, index) => {
-  post.addEventListener('click', () => {
-    postClickHandler(index);
-    addEmojiListener();
-    addDeleteButtonListeners(index);
-    postComment(index);
-  });
-});
-
-mostCommentedPosts.forEach((post, index) => {
-  post.addEventListener('click', () => {
-    postClickHandler(index);
-    addEmojiListener();
-    addDeleteButtonListeners(index);
-    postComment(index);
-  });
-});
