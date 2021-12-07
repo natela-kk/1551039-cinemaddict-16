@@ -27,6 +27,33 @@ get template() {
   return createMenuTemplate();
 }
 
+setEmptyMessage(elementToChange) {
+  const filters = Array.from(this.element.querySelectorAll('.main-navigation__item'));
+  filters.forEach((filter) => {
+    filter.addEventListener('click', () => {
+      filters.forEach((oterFilter) => {
+        oterFilter.classList.remove('main-navigation__item--active');
+      });
+      filter.classList.add('main-navigation__item--active');
+      this.changeEmtyTitle(filter, elementToChange);
+    });
+  });
+}
+
+changeEmtyTitle(filter, elementToChange) {
+//Я не уверена, что ссылка должна выглядеть так
+  if (filter.href === 'http://localhost:8081/#all') {
+    elementToChange.textContent = 'There are no movies in our database';
+  } else if (filter.href === 'http://localhost:8081/#watchlist') {
+    elementToChange.textContent = 'There are no movies to watch now';
+  } else if (filter.href === 'http://localhost:8081/#history') {
+    elementToChange.textContent = 'There are no watched movies now';
+  } else if (filter.href === 'http://localhost:8081/#favorites') {
+    elementToChange.textContent = 'There are no favorite movies now';
+  }
+}
+
+
 removeElement() {
   this.#element = null;
 }

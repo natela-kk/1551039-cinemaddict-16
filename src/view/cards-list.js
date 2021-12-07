@@ -35,7 +35,7 @@ const renderMovies = (start, end) => {
     });
 };
 
-renderMovies(0, NEXT_POSTS_COUNT);
+// renderMovies(0, NEXT_POSTS_COUNT);
 
 let renderedMoviesCount = NEXT_POSTS_COUNT;
 
