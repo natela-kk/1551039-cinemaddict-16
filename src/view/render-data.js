@@ -10,7 +10,7 @@ import FooterView from './footer-view.js';
 import { renderElement } from './render.js';
 import dayjs from 'dayjs';
 import EmtyListView from './empty-list-view.js';
-
+import { allMovies } from './cards-list.js';
 const RANDOM_MIN_DATE = 1;
 const RANDOM_MAX_DATE = 7;
 const RANDOM_MIN_RELEASE_DATE = 20;
@@ -106,9 +106,13 @@ renderElement(mainElement, cardsContainerComponent.element, RenderPosition.BEFOR
 const emptyListComponent = new EmtyListView();
 cardsContainerComponent.element.querySelector('.films-list__container').appendChild(emptyListComponent.element);
 menuComponent.setEmptyMessage(emptyListComponent.element);
-renderElement(mainElement, new FilterView().element, RenderPosition.BEFOREEND);
-renderElement(mainElement, new ButtonView().element, RenderPosition.BEFOREEND);
-renderElement(mainElement, new ExtraView().element, RenderPosition.BEFOREEND);
-renderElement(footer, new FooterView().element, RenderPosition.BEFOREEND);
+if(allMovies.length > 0) {
+  renderElement(mainElement, new FilterView().element, RenderPosition.BEFOREEND);
+  const buttonComponent = new ButtonView();
+  renderElement(mainElement, buttonComponent.element, RenderPosition.BEFOREEND);
+  buttonComponent.addButtonClickHandler();
+  renderElement(mainElement, new ExtraView().element, RenderPosition.BEFOREEND);
+  renderElement(footer, new FooterView().element, RenderPosition.BEFOREEND);
+}
 
 

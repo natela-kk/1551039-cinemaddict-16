@@ -29,28 +29,28 @@ get template() {
 
 setEmptyMessage(elementToChange) {
   const filters = Array.from(this.element.querySelectorAll('.main-navigation__item'));
+  let currentFilter = filters[0];
   filters.forEach((filter) => {
     filter.addEventListener('click', () => {
-      filters.forEach((oterFilter) => {
-        oterFilter.classList.remove('main-navigation__item--active');
-      });
-      filter.classList.add('main-navigation__item--active');
-      this.changeEmtyTitle(filter, elementToChange);
+      if (filter !== currentFilter) {
+        filter.classList.add('main-navigation__item--active');
+        this.changeEmtyTitle(filter, elementToChange);
+      }
+      currentFilter.classList.remove('main-navigation__item--active');
+      currentFilter = filter;
     });
   });
 }
 
 changeEmtyTitle(filter, elementToChange) {
-//Я не уверена, что ссылка должна выглядеть так
-  if (filter.href === 'http://localhost:8081/#all') {
-    elementToChange.textContent = 'There are no movies in our database';
-  } else if (filter.href === 'http://localhost:8081/#watchlist') {
-    elementToChange.textContent = 'There are no movies to watch now';
-  } else if (filter.href === 'http://localhost:8081/#history') {
-    elementToChange.textContent = 'There are no watched movies now';
-  } else if (filter.href === 'http://localhost:8081/#favorites') {
-    elementToChange.textContent = 'There are no favorite movies now';
-  }
+  const titlesList = {
+    all: 'There are no movies in our database',
+    watchlist: 'There are no movies to watch now',
+    history: 'There are no watched movies now',
+    favorites: 'There are no favorite movies now',
+  };
+  elementToChange.textContent = titlesList[filter.href.split('#')[1]];
+
 }
 
 
