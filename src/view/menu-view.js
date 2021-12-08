@@ -1,6 +1,6 @@
 import { createElement } from './render.js';
 
-const activeClass = 'main-navigation__item--active';
+const ACTIVE_CLASS = 'main-navigation__item--active';
 
 const createMenuTemplate = () => (
   `<nav class="main-navigation">
@@ -36,24 +36,24 @@ get template() {
   return createMenuTemplate();
 }
 
-getActiveFilter(elementToChange) {
-  this.element.querySelector(`.${activeClass}`).classList.remove(activeClass);
+setActiveFilter(elementToChange) {
+  this.element.querySelector(`.${ACTIVE_CLASS}`).classList.remove(ACTIVE_CLASS);
   const locationHash = window.location.hash.split('#')[1];
   if (locationHash) {
     elementToChange.textContent = titlesList[locationHash];
-    this.element.querySelector(`a[href="#${locationHash}"`).classList.add((activeClass));
+    this.element.querySelector(`a[href="#${locationHash}"`).classList.add(ACTIVE_CLASS);
   }
 }
 
 setEmptyMessage(elementToChange) {
   const filters = Array.from(this.element.querySelectorAll('.main-navigation__item'));
-  let currentFilter = this.element.querySelector(`.${activeClass}`);
+  let currentFilter = this.element.querySelector(`.${ACTIVE_CLASS}`);
   filters.forEach((filter) => {
     filter.addEventListener('click', () => {
       if (filter !== currentFilter) {
-        filter.classList.add(activeClass);
+        filter.classList.add(ACTIVE_CLASS);
         this.changeEmtyTitle(filter, elementToChange);
-        currentFilter.classList.remove(activeClass);
+        currentFilter.classList.remove(ACTIVE_CLASS);
         currentFilter = filter;
       }
     });
