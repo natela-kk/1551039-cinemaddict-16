@@ -1,5 +1,7 @@
 import { createElement } from './render.js';
 
+const ACTIVE_CLASS = 'main-navigation__item--active';
+
 const createMenuTemplate = () => (
   `<nav class="main-navigation">
   <div class="main-navigation__items">
@@ -12,6 +14,13 @@ const createMenuTemplate = () => (
 </nav>
 </section>`
 );
+
+const titlesList = {
+  all: 'There are no movies in our database',
+  watchlist: 'There are no movies to watch now',
+  history: 'There are no watched movies now',
+  favorites: 'There are no favorite movies now',
+};
 
 export default class MenuView {
 #element = null;
@@ -26,6 +35,35 @@ get element() {
 get template() {
   return createMenuTemplate();
 }
+
+setActiveFilter(elementToChange) {
+  this.element.querySelector(`.${ACTIVE_CLASS}`).classList.remove(ACTIVE_CLASS);
+  const locationHash = window.location.hash.split('#')[1];
+  if (locationHash) {
+    elementToChange.textContent = titlesList[locationHash];
+    this.element.querySelector(`a[href="#${locationHash}"`).classList.add(ACTIVE_CLASS);
+  }
+}
+
+setEmptyMessage(elementToChange) {
+  const filters = Array.from(this.element.querySelectorAll('.main-navigation__item'));
+  let currentFilter = this.element.querySelector(`.${ACTIVE_CLASS}`);
+  filters.forEach((filter) => {
+    filter.addEventListener('click', () => {
+      if (filter !== currentFilter) {
+        filter.classList.add(ACTIVE_CLASS);
+        this.changeEmtyTitle(filter, elementToChange);
+        currentFilter.classList.remove(ACTIVE_CLASS);
+        currentFilter = filter;
+      }
+    });
+  });
+}
+
+changeEmtyTitle(filter, elementToChange) {
+  elementToChange.textContent = titlesList[filter.href.split('#')[1]];
+}
+
 
 removeElement() {
   this.#element = null;
