@@ -100,10 +100,11 @@ export const generateMovie = (id) => ({
 renderElement(headerElement, new AvatarView().element, RenderPosition.BEFOREEND);
 
 const menuComponent = new MenuView();
+const emptyListComponent = new EmtyListView();
 renderElement(mainElement, menuComponent.element, RenderPosition.BEFOREEND);
+menuComponent.getActiveFilter(emptyListComponent.element);
 const cardsContainerComponent = new CardsContainerView();
 renderElement(mainElement, cardsContainerComponent.element, RenderPosition.BEFOREEND);
-const emptyListComponent = new EmtyListView();
 cardsContainerComponent.element.querySelector('.films-list__container').appendChild(emptyListComponent.element);
 menuComponent.setEmptyMessage(emptyListComponent.element);
 if(allMovies.length > 0) {

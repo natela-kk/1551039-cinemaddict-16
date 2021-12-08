@@ -1,5 +1,7 @@
 import { createElement } from './render.js';
 
+const activeClass = 'main-navigation__item--active';
+
 const createMenuTemplate = () => (
   `<nav class="main-navigation">
   <div class="main-navigation__items">
@@ -12,6 +14,13 @@ const createMenuTemplate = () => (
 </nav>
 </section>`
 );
+
+const titlesList = {
+  all: 'There are no movies in our database',
+  watchlist: 'There are no movies to watch now',
+  history: 'There are no watched movies now',
+  favorites: 'There are no favorite movies now',
+};
 
 export default class MenuView {
 #element = null;
@@ -27,30 +36,32 @@ get template() {
   return createMenuTemplate();
 }
 
+getActiveFilter(elementToChange) {
+  this.element.querySelector(`.${activeClass}`).classList.remove(activeClass);
+  const locationHash = window.location.hash.split('#')[1];
+  if (locationHash) {
+    elementToChange.textContent = titlesList[locationHash];
+    this.element.querySelector(`a[href="#${locationHash}"`).classList.add((activeClass));
+  }
+}
+
 setEmptyMessage(elementToChange) {
   const filters = Array.from(this.element.querySelectorAll('.main-navigation__item'));
-  let currentFilter = filters[0];
+  let currentFilter = this.element.querySelector(`.${activeClass}`);
   filters.forEach((filter) => {
     filter.addEventListener('click', () => {
       if (filter !== currentFilter) {
-        filter.classList.add('main-navigation__item--active');
+        filter.classList.add(activeClass);
         this.changeEmtyTitle(filter, elementToChange);
+        currentFilter.classList.remove(activeClass);
+        currentFilter = filter;
       }
-      currentFilter.classList.remove('main-navigation__item--active');
-      currentFilter = filter;
     });
   });
 }
 
 changeEmtyTitle(filter, elementToChange) {
-  const titlesList = {
-    all: 'There are no movies in our database',
-    watchlist: 'There are no movies to watch now',
-    history: 'There are no watched movies now',
-    favorites: 'There are no favorite movies now',
-  };
   elementToChange.textContent = titlesList[filter.href.split('#')[1]];
-
 }
 
 

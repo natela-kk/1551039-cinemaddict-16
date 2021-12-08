@@ -1,6 +1,7 @@
 import CardsView from './cards-view.js';
-import { generateMovie, RenderPosition } from './render-data.js';
-import { POSTSCOUNT } from './extra-view.js';
+// import { generateMovie } from './render-data.js';
+import { RenderPosition } from './render-data.js';
+// import { POSTSCOUNT } from './extra-view.js';
 import { renderElement } from './render.js';
 import { postClickHandler } from './popup.js';
 
