@@ -1,4 +1,4 @@
-import { createElement } from './render.js';
+import AbctractView from './abstract-view.js';
 
 const getFilmDescription = (description) => {
   const text = description.join(' ');
@@ -33,27 +33,16 @@ const createCardTemplate = (card) => {
       </article>`;
 };
 
-export default class CardsView {
-  #element = null;
+export default class CardsView extends AbctractView{
   #card = null;
 
   constructor(card) {
+    super();
     this.#card = card;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
   }
 
   get template() {
     return createCardTemplate(this.#card);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

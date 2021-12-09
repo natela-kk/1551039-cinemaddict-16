@@ -1,5 +1,5 @@
-import { createElement } from './render.js';
-// import PopupView from './popup.js';
+import AbctractView from './abstract-view.js';
+
 const createCommentTemplate = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">
     <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
@@ -14,27 +14,16 @@ const createCommentTemplate = (comment) => (`<li class="film-details__comment">
   </div>
   </li>`);
 
-export default class CommentView {
-    #element = null;
+export default class CommentView extends AbctractView{
 #comment = null;
 
 constructor(comment) {
+  super();
   this.#comment = comment;
-}
-
-get element() {
-  if (!this.#element) {
-    this.#element = createElement(this.template);
-  }
-  return this.#element;
 }
 
 get template() {
   return createCommentTemplate(this.#comment);
-}
-
-removeElement() {
-  this.#element = null;
 }
 
 addRemoveControlEvent(commentElement, popupComponent, cardComponent) {

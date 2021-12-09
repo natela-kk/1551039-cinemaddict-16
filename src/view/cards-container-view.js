@@ -1,4 +1,4 @@
-import { createElement } from './render.js';
+import AbctractView from './abstract-view.js';
 
 const createCardsContainerTemplate = () => (`<section class="films">
   <section class="films-list">
@@ -8,21 +8,8 @@ const createCardsContainerTemplate = () => (`<section class="films">
  </section>
  </section>`);
 
-export default class CradsContainerView {
-#element = null;
-
-get element() {
-  if (!this.#element) {
-    this.#element = createElement(this.template);
+export default class CradsContainerView extends AbctractView{
+  get template() {
+    return createCardsContainerTemplate();
   }
-  return this.#element;
-}
-
-get template() {
-  return createCardsContainerTemplate();
-}
-
-removeElement() {
-  this.#element = null;
-}
 }

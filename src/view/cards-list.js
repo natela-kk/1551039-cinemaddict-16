@@ -3,7 +3,7 @@ import CardsView from './cards-view.js';
 import { RenderPosition } from './render-data.js';
 // import { POSTSCOUNT } from './extra-view.js';
 import { renderElement } from './render.js';
-import { postClickHandler } from './popup.js';
+import { postClickHandler } from './popup-view.js';
 
 const NEXT_POSTS_COUNT = 5;
 const EXTRA_COUNT = 2;

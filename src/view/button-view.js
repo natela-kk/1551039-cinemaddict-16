@@ -1,24 +1,11 @@
-import { createElement } from './render.js';
+import AbctractView from './abstract-view.js';
 
 const createButtonTemplate = () => (
   '<button class="films-list__show-more">Show more</button>'
 );
 
-export default class ButtonView {
-#element = null;
-
-get element() {
-  if(!this.#element) {
-    this.#element = createElement(this.template);
+export default class ButtonView extends AbctractView {
+  get template() {
+    return createButtonTemplate();
   }
-  return this.#element;
-}
-
-get template() {
-  return createButtonTemplate();
-}
-
-removeElement() {
-  this.#element = null;
-}
 }

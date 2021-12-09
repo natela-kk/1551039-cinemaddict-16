@@ -1,8 +1,6 @@
 import { mainElement } from './render-data.js';
-// import { allMovies } from './cards-list.js';
 import CommentView from './comment-view.js';
-import { createElement } from './render.js';
-// import CardsView from './cards-view.js';
+import AbctractView from './abstract-view.js';
 
 // const filmcontainers = document.querySelectorAll('.films-list__container');
 // const allPosts = filmcontainers[0].querySelectorAll('.film-card');
@@ -134,19 +132,12 @@ const createPopupTemplate = (thePopup) => {
     </section>`;
 };
 
-export default class PopupView {
-  #element = null;
+export default class PopupView extends AbctractView{
   #popup = null;
 
   constructor(popupCard) {
+    super();
     this.#popup = popupCard;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
   }
 
   get template() {
@@ -187,10 +178,6 @@ export default class PopupView {
         emotionPreview.insertAdjacentHTML('beforeend', `<img src="./images/emoji/${checkedEmotion.value}.png" width="55" height="55" alt="emoji-${checkedEmotion.value}">`);
       });
     });
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 
 }

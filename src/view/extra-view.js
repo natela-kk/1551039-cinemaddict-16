@@ -1,4 +1,4 @@
-import { createElement } from './render.js';
+import AbctractView from './abstract-view.js';
 
 export const POSTSCOUNT = 22;
 
@@ -19,21 +19,8 @@ const createExtraTemplate = () => (
 </div>`
 );
 
-export default class ExtraView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
+export default class ExtraView extends AbctractView{
   get template() {
     return createExtraTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

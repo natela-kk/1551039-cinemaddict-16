@@ -1,4 +1,4 @@
-import { createElement } from './render.js';
+import AbctractView from './abstract-view.js';
 
 const createUserNameTemplate = () => (
   `<section class="header__profile profile">
@@ -7,21 +7,8 @@ const createUserNameTemplate = () => (
 </section>`
 );
 
-export default class AvatarView {
-  #element = null;
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
+export default class AvatarView extends AbctractView{
   get template() {
     return createUserNameTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
