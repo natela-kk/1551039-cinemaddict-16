@@ -12,7 +12,7 @@ export default class ButtonView extends AbctractView {
     return createButtonTemplate();
   }
 
-  addClickControleEvent() {
+  addClickControlsEvent() {
     let renderedMoviesCount = NEXT_POSTS_COUNT;
     this.element.addEventListener('click', (evt) => {
       evt.preventDefault();

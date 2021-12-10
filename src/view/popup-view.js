@@ -180,7 +180,7 @@ export default class PopupView extends AbctractView{
     });
   }
 
-  addInputClickControl(cardComponent) {
+  addInputKeydownControl(cardComponent) {
     const commentInput = this.element.querySelector('.film-details__comment-input');
     commentInput.addEventListener('keydown', (evt) => {
       this.element.inputKeydownHandler(evt, commentInput, this.element, cardComponent);
@@ -190,56 +190,51 @@ export default class PopupView extends AbctractView{
   addCloseButtonClickControl(callback) {
     this._callback.closeButtonclick = callback;
     closeButton = this.element.querySelector('.film-details__close-btn');
-    closeButton.addEventListener('click', this.#closeButtonclickHandler);
+    closeButton.addEventListener('click', this.#closeButtonClickHandler);
   }
 
-  #closeButtonclickHandler = () => {
+  #closeButtonClickHandler = () => {
     this._callback.closeButtonclick();
   }
 
+    documentKeydownHandler = (evt) => {
+      if (evt.code === 'Escape') {
+        this.closePopup();
+      }
+    };
+
+    closeButtonClickHandler = () => {
+      this.closePopup();
+    };
+
+    closePopup() {
+      mainElement.removeChild(popup);
+      closeButton.removeEventListener('click', this.closeButtonClickHandler);
+      document.removeEventListener('keydown', this.documentKeydownHandler);
+      document.body.classList.remove('hide-overflow');
+    }
+
+    postClickHandler(movie, cardComponent) {
+      document.body.classList.add('hide-overflow');
+      this.#popup = movie;
+      popup = this.element;
+
+      if (popup) {
+        mainElement.removeChild(popup);
+      }
+      this.addCloseButtonClickControl(this.closeButtonClickHandler);
+      mainElement.appendChild(this.element);
+      movie.comments.forEach((comment) => {
+        const commentComponent = new CommentView(comment);
+        this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
+        commentComponent.addRemoveControlEvent(this.element, cardComponent);
+      });
+      this.addEmojiListener();
+      this.addInputKeydownControl(cardComponent);
+
+      popup = document.querySelector('.film-details');
+      document.addEventListener('keydown', this.documentKeydownHandler);
+    }
+
 }
 
-const documentKeydownHandler = (evt) => {
-  if (evt.code === 'Escape') {
-    closePopup();
-  }
-};
-
-const closeButtonClickHandler = () => {
-  closePopup();
-};
-
-function closePopup() {
-  mainElement.removeChild(popup);
-  closeButton.removeEventListener('click', closeButtonClickHandler);
-  document.removeEventListener('keydown', documentKeydownHandler);
-  document.body.classList.remove('hide-overflow');
-}
-
-export const postClickHandler = (movie, cardComponent) => {
-  document.body.classList.add('hide-overflow');
-  popup = document.querySelector('.film-details');
-  if (popup) {
-    mainElement.removeChild(popup);
-  }
-
-  const popupComponent = new PopupView(movie);
-  // closeButton = popupComponent.element.querySelector('.film-details__close-btn');
-  // closeButton.addEventListener('click', closeButtonClickHandler);
-
-  //метод
-  popupComponent.addCloseButtonClickControl(closeButtonClickHandler);
-  //---
-  mainElement.appendChild(popupComponent.element);
-  movie.comments.forEach((comment) => {
-    const commentComponent = new CommentView(comment);
-    popupComponent.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
-    commentComponent.addRemoveControlEvent(popupComponent, cardComponent);
-  });
-  popupComponent.addEmojiListener();
-
-  popupComponent.addInputClickControl(cardComponent);
-
-  popup = document.querySelector('.film-details');
-  document.addEventListener('keydown', documentKeydownHandler);
-};

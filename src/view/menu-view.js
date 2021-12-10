@@ -29,26 +29,24 @@ export default class MenuView extends AbctractView{
   }
 
   setActiveFilter(elementToChange) {
-    const changeElement = elementToChange instanceof AbctractView ? elementToChange.element : elementToChange;
-
     this.element.querySelector(`.${ACTIVE_CLASS}`).classList.remove(ACTIVE_CLASS);
     const locationHash = window.location.hash.split('#')[1];
     if (locationHash) {
-      changeElement.textContent = titlesList[locationHash];
+      elementToChange.textContent = titlesList[locationHash];
       this.element.querySelector(`a[href="#${locationHash}"`).classList.add(ACTIVE_CLASS);
     }
   }
 
   setEmptyMessage(elementToChange) {
-    const changeElement = elementToChange instanceof AbctractView ? elementToChange.element : elementToChange;
-
     const filterList = this.element.querySelector('.main-navigation__items');
     let currentFilter = filterList.querySelector(`.${ACTIVE_CLASS}`);
     filterList.addEventListener('click', (evt) => {
-      currentFilter.classList.remove(ACTIVE_CLASS);
-      currentFilter = evt.target.closest('a');
-      currentFilter.classList.add(ACTIVE_CLASS);
-      this.changeEmtyTitle(currentFilter, changeElement);
+      if (evt.target.className === 'main-navigation__item' && currentFilter !== evt.target) {
+        currentFilter.classList.remove(ACTIVE_CLASS);
+        currentFilter = evt.target;
+        currentFilter.classList.add(ACTIVE_CLASS);
+        this.changeEmtyTitle(currentFilter, elementToChange);
+      }
     });
   }
 

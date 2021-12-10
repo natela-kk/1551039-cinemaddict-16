@@ -102,17 +102,17 @@ renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
 const menuComponent = new MenuView();
 const emptyListComponent = new EmtyListView();
 renderElement(mainElement, menuComponent, RenderPosition.BEFOREEND);
-menuComponent.setActiveFilter(emptyListComponent);
+menuComponent.setActiveFilter(emptyListComponent.element);
 const cardsContainerComponent = new CardsContainerView();
 renderElement(mainElement, cardsContainerComponent, RenderPosition.BEFOREEND);
 cardsContainerComponent.element.querySelector('.films-list__container').appendChild(emptyListComponent.element);
-menuComponent.setEmptyMessage(emptyListComponent);
+menuComponent.setEmptyMessage(emptyListComponent.element);
 if(allMovies.length > 0) {
   renderElement(mainElement, new FilterView(), RenderPosition.BEFOREEND);
   const buttonComponent = new ButtonView();
   renderElement(mainElement, buttonComponent, RenderPosition.BEFOREEND);
   buttonComponent.addButtonClickHandler();
-  buttonComponent.addClickControleEvent();
+  buttonComponent.addClickControlsEvent();
   renderElement(mainElement, new ExtraView(), RenderPosition.BEFOREEND);
   renderElement(footer, new FooterView(), RenderPosition.BEFOREEND);
 }

@@ -3,7 +3,7 @@ import CardsView from './cards-view.js';
 import { RenderPosition } from './render-data.js';
 // import { POSTSCOUNT } from './extra-view.js';
 import { renderElement } from '../mock/render.js';
-import { postClickHandler } from './popup-view.js';
+import PopupView from './popup-view.js';
 
 const EXTRA_COUNT = 2;
 
@@ -22,15 +22,9 @@ export const allMovies = [];
 const addClickHandler = (place, movie) => {
 
   const cardComponent = new CardsView(movie);
-  // cardComponent.element.querySelector('a').addEventListener('click', () => {
-  //   postClickHandler(movie, cardComponent);
-  // });
-
-  ///метод
   cardComponent.addClickHandler(movie, () => {
-    postClickHandler(movie, cardComponent);
+    new PopupView().postClickHandler(movie, cardComponent);
   });
-  ///
   renderElement(place, cardComponent, RenderPosition.BEFOREEND);
 };
 

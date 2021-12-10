@@ -36,10 +36,8 @@ addRemoveControlEvent(popupComponent, cardComponent) {
 }
 
 setCommentsCount(popupComponent, cardComponent) {
-  const popupElement = popupComponent instanceof AbctractView ? popupComponent.element : popupComponent;
-
-  const popupCommentsCountElement = popupElement.querySelector('.film-details__comments-count');
-  const comments = popupElement.querySelectorAll('.film-details__comment');
+  const popupCommentsCountElement = popupComponent.querySelector('.film-details__comments-count');
+  const comments = popupComponent.querySelectorAll('.film-details__comment');
   const newValue = comments.length;
   popupCommentsCountElement.textContent = newValue;
   const cardCommentsCountElement =  cardComponent.element.querySelector('.film-card__comments');
