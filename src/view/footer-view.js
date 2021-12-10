@@ -1,25 +1,12 @@
-import { createElement } from './render.js';
+import AbctractView from './abstract-view.js';
 import { POSTSCOUNT } from './extra-view.js';
 
 const createFooterTemplate = () => (
   `<p>${POSTSCOUNT} movies inside</p>`
 );
 
-export default class FooterView {
-#element = null;
-
-get element() {
-  if (!this.#element) {
-    this.#element = createElement(this.template);
+export default class FooterView extends AbctractView{
+  get template() {
+    return createFooterTemplate();
   }
-  return this.#element;
-}
-
-get template() {
-  return createFooterTemplate();
-}
-
-removeElement() {
-  this.#element = null;
-}
 }

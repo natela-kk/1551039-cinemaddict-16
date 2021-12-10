@@ -1,22 +1,9 @@
-import { createElement } from './render.js';
+import AbctractView from './abstract-view.js';
 
 const createEmtyListTemplate = () => ('<h2 class="films-list__title">There are no movies in our database</h2>');
 
-export default class EmtyListView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
+export default class EmtyListView extends AbctractView{
   get template() {
     return createEmtyListTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

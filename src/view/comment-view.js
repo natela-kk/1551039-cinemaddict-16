@@ -1,5 +1,5 @@
-import { createElement } from './render.js';
-// import PopupView from './popup.js';
+import AbctractView from './abstract-view.js';
+
 const createCommentTemplate = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">
     <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
@@ -14,41 +14,30 @@ const createCommentTemplate = (comment) => (`<li class="film-details__comment">
   </div>
   </li>`);
 
-export default class CommentView {
-    #element = null;
+export default class CommentView extends AbctractView{
 #comment = null;
 
 constructor(comment) {
+  super();
   this.#comment = comment;
-}
-
-get element() {
-  if (!this.#element) {
-    this.#element = createElement(this.template);
-  }
-  return this.#element;
 }
 
 get template() {
   return createCommentTemplate(this.#comment);
 }
 
-removeElement() {
-  this.#element = null;
-}
-
-addRemoveControlEvent(commentElement, popupComponent, cardComponent) {
-  const deleteButtonElement = commentElement.querySelector('.film-details__comment-delete');
+addRemoveControlEvent(popupComponent, cardComponent) {
+  const deleteButtonElement = this.element.querySelector('.film-details__comment-delete');
   deleteButtonElement.addEventListener('click', (evt) => {
     evt.preventDefault();
-    commentElement.remove();
-    this.setCommentsCount(commentElement, popupComponent, cardComponent);
+    this.element.remove();
+    this.setCommentsCount(popupComponent, cardComponent);
   });
 }
 
-setCommentsCount(commentElement, popupComponent, cardComponent) {
-  const popupCommentsCountElement = popupComponent.element.querySelector('.film-details__comments-count');
-  const comments = popupComponent.element.querySelectorAll('.film-details__comment');
+setCommentsCount(popupComponent, cardComponent) {
+  const popupCommentsCountElement = popupComponent.querySelector('.film-details__comments-count');
+  const comments = popupComponent.querySelectorAll('.film-details__comment');
   const newValue = comments.length;
   popupCommentsCountElement.textContent = newValue;
   const cardCommentsCountElement =  cardComponent.element.querySelector('.film-card__comments');

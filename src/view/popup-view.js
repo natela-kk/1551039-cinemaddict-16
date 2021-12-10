@@ -1,8 +1,6 @@
 import { mainElement } from './render-data.js';
-// import { allMovies } from './cards-list.js';
 import CommentView from './comment-view.js';
-import { createElement } from './render.js';
-// import CardsView from './cards-view.js';
+import AbctractView from './abstract-view.js';
 
 // const filmcontainers = document.querySelectorAll('.films-list__container');
 // const allPosts = filmcontainers[0].querySelectorAll('.film-card');
@@ -134,19 +132,12 @@ const createPopupTemplate = (thePopup) => {
     </section>`;
 };
 
-export default class PopupView {
-  #element = null;
+export default class PopupView extends AbctractView{
   #popup = null;
 
   constructor(popupCard) {
+    super();
     this.#popup = popupCard;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
   }
 
   get template() {
@@ -169,17 +160,17 @@ export default class PopupView {
       commentList.appendChild(newCommentComponent.element);
       form.reset();
       userEmoji.remove();
-      newCommentComponent.setCommentsCount(newCommentComponent.element, popupComponent, cardComponent);
-      newCommentComponent.addRemoveControlEvent(newCommentComponent.element, popupComponent, cardComponent);
+      newCommentComponent.setCommentsCount(popupComponent, cardComponent);
+      newCommentComponent.addRemoveControlEvent(popupComponent, cardComponent);
     }
   }
 
-  addEmojiListener(popop) {
-    const emotionOptions = popop.querySelectorAll('input[type="radio"]');
-    const emotionPreview = popop.querySelector('.film-details__add-emoji-label');
+  addEmojiListener() {
+    const emotionOptions = this.element.querySelectorAll('input[type="radio"]');
+    const emotionPreview = this.element.querySelector('.film-details__add-emoji-label');
     emotionOptions.forEach((option) => {
       option.addEventListener('change', () => {
-        checkedEmotion = popop.querySelector('input[type="radio"]:checked');
+        checkedEmotion = this.element.querySelector('input[type="radio"]:checked');
         emotionImages = Array.from(emotionPreview.children);
         if (emotionImages.length > 0) {
           emotionImages[0].remove();
@@ -189,49 +180,61 @@ export default class PopupView {
     });
   }
 
-  removeElement() {
-    this.#element = null;
+  addInputKeydownControl(cardComponent) {
+    const commentInput = this.element.querySelector('.film-details__comment-input');
+    commentInput.addEventListener('keydown', (evt) => {
+      this.element.inputKeydownHandler(evt, commentInput, this.element, cardComponent);
+    });
   }
+
+  addCloseButtonClickControl(callback) {
+    this._callback.closeButtonclick = callback;
+    closeButton = this.element.querySelector('.film-details__close-btn');
+    closeButton.addEventListener('click', this.#closeButtonClickHandler);
+  }
+
+  #closeButtonClickHandler = () => {
+    this._callback.closeButtonclick();
+  }
+
+    documentKeydownHandler = (evt) => {
+      if (evt.code === 'Escape') {
+        this.closePopup();
+      }
+    };
+
+    closeButtonClickHandler = () => {
+      this.closePopup();
+    };
+
+    closePopup() {
+      mainElement.removeChild(popup);
+      closeButton.removeEventListener('click', this.closeButtonClickHandler);
+      document.removeEventListener('keydown', this.documentKeydownHandler);
+      document.body.classList.remove('hide-overflow');
+    }
+
+    postClickHandler(movie, cardComponent) {
+      document.body.classList.add('hide-overflow');
+      this.#popup = movie;
+      popup = this.element;
+
+      if (popup) {
+        mainElement.removeChild(popup);
+      }
+      this.addCloseButtonClickControl(this.closeButtonClickHandler);
+      mainElement.appendChild(this.element);
+      movie.comments.forEach((comment) => {
+        const commentComponent = new CommentView(comment);
+        this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
+        commentComponent.addRemoveControlEvent(this.element, cardComponent);
+      });
+      this.addEmojiListener();
+      this.addInputKeydownControl(cardComponent);
+
+      popup = document.querySelector('.film-details');
+      document.addEventListener('keydown', this.documentKeydownHandler);
+    }
 
 }
 
-const documentKeydownHandler = (evt) => {
-  if (evt.code === 'Escape') {
-    closePopup();
-  }
-};
-
-const closeButtonClickHandler = () => {
-  closePopup();
-};
-
-function closePopup() {
-  mainElement.removeChild(popup);
-  closeButton.removeEventListener('click', closeButtonClickHandler);
-  document.removeEventListener('keydown', documentKeydownHandler);
-  document.body.classList.remove('hide-overflow');
-}
-
-export const postClickHandler = (movie, cardComponent) => {
-  document.body.classList.add('hide-overflow');
-  popup = document.querySelector('.film-details');
-  if (popup) {
-    mainElement.removeChild(popup);
-  }
-  const popupComponent = new PopupView(movie);
-  closeButton = popupComponent.element.querySelector('.film-details__close-btn');
-  closeButton.addEventListener('click', closeButtonClickHandler);
-  mainElement.appendChild(popupComponent.element);
-  movie.comments.forEach((comment) => {
-    const commentComponent = new CommentView(comment);
-    popupComponent.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
-    commentComponent.addRemoveControlEvent(commentComponent.element, popupComponent, cardComponent);
-  });
-  popupComponent.addEmojiListener(popupComponent.element);
-  const commentInput = popupComponent.element.querySelector('.film-details__comment-input');
-  commentInput.addEventListener('keydown', (evt) => {
-    popupComponent.inputKeydownHandler(evt, commentInput, popupComponent, cardComponent);
-  });
-  popup = document.querySelector('.film-details');
-  document.addEventListener('keydown', documentKeydownHandler);
-};

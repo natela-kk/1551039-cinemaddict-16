@@ -1,24 +1,26 @@
-import { createElement } from './render.js';
+import AbctractView from './abstract-view.js';
+import { renderMovies, allMovies } from './cards-list.js';
+
+const NEXT_POSTS_COUNT = 5;
 
 const createButtonTemplate = () => (
   '<button class="films-list__show-more">Show more</button>'
 );
 
-export default class ButtonView {
-#element = null;
-
-get element() {
-  if(!this.#element) {
-    this.#element = createElement(this.template);
+export default class ButtonView extends AbctractView {
+  get template() {
+    return createButtonTemplate();
   }
-  return this.#element;
-}
 
-get template() {
-  return createButtonTemplate();
-}
-
-removeElement() {
-  this.#element = null;
-}
+  addClickControlsEvent() {
+    let renderedMoviesCount = NEXT_POSTS_COUNT;
+    this.element.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      renderMovies(renderedMoviesCount, renderedMoviesCount + NEXT_POSTS_COUNT);
+      renderedMoviesCount += NEXT_POSTS_COUNT;
+      if (renderedMoviesCount >= allMovies.length) {
+        this.element.remove();
+      }
+    });
+  }
 }

@@ -1,4 +1,4 @@
-import { createElement } from './render.js';
+import AbctractView from './abstract-view.js';
 
 const ACTIVE_CLASS = 'main-navigation__item--active';
 
@@ -22,50 +22,36 @@ const titlesList = {
   favorites: 'There are no favorite movies now',
 };
 
-export default class MenuView {
-#element = null;
+export default class MenuView extends AbctractView{
 
-get element() {
-  if (!this.#element) {
-    this.#element = createElement(this.template);
+  get template() {
+    return createMenuTemplate();
   }
-  return this.#element;
-}
 
-get template() {
-  return createMenuTemplate();
-}
-
-setActiveFilter(elementToChange) {
-  this.element.querySelector(`.${ACTIVE_CLASS}`).classList.remove(ACTIVE_CLASS);
-  const locationHash = window.location.hash.split('#')[1];
-  if (locationHash) {
-    elementToChange.textContent = titlesList[locationHash];
-    this.element.querySelector(`a[href="#${locationHash}"`).classList.add(ACTIVE_CLASS);
+  setActiveFilter(elementToChange) {
+    this.element.querySelector(`.${ACTIVE_CLASS}`).classList.remove(ACTIVE_CLASS);
+    const locationHash = window.location.hash.split('#')[1];
+    if (locationHash) {
+      elementToChange.textContent = titlesList[locationHash];
+      this.element.querySelector(`a[href="#${locationHash}"`).classList.add(ACTIVE_CLASS);
+    }
   }
-}
 
-setEmptyMessage(elementToChange) {
-  const filters = Array.from(this.element.querySelectorAll('.main-navigation__item'));
-  let currentFilter = this.element.querySelector(`.${ACTIVE_CLASS}`);
-  filters.forEach((filter) => {
-    filter.addEventListener('click', () => {
-      if (filter !== currentFilter) {
-        filter.classList.add(ACTIVE_CLASS);
-        this.changeEmtyTitle(filter, elementToChange);
+  setEmptyMessage(elementToChange) {
+    const filterList = this.element.querySelector('.main-navigation__items');
+    let currentFilter = filterList.querySelector(`.${ACTIVE_CLASS}`);
+    filterList.addEventListener('click', (evt) => {
+      if (evt.target.className === 'main-navigation__item' && currentFilter !== evt.target) {
         currentFilter.classList.remove(ACTIVE_CLASS);
-        currentFilter = filter;
+        currentFilter = evt.target;
+        currentFilter.classList.add(ACTIVE_CLASS);
+        this.changeEmtyTitle(currentFilter, elementToChange);
       }
     });
-  });
-}
+  }
 
-changeEmtyTitle(filter, elementToChange) {
-  elementToChange.textContent = titlesList[filter.href.split('#')[1]];
-}
+  changeEmtyTitle(filter, elementToChange) {
+    elementToChange.textContent = titlesList[filter.href.split('#')[1]];
+  }
 
-
-removeElement() {
-  this.#element = null;
-}
 }
