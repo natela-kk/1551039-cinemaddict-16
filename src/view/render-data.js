@@ -7,7 +7,7 @@ import { getRandomInteger, getRandomPositiveFloat } from '../mock/utils.js';
 import { getRandomDescription, getCommentsList } from '../mock/structure.js';
 import ExtraView from './extra-view.js';
 import FooterView from './footer-view.js';
-import { renderElement } from './render.js';
+import { renderElement } from '../mock/render.js';
 import dayjs from 'dayjs';
 import EmtyListView from './empty-list-view.js';
 import { allMovies } from './cards-list.js';
@@ -97,23 +97,24 @@ export const generateMovie = (id) => ({
     'favorite': Boolean(getRandomInteger(0, 1)),
   }
 });
-renderElement(headerElement, new AvatarView().element, RenderPosition.BEFOREEND);
+renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
 
 const menuComponent = new MenuView();
 const emptyListComponent = new EmtyListView();
-renderElement(mainElement, menuComponent.element, RenderPosition.BEFOREEND);
-menuComponent.setActiveFilter(emptyListComponent.element);
+renderElement(mainElement, menuComponent, RenderPosition.BEFOREEND);
+menuComponent.setActiveFilter(emptyListComponent);
 const cardsContainerComponent = new CardsContainerView();
-renderElement(mainElement, cardsContainerComponent.element, RenderPosition.BEFOREEND);
+renderElement(mainElement, cardsContainerComponent, RenderPosition.BEFOREEND);
 cardsContainerComponent.element.querySelector('.films-list__container').appendChild(emptyListComponent.element);
-menuComponent.setEmptyMessage(emptyListComponent.element);
+menuComponent.setEmptyMessage(emptyListComponent);
 if(allMovies.length > 0) {
-  renderElement(mainElement, new FilterView().element, RenderPosition.BEFOREEND);
+  renderElement(mainElement, new FilterView(), RenderPosition.BEFOREEND);
   const buttonComponent = new ButtonView();
-  renderElement(mainElement, buttonComponent.element, RenderPosition.BEFOREEND);
+  renderElement(mainElement, buttonComponent, RenderPosition.BEFOREEND);
   buttonComponent.addButtonClickHandler();
-  renderElement(mainElement, new ExtraView().element, RenderPosition.BEFOREEND);
-  renderElement(footer, new FooterView().element, RenderPosition.BEFOREEND);
+  buttonComponent.addClickControleEvent();
+  renderElement(mainElement, new ExtraView(), RenderPosition.BEFOREEND);
+  renderElement(footer, new FooterView(), RenderPosition.BEFOREEND);
 }
 
 

@@ -44,5 +44,15 @@ export default class CardsView extends AbctractView{
   get template() {
     return createCardTemplate(this.#card);
   }
+
+  addClickHandler(movie, callback) {
+    this._callback.postClick = callback;
+    this.#card = movie;
+    this.element.querySelector('a').addEventListener('click', this.#postClickHandler);
+  }
+
+  #postClickHandler = () => {
+    this._callback.postClick();
+  }
 }
 

@@ -26,18 +26,20 @@ get template() {
   return createCommentTemplate(this.#comment);
 }
 
-addRemoveControlEvent(commentElement, popupComponent, cardComponent) {
-  const deleteButtonElement = commentElement.querySelector('.film-details__comment-delete');
+addRemoveControlEvent(popupComponent, cardComponent) {
+  const deleteButtonElement = this.element.querySelector('.film-details__comment-delete');
   deleteButtonElement.addEventListener('click', (evt) => {
     evt.preventDefault();
-    commentElement.remove();
-    this.setCommentsCount(commentElement, popupComponent, cardComponent);
+    this.element.remove();
+    this.setCommentsCount(popupComponent, cardComponent);
   });
 }
 
-setCommentsCount(commentElement, popupComponent, cardComponent) {
-  const popupCommentsCountElement = popupComponent.element.querySelector('.film-details__comments-count');
-  const comments = popupComponent.element.querySelectorAll('.film-details__comment');
+setCommentsCount(popupComponent, cardComponent) {
+  const popupElement = popupComponent instanceof AbctractView ? popupComponent.element : popupComponent;
+
+  const popupCommentsCountElement = popupElement.querySelector('.film-details__comments-count');
+  const comments = popupElement.querySelectorAll('.film-details__comment');
   const newValue = comments.length;
   popupCommentsCountElement.textContent = newValue;
   const cardCommentsCountElement =  cardComponent.element.querySelector('.film-card__comments');

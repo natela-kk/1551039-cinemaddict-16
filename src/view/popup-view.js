@@ -160,17 +160,17 @@ export default class PopupView extends AbctractView{
       commentList.appendChild(newCommentComponent.element);
       form.reset();
       userEmoji.remove();
-      newCommentComponent.setCommentsCount(newCommentComponent.element, popupComponent, cardComponent);
-      newCommentComponent.addRemoveControlEvent(newCommentComponent.element, popupComponent, cardComponent);
+      newCommentComponent.setCommentsCount(popupComponent, cardComponent);
+      newCommentComponent.addRemoveControlEvent(popupComponent, cardComponent);
     }
   }
 
-  addEmojiListener(popop) {
-    const emotionOptions = popop.querySelectorAll('input[type="radio"]');
-    const emotionPreview = popop.querySelector('.film-details__add-emoji-label');
+  addEmojiListener() {
+    const emotionOptions = this.element.querySelectorAll('input[type="radio"]');
+    const emotionPreview = this.element.querySelector('.film-details__add-emoji-label');
     emotionOptions.forEach((option) => {
       option.addEventListener('change', () => {
-        checkedEmotion = popop.querySelector('input[type="radio"]:checked');
+        checkedEmotion = this.element.querySelector('input[type="radio"]:checked');
         emotionImages = Array.from(emotionPreview.children);
         if (emotionImages.length > 0) {
           emotionImages[0].remove();
@@ -178,6 +178,23 @@ export default class PopupView extends AbctractView{
         emotionPreview.insertAdjacentHTML('beforeend', `<img src="./images/emoji/${checkedEmotion.value}.png" width="55" height="55" alt="emoji-${checkedEmotion.value}">`);
       });
     });
+  }
+
+  addInputClickControl(cardComponent) {
+    const commentInput = this.element.querySelector('.film-details__comment-input');
+    commentInput.addEventListener('keydown', (evt) => {
+      this.element.inputKeydownHandler(evt, commentInput, this.element, cardComponent);
+    });
+  }
+
+  addCloseButtonClickControl(callback) {
+    this._callback.closeButtonclick = callback;
+    closeButton = this.element.querySelector('.film-details__close-btn');
+    closeButton.addEventListener('click', this.#closeButtonclickHandler);
+  }
+
+  #closeButtonclickHandler = () => {
+    this._callback.closeButtonclick();
   }
 
 }
@@ -205,20 +222,24 @@ export const postClickHandler = (movie, cardComponent) => {
   if (popup) {
     mainElement.removeChild(popup);
   }
+
   const popupComponent = new PopupView(movie);
-  closeButton = popupComponent.element.querySelector('.film-details__close-btn');
-  closeButton.addEventListener('click', closeButtonClickHandler);
+  // closeButton = popupComponent.element.querySelector('.film-details__close-btn');
+  // closeButton.addEventListener('click', closeButtonClickHandler);
+
+  //метод
+  popupComponent.addCloseButtonClickControl(closeButtonClickHandler);
+  //---
   mainElement.appendChild(popupComponent.element);
   movie.comments.forEach((comment) => {
     const commentComponent = new CommentView(comment);
     popupComponent.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
-    commentComponent.addRemoveControlEvent(commentComponent.element, popupComponent, cardComponent);
+    commentComponent.addRemoveControlEvent(popupComponent, cardComponent);
   });
-  popupComponent.addEmojiListener(popupComponent.element);
-  const commentInput = popupComponent.element.querySelector('.film-details__comment-input');
-  commentInput.addEventListener('keydown', (evt) => {
-    popupComponent.inputKeydownHandler(evt, commentInput, popupComponent, cardComponent);
-  });
+  popupComponent.addEmojiListener();
+
+  popupComponent.addInputClickControl(cardComponent);
+
   popup = document.querySelector('.film-details');
   document.addEventListener('keydown', documentKeydownHandler);
 };

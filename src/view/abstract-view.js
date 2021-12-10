@@ -1,7 +1,8 @@
-import { createElement } from './render.js';
+import { createElement } from '../mock/render.js';
 
 export default class AbctractView {
   #element = null;
+  _callback = {};
 
   constructor() {
     if (new.target === AbctractView) {
