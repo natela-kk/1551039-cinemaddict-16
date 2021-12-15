@@ -10,7 +10,12 @@ import FooterView from './footer-view.js';
 import { renderElement } from '../mock/render.js';
 import dayjs from 'dayjs';
 import EmtyListView from './empty-list-view.js';
-import { allMovies } from './cards-list.js';
+import { POSTSCOUNT } from './extra-view.js';
+import CardsView from './cards-view.js';
+import PopupView from './popup-view.js';
+
+// import { allMovies } from './cards-list.js';
+import MovieListPresenter from '../presenter/movie-list-presenter.js';
 const RANDOM_MIN_DATE = 1;
 const RANDOM_MAX_DATE = 7;
 const RANDOM_MIN_RELEASE_DATE = 20;
@@ -21,7 +26,6 @@ const HOUR = 60;
 const MIN_RATING = 0;
 const MAX_RATING = 10;
 const RATING_DIGITS = 1;
-const footer = document.querySelector('.footer');
 
 export const mainElement = document.querySelector('.main');
 const headerElement = document.querySelector('.header');
@@ -99,22 +103,53 @@ export const generateMovie = (id) => ({
 });
 renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
 
-const menuComponent = new MenuView();
-const emptyListComponent = new EmtyListView();
-renderElement(mainElement, menuComponent, RenderPosition.BEFOREEND);
-menuComponent.setActiveFilter(emptyListComponent.element);
-const cardsContainerComponent = new CardsContainerView();
-renderElement(mainElement, cardsContainerComponent, RenderPosition.BEFOREEND);
-cardsContainerComponent.element.querySelector('.films-list__container').appendChild(emptyListComponent.element);
-menuComponent.setEmptyMessage(emptyListComponent.element);
-if(allMovies.length > 0) {
-  renderElement(mainElement, new FilterView(), RenderPosition.BEFOREEND);
-  const buttonComponent = new ButtonView();
-  renderElement(mainElement, buttonComponent, RenderPosition.BEFOREEND);
-  buttonComponent.addButtonClickHandler();
-  buttonComponent.addClickControlsEvent();
-  renderElement(mainElement, new ExtraView(), RenderPosition.BEFOREEND);
-  renderElement(footer, new FooterView(), RenderPosition.BEFOREEND);
-}
+/////////////////
+const getMovieList = () => {
+  const movies = [];
+  for (let i = 1; i <= POSTSCOUNT; i++) {
+    movies.push(generateMovie(i));
+  }
+  return movies;
+};
+
+export const allMovies = getMovieList();
+export const addCard = (movie) => {
+  const cardsContainer = document.querySelector('.films-list__container');
+
+  const cardComponent = new CardsView(movie);
+  cardComponent.addClickHandler(movie, () => {
+    new PopupView().postClickHandler(movie, cardComponent);
+  });
+
+  renderElement(cardsContainer, cardComponent, RenderPosition.BEFOREEND);
+};
+
+export const renderMovies = (start, end) => {
+  allMovies.slice(start, end)
+    .forEach((movie) => {
+      addCard( movie);
+    });
+};
+
+const presenter = new MovieListPresenter();
+presenter.init(allMovies);
+
+// const menuComponent = new MenuView();
+// const emptyListComponent = new EmtyListView();
+// renderElement(mainElement, menuComponent, RenderPosition.BEFOREEND);
+// menuComponent.setActiveFilter(emptyListComponent.element);
+// const cardsContainerComponent = new CardsContainerView();
+// renderElement(mainElement, cardsContainerComponent, RenderPosition.BEFOREEND);
+// cardsContainerComponent.element.querySelector('.films-list__container').appendChild(emptyListComponent.element);
+// menuComponent.setEmptyMessage(emptyListComponent.element);
+// if(allMovies.length > 0) {
+//   renderElement(mainElement, new FilterView(), RenderPosition.BEFOREEND);
+//   const buttonComponent = new ButtonView();
+//   renderElement(mainElement, buttonComponent, RenderPosition.BEFOREEND);
+//   // buttonComponent.addButtonClickHandler();
+//   buttonComponent.addClickControlsEvent();
+//   renderElement(mainElement, new ExtraView(), RenderPosition.BEFOREEND);
+//   renderElement(footer, new FooterView(), RenderPosition.BEFOREEND);
+// }
 
 
