@@ -1,5 +1,5 @@
 import AbctractView from './abstract-view.js';
-
+import { allMovies } from '../main.js';
 const ACTIVE_CLASS = 'main-navigation__item--active';
 
 const createMenuTemplate = () => (
@@ -54,4 +54,21 @@ export default class MenuView extends AbctractView{
     elementToChange.textContent = titlesList[filter.href.split('#')[1]];
   }
 
+  setFiltersCount() {
+    const watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
+    const historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
+    const favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
+    const watchlistMovies = allMovies.filter((movie) =>
+      movie.userDetails.watchlist);
+    watchListCount.textContent = watchlistMovies.length;
+    const historyMovies = allMovies.filter((movie) =>
+      movie.userDetails.alreadyWatched);
+    historyCount.textContent = historyMovies.length;
+
+    const favoritesMovies = allMovies.filter((movie) =>
+      movie.userDetails.favorite);
+    favoritesCount.textContent = favoritesMovies.length;
+  }
+
 }
+

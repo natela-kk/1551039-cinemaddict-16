@@ -12,22 +12,6 @@
 // if(allMovies.length > 0) {
 //   // renderMovies(0, NEXT_POSTS_COUNT);
 
-//   const watchListCount = document.querySelector('a[href="#watchlist"]').querySelector('span');
-//   const historyCount = document.querySelector('a[href="#history"]').querySelector('span');
-//   const favoritesCount = document.querySelector('a[href="#favorites"]').querySelector('span');
-
-//   const watchlistMovies = allMovies.filter((movie) =>
-//     movie.userDetails.watchlist);
-//   watchListCount.textContent = watchlistMovies.length;
-
-//   const historyMovies = allMovies.filter((movie) =>
-//     movie.userDetails.already_watched);
-//   historyCount.textContent = historyMovies.length;
-
-//   const favoritesMovies = allMovies.filter((movie) =>
-//     movie.userDetails.favorite);
-//   favoritesCount.textContent = favoritesMovies.length;
-
 //   const extraLists = document.querySelectorAll('.films-list--extra');
 //   // const topRated = extraLists[0].querySelector('.films-list__container');
 

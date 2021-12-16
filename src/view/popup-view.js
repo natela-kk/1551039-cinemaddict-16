@@ -1,4 +1,4 @@
-import { mainElement } from './render-data.js';
+import { mainElement } from '../main.js';
 import CommentView from './comment-view.js';
 import AbctractView from './abstract-view.js';
 
@@ -18,8 +18,8 @@ const getWatchlistStatus = (userDetails) => userDetails.watchlist ? ('film-detai
 const getWatchedStatus = (userDetails) => userDetails.already_watched ? ('film-details__control-button--active') : '';
 const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details__control-button--active') : '';
 
-const createPopupTemplate = (thePopup) => {
-  const {filmInfo, comments, userDetails} = thePopup;
+const createPopupTemplate = (movieInfo) => {
+  const {filmInfo, comments, userDetails} = movieInfo;
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
   <div class="film-details__top-container">
@@ -135,9 +135,9 @@ const createPopupTemplate = (thePopup) => {
 export default class PopupView extends AbctractView{
   #popup = null;
 
-  constructor(popupCard) {
+  constructor(movieInfo) {
     super();
-    this.#popup = popupCard;
+    this.#popup = movieInfo;
   }
 
   get template() {
@@ -183,7 +183,7 @@ export default class PopupView extends AbctractView{
   addInputKeydownControl(cardComponent) {
     const commentInput = this.element.querySelector('.film-details__comment-input');
     commentInput.addEventListener('keydown', (evt) => {
-      this.element.inputKeydownHandler(evt, commentInput, this.element, cardComponent);
+      this.inputKeydownHandler(evt, commentInput, this.element, cardComponent);
     });
   }
 
@@ -217,11 +217,12 @@ export default class PopupView extends AbctractView{
     postClickHandler(movie, cardComponent) {
       document.body.classList.add('hide-overflow');
       this.#popup = movie;
-      popup = this.element;
+      popup = this.element.querySelector('.film-details');
 
       if (popup) {
         mainElement.removeChild(popup);
       }
+
       this.addCloseButtonClickControl(this.closeButtonClickHandler);
       mainElement.appendChild(this.element);
       movie.comments.forEach((comment) => {
@@ -229,8 +230,10 @@ export default class PopupView extends AbctractView{
         this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
         commentComponent.addRemoveControlEvent(this.element, cardComponent);
       });
+
       this.addEmojiListener();
       this.addInputKeydownControl(cardComponent);
+      console.log(popup);
 
       popup = document.querySelector('.film-details');
       document.addEventListener('keydown', this.documentKeydownHandler);

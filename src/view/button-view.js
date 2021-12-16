@@ -1,6 +1,5 @@
 import AbctractView from './abstract-view.js';
-import { renderMovies } from './render-data.js';
-import { allMovies } from './render-data.js';
+import { allMovies, renderMovies } from '../main.js';
 const NEXT_POSTS_COUNT = 5;
 
 const createButtonTemplate = () => (
@@ -16,7 +15,6 @@ export default class ButtonView extends AbctractView {
     let renderedMoviesCount = NEXT_POSTS_COUNT;
     this.element.addEventListener('click', (evt) => {
       evt.preventDefault();
-      console.log(renderedMoviesCount, renderedMoviesCount + NEXT_POSTS_COUNT);
       renderMovies(renderedMoviesCount, renderedMoviesCount + NEXT_POSTS_COUNT);
       renderedMoviesCount += NEXT_POSTS_COUNT;
       if (renderedMoviesCount >= allMovies.length) {
