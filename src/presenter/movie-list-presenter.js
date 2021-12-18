@@ -50,8 +50,8 @@ init = (movies) => {
 }
 
 renderMovie = (movie) => {
-  const moviePresenter = new MoviePresenter(this.#cardsContainer);
-  moviePresenter.init(movie);
+  const moviePresenter = new MoviePresenter(this.#cardsContainer, movie, this);
+  moviePresenter.init();
 }
 
 #renderMovies = (from, to) => {

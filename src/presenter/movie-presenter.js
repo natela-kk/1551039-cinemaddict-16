@@ -3,32 +3,36 @@ import CommentView from '../view/comment-view';
 import CardsView from '../view/cards-view.js';
 import { renderElement } from '../mock/render';
 import { RenderPosition } from '../mock/generate.js';
-import { presenter } from '../main.js';
+// import { presenter } from '../main.js';
 
 export default class MoviePresenter {
   #movie = null;
+  #popupComponent = null;
+  #movieListPresenter = null;
 
-#popupComponent = new PopupView();
 #commentComponent = new CommentView();
 #moviesContainer = null;
 
-constructor(moviesContainer) {
+constructor(moviesContainer, movie, movieListPresenter) {
   this.#moviesContainer = moviesContainer;
+  this.#movie = movie;
+  this.#movieListPresenter = movieListPresenter;
 }
 
 
-init = (movie) => {
-  const cardComponent = new CardsView(movie);
+init = () => {
+  const cardComponent = new CardsView(this.#movie);
   renderElement(this.#moviesContainer, cardComponent, RenderPosition.BEFOREEND);
-  this.addToFavorite(cardComponent);
-  this.addToWatchlist(cardComponent);
-  this.addToHistory(cardComponent);
-  this.addPostClickHandler(cardComponent, movie, () => {
-    new PopupView(movie).postClickHandler(movie, cardComponent);
+  this.addToFavorite(this.#movieListPresenter, cardComponent);
+  this.addToWatchlist(this.#movieListPresenter, cardComponent);
+  this.addToHistory(this.#movieListPresenter, cardComponent);
+  this.addPostClickHandler(cardComponent, () => {
+    this.#popupComponent = new PopupView(this.#movie);
+    this.#popupComponent.postClickHandler(this.#movie, cardComponent);
   });
 }
 
-addToFavorite(cardComponent) {
+addToFavorite(presenter, cardComponent) {
   const favoriteButton = cardComponent.element.querySelector('.film-card__controls-item--favorite');
   favoriteButton.addEventListener('click', () => {
     const favoriteSign = cardComponent.movieInfo.userDetails.favorite;
@@ -38,7 +42,7 @@ addToFavorite(cardComponent) {
   });
 }
 
-addToWatchlist(cardComponent) {
+addToWatchlist(presenter, cardComponent) {
   const watchlistButton = cardComponent.element.querySelector('.film-card__controls-item--add-to-watchlist');
   watchlistButton.addEventListener('click', () => {
     const watchlistSign = cardComponent.movieInfo.userDetails.watchlist;
@@ -48,7 +52,7 @@ addToWatchlist(cardComponent) {
   });
 }
 
-addToHistory(cardComponent) {
+addToHistory(presenter, cardComponent) {
   const alreadyWatchedButton = cardComponent.element.querySelector('.film-card__controls-item--mark-as-watched');
   alreadyWatchedButton.addEventListener('click', () => {
     const alreadyWatchedSign = cardComponent.movieInfo.userDetails.alreadyWatched;
@@ -58,9 +62,9 @@ addToHistory(cardComponent) {
   });
 }
 
-addPostClickHandler(cardComponent, movie, callback) {
+addPostClickHandler(cardComponent, callback) {
   cardComponent._callback.postClick = callback;
-  cardComponent.movieInfo = movie;
+  cardComponent.movieInfo = this.#movie;
   cardComponent.element.querySelector('a').addEventListener('click', cardComponent.postClickHandler);
 }
 
