@@ -1,5 +1,4 @@
 import AbctractView from './abstract-view.js';
-import { presenter } from '../main.js';
 
 const getFilmDescription = (description) => {
   const text = description.join(' ');
@@ -35,55 +34,19 @@ const createCardTemplate = (card) => {
 };
 
 export default class CardsView extends AbctractView{
-  #movieInfo = null;
+  movieInfo = null;
 
   constructor(movieInfo) {
     super();
-    this.#movieInfo = movieInfo;
+    this.movieInfo = movieInfo;
   }
 
   get template() {
-    return createCardTemplate(this.#movieInfo);
+    return createCardTemplate(this.movieInfo);
   }
 
-  addClickHandler(movie, callback) {
-    this._callback.postClick = callback;
-    this.#movieInfo = movie;
-    this.element.querySelector('a').addEventListener('click', this.#postClickHandler);
-  }
-
-  #postClickHandler = () => {
+  postClickHandler = () => {
     this._callback.postClick();
-  }
-
-  addToFavorite() {
-    const favoriteButton = this.element.querySelector('.film-card__controls-item--favorite');
-    favoriteButton.addEventListener('click', () => {
-      const favoriteSign = this.#movieInfo.userDetails.favorite;
-      this.#movieInfo.userDetails.favorite = !favoriteSign;
-      favoriteButton.classList.toggle('film-card__controls-item--active');
-      presenter.menuComponent.setFiltersCount();
-    });
-  }
-
-  addToWatchlist() {
-    const watchlistButton = this.element.querySelector('.film-card__controls-item--add-to-watchlist');
-    watchlistButton.addEventListener('click', () => {
-      const watchlistSign = this.#movieInfo.userDetails.watchlist;
-      this.#movieInfo.userDetails.watchlist = !watchlistSign;
-      watchlistButton.classList.toggle('film-card__controls-item--active');
-      presenter.menuComponent.setFiltersCount();
-    });
-  }
-
-  addToHistory() {
-    const alreadyWatchedButton = this.element.querySelector('.film-card__controls-item--mark-as-watched');
-    alreadyWatchedButton.addEventListener('click', () => {
-      const alreadyWatchedSign = this.#movieInfo.userDetails.alreadyWatched;
-      this.#movieInfo.userDetails.alreadyWatched = !alreadyWatchedSign;
-      alreadyWatchedButton.classList.toggle('film-card__controls-item--active');
-      presenter.menuComponent.setFiltersCount();
-    });
   }
 
 }

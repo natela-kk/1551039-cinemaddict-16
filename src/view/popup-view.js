@@ -233,8 +233,6 @@ export default class PopupView extends AbctractView{
 
       this.addEmojiListener();
       this.addInputKeydownControl(cardComponent);
-      console.log(popup);
-
       popup = document.querySelector('.film-details');
       document.addEventListener('keydown', this.documentKeydownHandler);
     }

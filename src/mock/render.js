@@ -1,7 +1,7 @@
 import { RenderPosition } from './generate';
 import AbctractView from '../view/abstract-view';
 
-export function renderElement (container, element, place) {
+export const renderElement = (container, element, place) => {
   const parent = container instanceof AbctractView ? container.element : container;
   const child = element instanceof AbctractView ? element.element : element;
 

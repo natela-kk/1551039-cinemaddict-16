@@ -1,6 +1,6 @@
 import AbctractView from './abstract-view.js';
 import { allMovies } from '../main.js';
-const ACTIVE_CLASS = 'main-navigation__item--active';
+export const ACTIVE_CLASS = 'main-navigation__item--active';
 
 const createMenuTemplate = () => (
   `<nav class="main-navigation">
@@ -35,19 +35,6 @@ export default class MenuView extends AbctractView{
       elementToChange.textContent = titlesList[locationHash];
       this.element.querySelector(`a[href="#${locationHash}"`).classList.add(ACTIVE_CLASS);
     }
-  }
-
-  setEmptyMessage(elementToChange) {
-    const filterList = this.element.querySelector('.main-navigation__items');
-    let currentFilter = filterList.querySelector(`.${ACTIVE_CLASS}`);
-    filterList.addEventListener('click', (evt) => {
-      if (evt.target.className === 'main-navigation__item' && currentFilter !== evt.target) {
-        currentFilter.classList.remove(ACTIVE_CLASS);
-        currentFilter = evt.target;
-        currentFilter.classList.add(ACTIVE_CLASS);
-        this.changeEmtyTitle(currentFilter, elementToChange);
-      }
-    });
   }
 
   changeEmtyTitle(filter, elementToChange) {
