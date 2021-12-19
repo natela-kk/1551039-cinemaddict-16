@@ -28,48 +28,66 @@ init = () => {
   this.addPostClickHandler(cardComponent, () => {
     this.#popupComponent.postClickHandler(this.#movie, cardComponent);
   });
-  this.addTo(cardComponent);
+  this.addFavoriteClickHandler(cardComponent);
+  this.addToWatchlistClickHandler(cardComponent);
+  this.addToHistoryClickHandler(cardComponent);
 }
 
-addTo(cardComponent) {
-  const alreadyWatchedButtonInCard = cardComponent.element.querySelector('.film-card__controls-item--mark-as-watched');
-  const alreadyWatchedButtonInPopup = this.#popupComponent.element.querySelector('.film-details__control-button--watched');
-  const watchlistButtonInCard = cardComponent.element.querySelector('.film-card__controls-item--add-to-watchlist');
-  const watchlistButtonInPopup = this.#popupComponent.element.querySelector('.film-details__control-button--watchlist');
+addFavoriteClickHandler(cardComponent) {
   const favoriteButtonInCard = cardComponent.element.querySelector('.film-card__controls-item--favorite');
   const favoriteButtonInPopup = this.#popupComponent.element.querySelector('.film-details__control-button--favorite');
-
-  alreadyWatchedButtonInCard.addEventListener('click', () => {
-    this.markAs(alreadyWatchedButtonInPopup, cardComponent, alreadyWatchedButtonInCard, 'alreadyWatched');
-  });
-
-  alreadyWatchedButtonInPopup.addEventListener('click', () => {
-    this.markAs(alreadyWatchedButtonInPopup, cardComponent, alreadyWatchedButtonInCard, 'alreadyWatched');
-  });
-
-  watchlistButtonInCard.addEventListener('click', () => {
-    this.markAs(watchlistButtonInPopup, cardComponent, watchlistButtonInCard, 'watchlist');
-  });
-
-  watchlistButtonInPopup.addEventListener('click', () => {
-    this.markAs(watchlistButtonInPopup, cardComponent, watchlistButtonInCard, 'watchlist');
-  });
-
   favoriteButtonInCard.addEventListener('click', () => {
-    // const {favorite} = cardComponent.movieInfo.userDetails;
-    this.markAs(favoriteButtonInPopup, cardComponent, favoriteButtonInCard, 'favorite');
+    this.addToFavorite(favoriteButtonInPopup, cardComponent, favoriteButtonInCard);
   });
 
   favoriteButtonInPopup.addEventListener('click', () => {
-    // const {favorite} = cardComponent.movieInfo.userDetails;
-    this.markAs(favoriteButtonInPopup, cardComponent, favoriteButtonInCard, 'favorite');
+    this.addToFavorite(favoriteButtonInPopup, cardComponent, favoriteButtonInCard);
   });
-
 }
 
-markAs(popupButton, cardComponent, cardButtonIn, mark) {
-  const status = cardComponent.movieInfo.userDetails[mark];
-  cardComponent.movieInfo.userDetails[mark] = !status;
+addToFavorite(popupButton, cardComponent, cardButtonIn) {
+  const status = cardComponent.movieInfo.userDetails.favorite;
+  cardComponent.movieInfo.userDetails.favorite = !status;
+  popupButton.classList.toggle('film-details__control-button--active');
+  cardButtonIn.classList.toggle('film-card__controls-item--active');
+  this.#movieListPresenter.menuComponent.setFiltersCount();
+}
+
+addToWatchlistClickHandler(cardComponent) {
+  const watchlistButtonInCard = cardComponent.element.querySelector('.film-card__controls-item--add-to-watchlist');
+  const watchlistButtonInPopup = this.#popupComponent.element.querySelector('.film-details__control-button--watchlist');
+  watchlistButtonInCard.addEventListener('click', () => {
+    this.addToWatchlist(watchlistButtonInPopup, cardComponent, watchlistButtonInCard);
+  });
+
+  watchlistButtonInPopup.addEventListener('click', () => {
+    this.addToWatchlist(watchlistButtonInPopup, cardComponent, watchlistButtonInCard);
+  });
+}
+
+addToWatchlist(popupButton, cardComponent, cardButtonIn) {
+  const status = cardComponent.movieInfo.userDetails.watchlist;
+  cardComponent.movieInfo.userDetails.watchlist = !status;
+  popupButton.classList.toggle('film-details__control-button--active');
+  cardButtonIn.classList.toggle('film-card__controls-item--active');
+  this.#movieListPresenter.menuComponent.setFiltersCount();
+}
+
+addToHistoryClickHandler(cardComponent) {
+  const alreadyWatchedButtonInCard = cardComponent.element.querySelector('.film-card__controls-item--mark-as-watched');
+  const alreadyWatchedButtonInPopup = this.#popupComponent.element.querySelector('.film-details__control-button--watched');
+  alreadyWatchedButtonInCard.addEventListener('click', () => {
+    this.addToHistory(alreadyWatchedButtonInPopup, cardComponent, alreadyWatchedButtonInCard);
+  });
+
+  alreadyWatchedButtonInPopup.addEventListener('click', () => {
+    this.addToHistory(alreadyWatchedButtonInPopup, cardComponent, alreadyWatchedButtonInCard);
+  });
+}
+
+addToHistory(popupButton, cardComponent, cardButtonIn) {
+  const status = cardComponent.movieInfo.userDetails.alreadyWatched;
+  cardComponent.movieInfo.userDetails.alreadyWatched = !status;
   popupButton.classList.toggle('film-details__control-button--active');
   cardButtonIn.classList.toggle('film-card__controls-item--active');
   this.#movieListPresenter.menuComponent.setFiltersCount();
@@ -81,6 +99,6 @@ addPostClickHandler(cardComponent, callback) {
   cardComponent.element.querySelector('a').addEventListener('click', cardComponent.postClickHandler);
 }
 
-
 }
+
 

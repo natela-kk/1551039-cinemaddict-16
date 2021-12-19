@@ -29,7 +29,6 @@ menuComponent = new MenuView();
 #footerComponent = new FooterView();
 #emptyListComponent = new EmtyListView();
 #cardsContainer = this.#cardsContainerComponent.element.querySelector('.films-list__container');
-#init = null;
 
 #movies = [];
 
