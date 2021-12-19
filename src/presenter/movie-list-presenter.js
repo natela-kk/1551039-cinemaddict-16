@@ -29,6 +29,7 @@ menuComponent = new MenuView();
 #footerComponent = new FooterView();
 #emptyListComponent = new EmtyListView();
 #cardsContainer = this.#cardsContainerComponent.element.querySelector('.films-list__container');
+#init = null;
 
 #movies = [];
 
@@ -42,7 +43,6 @@ init = (movies) => {
   this.menuComponent.setFiltersCount();
   this.menuComponent.setActiveFilter(this.#emptyListComponent.element);
   this.#renderMovieList();
-
 }
 
 #renderSort = () => {
@@ -50,8 +50,7 @@ init = (movies) => {
 }
 
 renderMovie = (movie) => {
-  const moviePresenter = new MoviePresenter(this.#cardsContainer, movie, this);
-  moviePresenter.init();
+  new MoviePresenter(this.#cardsContainer, movie, this);
 }
 
 #renderMovies = (from, to) => {
