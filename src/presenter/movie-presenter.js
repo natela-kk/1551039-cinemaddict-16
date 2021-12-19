@@ -27,6 +27,9 @@ init = () => {
   renderElement(this.#moviesContainer, cardComponent, RenderPosition.BEFOREEND);
   this.addPostClickHandler(cardComponent, () => {
     this.#popupComponent.postClickHandler(this.#movie, cardComponent);
+    this.#popupComponent.addFavoriteClickHandler(this.#movieListPresenter.menuComponent, cardComponent);
+    this.#popupComponent.addToWatchlistClickHandler(this.#movieListPresenter.menuComponent, cardComponent);
+    this.#popupComponent.addToHistoryClickHandler(this.#movieListPresenter.menuComponent, cardComponent);
   });
   this.addFavoriteClickHandler(cardComponent);
   this.addToWatchlistClickHandler(cardComponent);
@@ -37,10 +40,6 @@ addFavoriteClickHandler(cardComponent) {
   const favoriteButtonInCard = cardComponent.element.querySelector('.film-card__controls-item--favorite');
   const favoriteButtonInPopup = this.#popupComponent.element.querySelector('.film-details__control-button--favorite');
   favoriteButtonInCard.addEventListener('click', () => {
-    this.addToFavorite(favoriteButtonInPopup, cardComponent, favoriteButtonInCard);
-  });
-
-  favoriteButtonInPopup.addEventListener('click', () => {
     this.addToFavorite(favoriteButtonInPopup, cardComponent, favoriteButtonInCard);
   });
 }
@@ -59,10 +58,6 @@ addToWatchlistClickHandler(cardComponent) {
   watchlistButtonInCard.addEventListener('click', () => {
     this.addToWatchlist(watchlistButtonInPopup, cardComponent, watchlistButtonInCard);
   });
-
-  watchlistButtonInPopup.addEventListener('click', () => {
-    this.addToWatchlist(watchlistButtonInPopup, cardComponent, watchlistButtonInCard);
-  });
 }
 
 addToWatchlist(popupButton, cardComponent, cardButtonIn) {
@@ -77,10 +72,6 @@ addToHistoryClickHandler(cardComponent) {
   const alreadyWatchedButtonInCard = cardComponent.element.querySelector('.film-card__controls-item--mark-as-watched');
   const alreadyWatchedButtonInPopup = this.#popupComponent.element.querySelector('.film-details__control-button--watched');
   alreadyWatchedButtonInCard.addEventListener('click', () => {
-    this.addToHistory(alreadyWatchedButtonInPopup, cardComponent, alreadyWatchedButtonInCard);
-  });
-
-  alreadyWatchedButtonInPopup.addEventListener('click', () => {
     this.addToHistory(alreadyWatchedButtonInPopup, cardComponent, alreadyWatchedButtonInCard);
   });
 }

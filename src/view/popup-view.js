@@ -237,5 +237,52 @@ export default class PopupView extends AbctractView{
       document.addEventListener('keydown', this.documentKeydownHandler);
     }
 
+    addFavoriteClickHandler(menuComponent, cardComponent) {
+      const favoriteButtonInCard = cardComponent.element.querySelector('.film-card__controls-item--favorite');
+      const favoriteButtonInPopup = this.element.querySelector('.film-details__control-button--favorite');
+      favoriteButtonInPopup.addEventListener('click', () => {
+        this.addToFavorite(menuComponent, favoriteButtonInPopup, cardComponent, favoriteButtonInCard);
+      });
+    }
+
+    addToFavorite(menuComponent, popupButton, cardComponent, cardButtonIn) {
+      const status = cardComponent.movieInfo.userDetails.favorite;
+      cardComponent.movieInfo.userDetails.favorite = !status;
+      popupButton.classList.toggle('film-details__control-button--active');
+      cardButtonIn.classList.toggle('film-card__controls-item--active');
+      menuComponent.setFiltersCount();
+    }
+
+    addToWatchlistClickHandler(menuComponent, cardComponent) {
+      const watchlistButtonInCard = cardComponent.element.querySelector('.film-card__controls-item--add-to-watchlist');
+      const watchlistButtonInPopup = this.element.querySelector('.film-details__control-button--watchlist');
+      watchlistButtonInPopup.addEventListener('click', () => {
+        this.addToWatchlist(menuComponent, watchlistButtonInPopup, cardComponent, watchlistButtonInCard);
+      });
+    }
+
+    addToWatchlist(menuComponent, popupButton, cardComponent, cardButtonIn) {
+      const status = cardComponent.movieInfo.userDetails.watchlist;
+      cardComponent.movieInfo.userDetails.watchlist = !status;
+      popupButton.classList.toggle('film-details__control-button--active');
+      cardButtonIn.classList.toggle('film-card__controls-item--active');
+      menuComponent.setFiltersCount();
+    }
+
+    addToHistoryClickHandler(menuComponent, cardComponent) {
+      const alreadyWatchedButtonInCard = cardComponent.element.querySelector('.film-card__controls-item--mark-as-watched');
+      const alreadyWatchedButtonInPopup = this.element.querySelector('.film-details__control-button--watched');
+      alreadyWatchedButtonInPopup.addEventListener('click', () => {
+        this.addToHistory(menuComponent, alreadyWatchedButtonInPopup, cardComponent, alreadyWatchedButtonInCard);
+      });
+    }
+
+    addToHistory(menuComponent, popupButton, cardComponent, cardButtonIn) {
+      const status = cardComponent.movieInfo.userDetails.alreadyWatched;
+      cardComponent.movieInfo.userDetails.alreadyWatched = !status;
+      popupButton.classList.toggle('film-details__control-button--active');
+      cardButtonIn.classList.toggle('film-card__controls-item--active');
+      menuComponent.setFiltersCount();
+    }
 }
 
