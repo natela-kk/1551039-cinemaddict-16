@@ -1,7 +1,7 @@
 import PopupView from '../view/popup-view';
 import CommentView from '../view/comment-view';
 import CardsView from '../view/cards-view.js';
-import { renderElement } from '../mock/render';
+import { renderElement, remove } from '../mock/render';
 import { RenderPosition } from '../mock/generate.js';
 // import { presenter } from '../main.js';
 
@@ -9,31 +9,32 @@ export default class MoviePresenter {
   #movie = null;
   #popupComponent = null;
   #movieListPresenter = null;
-
+  #cardComponent = null;
 #commentComponent = new CommentView();
 #moviesContainer = null;
+#changeData = null;
 
-constructor(moviesContainer, movie, movieListPresenter) {
+constructor(moviesContainer, movieListPresenter, changeData) {
   this.#moviesContainer = moviesContainer;
-  this.#movie = movie;
   this.#movieListPresenter = movieListPresenter;
-  this.init();
+  this.#changeData = changeData;
 }
 
 
-init = () => {
-  const cardComponent = new CardsView(this.#movie);
+init = (movie) => {
+  this.#movie = movie;
+  this.#cardComponent = new CardsView(this.#movie);
   this.#popupComponent = new PopupView(this.#movie);
-  renderElement(this.#moviesContainer, cardComponent, RenderPosition.BEFOREEND);
-  this.addPostClickHandler(cardComponent, () => {
-    this.#popupComponent.postClickHandler(this.#movie, cardComponent);
-    this.#popupComponent.addFavoriteClickHandler(this.#movieListPresenter.menuComponent, cardComponent);
-    this.#popupComponent.addToWatchlistClickHandler(this.#movieListPresenter.menuComponent, cardComponent);
-    this.#popupComponent.addToHistoryClickHandler(this.#movieListPresenter.menuComponent, cardComponent);
+  renderElement(this.#moviesContainer, this.#cardComponent, RenderPosition.BEFOREEND);
+  this.addPostClickHandler(this.#cardComponent, () => {
+    this.#popupComponent.postClickHandler(this.#movie, this.#cardComponent);
+    this.#popupComponent.addFavoriteClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
+    this.#popupComponent.addToWatchlistClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
+    this.#popupComponent.addToHistoryClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
   });
-  this.addFavoriteClickHandler(cardComponent);
-  this.addToWatchlistClickHandler(cardComponent);
-  this.addToHistoryClickHandler(cardComponent);
+  this.addFavoriteClickHandler(this.#cardComponent);
+  this.addToWatchlistClickHandler(this.#cardComponent);
+  this.addToHistoryClickHandler(this.#cardComponent);
 }
 
 addFavoriteClickHandler(cardComponent) {
@@ -90,6 +91,9 @@ addPostClickHandler(cardComponent, callback) {
   cardComponent.element.querySelector('a').addEventListener('click', cardComponent.postClickHandler);
 }
 
+destroy = () => {
+  remove(this.#cardComponent);
+}
 }
 
 

@@ -2,6 +2,7 @@ import { getRandomInteger, getRandomPositiveFloat } from './utils.js';
 import { getRandomDescription, getCommentsList } from './structure.js';
 import dayjs from 'dayjs';
 import { POSTSCOUNT } from '../view/extra-view.js';
+import { nanoid } from 'nanoid';
 
 const RANDOM_MIN_DATE = 1;
 const RANDOM_MAX_DATE = 7;
@@ -55,8 +56,8 @@ const generateGenre = () => {
   return genreList;
 };
 
-export const generateMovie = (id) => ({
-  'id': id,
+export const generateMovie = () => ({
+  'id': nanoid(),
   'comments': getCommentsList(),
   'filmInfo': {
     'title': 'A Little Pony Without The Carpet',
@@ -90,7 +91,7 @@ export const generateMovie = (id) => ({
 export const getMovieList = () => {
   const movies = [];
   for (let i = 1; i <= POSTSCOUNT; i++) {
-    movies.push(generateMovie(i));
+    movies.push(generateMovie());
   }
   return movies;
 };

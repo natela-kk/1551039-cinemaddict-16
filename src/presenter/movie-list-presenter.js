@@ -1,5 +1,4 @@
 import MenuView from '../view/menu-view.js';
-import CardsView from '../view/cards-view.js';
 import FilterView from '../view/filter-view.js';
 import CardsContainerView from '../view/cards-container-view.js';
 import ButtonView from '../view/button-view.js';
@@ -7,11 +6,12 @@ import AvatarView from '../view/user-name-view.js';
 import ExtraView from '../view/extra-view.js';
 import FooterView from '../view/footer-view.js';
 import EmtyListView from '../view/empty-list-view.js';
-import { renderElement } from '../mock/render.js';
+import { remove, renderElement } from '../mock/render.js';
 import { RenderPosition } from '../mock/generate.js';
 import MoviePresenter from './movie-presenter.js';
 import { ACTIVE_CLASS } from '../view/menu-view.js';
 import { allMovies, renderMovies } from '../main.js';
+import { updateItem } from '../mock/utils.js';
 
 const NEXT_POSTS_COUNT = 5;
 const footer = document.querySelector('.footer');
@@ -20,7 +20,6 @@ export default class MovieListPresenter {
 #mainContainer = null;
 
 #cardsContainerComponent = new CardsContainerView();
-#cardsComponent = new CardsView();
 menuComponent = new MenuView();
 #filterComponent = new FilterView();
 #buttonComponent = new ButtonView();
@@ -29,6 +28,8 @@ menuComponent = new MenuView();
 #footerComponent = new FooterView();
 #emptyListComponent = new EmtyListView();
 #cardsContainer = this.#cardsContainerComponent.element.querySelector('.films-list__container');
+#moviePresenter = new Map();
+#renderedMoviesCount = NEXT_POSTS_COUNT;
 
 #movies = [];
 
@@ -49,7 +50,10 @@ init = (movies) => {
 }
 
 renderMovie = (movie) => {
-  new MoviePresenter(this.#cardsContainer, movie, this);
+  const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.#handleMovieChange);
+  moviePresenter.init(movie);
+  this.#moviePresenter.set(movie.id, moviePresenter);
+
 }
 
 #renderMovies = (from, to) => {
@@ -96,17 +100,28 @@ setEmptyMessage(elementToChange) {
 }
 
 addNextPosts() {
-  let renderedMoviesCount = NEXT_POSTS_COUNT;
   this.#buttonComponent.element.addEventListener('click', (evt) => {
     evt.preventDefault();
-    renderMovies(renderedMoviesCount, renderedMoviesCount + NEXT_POSTS_COUNT);
-    renderedMoviesCount += NEXT_POSTS_COUNT;
-    if (renderedMoviesCount >= allMovies.length) {
+    renderMovies(this.#renderedMoviesCount, this.#renderedMoviesCount + NEXT_POSTS_COUNT);
+    this.#renderedMoviesCount += NEXT_POSTS_COUNT;
+    if (this.#renderedMoviesCount >= allMovies.length) {
       this.#buttonComponent.element.remove();
     }
   });
 }
 
+#clearMovieList = () => {
+  this.#moviePresenter.forEach((presenter) => presenter.destroy());
+  this.#moviePresenter.clear();
+  this.#renderedMoviesCount = NEXT_POSTS_COUNT;
+
+  remove(this.#buttonComponent);
+}
+
+#handleMovieChange = (updatedMovie) => {
+  this.#movies = updateItem(this.#movies, updatedMovie);
+  this.#moviePresenter.get(updatedMovie.id).init(updatedMovie);
+}
 
 }
 
