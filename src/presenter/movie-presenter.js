@@ -38,9 +38,9 @@ init = (movie) => {
   // this.addToHistoryClickHandler(this.#cardComponent);
   ////////////////
   this.#cardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-  // this.#cardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
-  // this.#cardComponent.setHistoryClickHandler(this.#handleHistoryClick);
-  // this.#popupComponent.setFormSubmitHandler(this.#handleFormSubmit);
+  this.#cardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
+  this.#cardComponent.setHistoryClickHandler(this.#handleHistoryClick);
+  this.#popupComponent.setFormSubmitHandler(this.#handleFormSubmit);
 }
 
 addFavoriteClickHandler(cardComponent) {
@@ -102,16 +102,22 @@ destroy = () => {
 }
 
 #handleFavoriteClick = () => {
+  console.log(this.#movie.favorite);
   this.#changeData({...this.#movie, favorite: !this.#movie.favorite});
-
+  console.log(this.#movie.favorite);
 }
 
 #handleWatchlistClick = () => {
+  console.log(this.#movie.watchlist);
   this.#changeData({...this.#movie, watchlist: !this.#movie.watchlist});
+  console.log(this.#movie.watchlist);
 }
 
 #handleHistoryClick = () => {
+  console.log(this.#movie.alreadyWatched);
   this.#changeData({...this.#movie, alreadyWatched: !this.#movie.alreadyWatched});
+  console.log(this.#movie.alreadyWatched);
+
 }
 
 #handleFormSubmit = (movie) => {

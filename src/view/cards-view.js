@@ -52,25 +52,21 @@ export default class CardsView extends AbctractView{
 
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
-    console.log(this._callback.favoriteClick);
-
-    this.element.querySelector('.film-card__controls-item--favorite').addEventListener('click', this.favoriteClickHandler);
+    this.element.querySelector('.film-card__controls-item--favorite').addEventListener('click', this.favoriteClickHandler.bind(this));
   }
 
-  setWatchlistClickHandle(callback) {
+  setWatchlistClickHandler(callback) {
     this._callback.watchlistClick = callback;
-    this.element.querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this.watchlistClickHandler);
+    this.element.querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this.watchlistClickHandler.bind(this));
   }
 
   setHistoryClickHandler(callback) {
     this._callback.historyClick = callback;
-    this.element.querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this.historyClickHandler);
+    this.element.querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this.historyClickHandler.bind(this));
   }
 
   favoriteClickHandler(evt) {
     evt.preventDefault();
-    console.log(this._callback.favoriteClick);
-
     this._callback.favoriteClick();
   }
 

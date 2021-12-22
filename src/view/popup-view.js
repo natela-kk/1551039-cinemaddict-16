@@ -287,7 +287,7 @@ export default class PopupView extends AbctractView{
 
     setFormSubmitHandler(callback) {
       this._callback.formSubmit = callback;
-      this.element.querySelector('form').addEventListener('submit', this.formSubmitHandler);
+      this.element.querySelector('form').addEventListener('submit', this.formSubmitHandler.bind(this));
     }
 
     formSubmitHandler(evt) {

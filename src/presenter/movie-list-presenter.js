@@ -119,7 +119,10 @@ addNextPosts() {
 }
 
 #handleMovieChange = (updatedMovie) => {
+  console.log(this.#movies);
   this.#movies = updateItem(this.#movies, updatedMovie);
+  console.log(this.#movies);
+
   this.#moviePresenter.get(updatedMovie.id).init(updatedMovie);
 }
 
