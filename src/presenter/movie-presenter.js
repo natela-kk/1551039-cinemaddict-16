@@ -102,21 +102,15 @@ destroy = () => {
 }
 
 #handleFavoriteClick = () => {
-  console.log(this.#movie.favorite);
   this.#changeData({...this.#movie, favorite: !this.#movie.favorite});
-  console.log(this.#movie.favorite);
 }
 
 #handleWatchlistClick = () => {
-  console.log(this.#movie.watchlist);
-  this.#changeData({...this.#movie, watchlist: !this.#movie.watchlist});
-  console.log(this.#movie.watchlist);
+  this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}});
 }
 
 #handleHistoryClick = () => {
-  console.log(this.#movie.alreadyWatched);
   this.#changeData({...this.#movie, alreadyWatched: !this.#movie.alreadyWatched});
-  console.log(this.#movie.alreadyWatched);
 
 }
 
