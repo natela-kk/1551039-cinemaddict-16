@@ -10,15 +10,16 @@ export default class MoviePresenter {
   #popupComponent = null;
   #movieListPresenter = null;
   #cardComponent = null;
-#commentComponent = new CommentView();
-#moviesContainer = null;
-#changeData = null;
+  #commentComponent = new CommentView();
+  #moviesContainer = null;
+  #changeData = null;
 
-constructor(moviesContainer, movieListPresenter, changeData) {
-  this.#moviesContainer = moviesContainer;
-  this.#movieListPresenter = movieListPresenter;
-  this.#changeData = changeData;
-}
+  constructor(moviesContainer, movieListPresenter, changeData) {
+    this.#moviesContainer = moviesContainer;
+    this.#movieListPresenter = movieListPresenter;
+    this.#changeData = changeData;
+
+  }
 
 
 init = (movie) => {
@@ -32,9 +33,14 @@ init = (movie) => {
     this.#popupComponent.addToWatchlistClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
     this.#popupComponent.addToHistoryClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
   });
-  this.addFavoriteClickHandler(this.#cardComponent);
-  this.addToWatchlistClickHandler(this.#cardComponent);
-  this.addToHistoryClickHandler(this.#cardComponent);
+  // this.addFavoriteClickHandler(this.#cardComponent);
+  // this.addToWatchlistClickHandler(this.#cardComponent);
+  // this.addToHistoryClickHandler(this.#cardComponent);
+  ////////////////
+  this.#cardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+  // this.#cardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
+  // this.#cardComponent.setHistoryClickHandler(this.#handleHistoryClick);
+  // this.#popupComponent.setFormSubmitHandler(this.#handleFormSubmit);
 }
 
 addFavoriteClickHandler(cardComponent) {
@@ -94,6 +100,24 @@ addPostClickHandler(cardComponent, callback) {
 destroy = () => {
   remove(this.#cardComponent);
 }
+
+#handleFavoriteClick = () => {
+  this.#changeData({...this.#movie, favorite: !this.#movie.favorite});
+
+}
+
+#handleWatchlistClick = () => {
+  this.#changeData({...this.#movie, watchlist: !this.#movie.watchlist});
+}
+
+#handleHistoryClick = () => {
+  this.#changeData({...this.#movie, alreadyWatched: !this.#movie.alreadyWatched});
+}
+
+#handleFormSubmit = (movie) => {
+  this.#changeData(movie);
+}
+
 }
 
 

@@ -284,5 +284,15 @@ export default class PopupView extends AbctractView{
       cardButtonIn.classList.toggle('film-card__controls-item--active');
       menuComponent.setFiltersCount();
     }
+
+    setFormSubmitHandler(callback) {
+      this._callback.formSubmit = callback;
+      this.element.querySelector('form').addEventListener('submit', this.formSubmitHandler);
+    }
+
+    formSubmitHandler(evt) {
+      evt.preventDefault();
+      this._callback.formSubmit(this.#popup);
+    }
 }
 
