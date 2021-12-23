@@ -1,4 +1,4 @@
-import AbctractView from './abstract-view.js';
+import AbstractView from './abstract-view.js';
 
 const createFilterTemplate = () => (
   `<ul class="sort">
@@ -8,7 +8,7 @@ const createFilterTemplate = () => (
 </ul>`
 );
 
-export default class FilterView extends AbctractView{
+export default class FilterView extends AbstractView{
   get template() {
     return createFilterTemplate();
   }

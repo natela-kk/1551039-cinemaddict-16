@@ -1,4 +1,4 @@
-import AbctractView from './abstract-view.js';
+import AbstractView from './abstract-view.js';
 
 const getFilmDescription = (description) => {
   const text = description.join(' ');
@@ -6,7 +6,7 @@ const getFilmDescription = (description) => {
 };
 
 const getWatchlistStatus = (userDetails) => userDetails.watchlist === true ? ('film-card__controls-item--active') : '';
-const getWatchedStatus = (userDetails) => userDetails.already_watched === true ? ('film-card__controls-item--active') : '';
+const getWatchedStatus = (userDetails) => userDetails.alreadyWatched === true ? ('film-card__controls-item--active') : '';
 const getFavoriteStatus = (userDetails) => userDetails.favorite === true ? ('film-card__controls-item--active') : '';
 
 
@@ -33,7 +33,7 @@ const createCardTemplate = (card) => {
       </article>`;
 };
 
-export default class CardsView extends AbctractView{
+export default class CardsView extends AbstractView{
   #movieInfo = null;
 
   constructor(movieInfo) {

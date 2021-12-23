@@ -1,4 +1,4 @@
-import AbctractView from './abstract-view.js';
+import AbstractView from './abstract-view.js';
 
 const createCommentTemplate = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">
@@ -14,7 +14,7 @@ const createCommentTemplate = (comment) => (`<li class="film-details__comment">
   </div>
   </li>`);
 
-export default class CommentView extends AbctractView{
+export default class CommentView extends AbstractView{
 #comment = null;
 
 constructor(comment) {

@@ -1,4 +1,4 @@
-import AbctractView from './abstract-view.js';
+import AbstractView from './abstract-view.js';
 
 export const POSTSCOUNT = 22;
 
@@ -19,7 +19,7 @@ const createExtraTemplate = () => (
 </div>`
 );
 
-export default class ExtraView extends AbctractView{
+export default class ExtraView extends AbstractView{
   get template() {
     return createExtraTemplate();
   }

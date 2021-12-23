@@ -1,9 +1,9 @@
 import { RenderPosition } from './generate';
-import AbctractView from '../view/abstract-view';
+import AbstractView from '../view/abstract-view';
 
 export const renderElement = (container, element, place) => {
-  const parent = container instanceof AbctractView ? container.element : container;
-  const child = element instanceof AbctractView ? element.element : element;
+  const parent = container instanceof AbstractView ? container.element : container;
+  const child = element instanceof AbstractView ? element.element : element;
 
   switch (place) {
     case RenderPosition.BEFOREBEGIN:
@@ -32,7 +32,7 @@ export const remove = (component) => {
     return;
   }
 
-  if (!(component instanceof AbctractView)) {
+  if (!(component instanceof AbstractView)) {
     throw new Error('Can remove only components');
   }
 

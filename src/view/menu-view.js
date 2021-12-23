@@ -1,4 +1,4 @@
-import AbctractView from './abstract-view.js';
+import AbstractView from './abstract-view.js';
 import { allMovies } from '../main.js';
 export const ACTIVE_CLASS = 'main-navigation__item--active';
 
@@ -22,7 +22,7 @@ const titlesList = {
   favorites: 'There are no favorite movies now',
 };
 
-export default class MenuView extends AbctractView{
+export default class MenuView extends AbstractView{
 
   get template() {
     return createMenuTemplate();
