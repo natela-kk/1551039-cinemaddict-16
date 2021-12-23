@@ -9,7 +9,7 @@ let closeButton;
 
 const getGenreWord = (genres) => genres.length > 1 ? 'Genres' : 'Genre';
 const getWatchlistStatus = (userDetails) => userDetails.watchlist ? ('film-details__control-button--active') : '';
-const getWatchedStatus = (userDetails) => userDetails.already_watched ? ('film-details__control-button--active') : '';
+const getWatchedStatus = (userDetails) => userDetails.alreadyWatched ? ('film-details__control-button--active') : '';
 const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details__control-button--active') : '';
 
 const createPopupTemplate = (movieInfo) => {
@@ -204,7 +204,6 @@ export default class PopupView extends AbstractView{
     };
 
     closePopup() {
-      // moviePresenter.popupMode = PopupMode.CLOSED;
       this.element.remove();
       closeButton.removeEventListener('click', this.closeButtonClickHandler);
       document.removeEventListener('keydown', this.documentKeydownHandler);
@@ -212,10 +211,14 @@ export default class PopupView extends AbstractView{
     }
 
     postClickHandler(movie, cardComponent, moviePresenter) {
+      this.#changePopupMode();
+      moviePresenter.popupMode = PopupMode.OPENED;
+
       document.body.classList.add('hide-overflow');
       this.#popup = movie;
       this.addCloseButtonClickControl(this.closeButtonClickHandler);
       mainElement.appendChild(this.element);
+
       movie.comments.forEach((comment) => {
         const commentComponent = new CommentView(comment);
         this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
@@ -225,9 +228,6 @@ export default class PopupView extends AbstractView{
       this.addEmojiListener();
       this.addInputKeydownControl(cardComponent);
       document.addEventListener('keydown', this.documentKeydownHandler);
-      this.#changePopupMode();
-      moviePresenter.popupMode = PopupMode.OPENED;
-      console.log('OPEN');
     }
 
     setFormSubmitHandler(callback) {
@@ -239,5 +239,39 @@ export default class PopupView extends AbstractView{
       evt.preventDefault();
       this._callback.formSubmit(this.#popup);
     }
+
+    setFavoriteClickHandler(callback) {
+      this._callback.favoriteClick = callback;
+      this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.favoriteClickHandler.bind(this));
+    }
+
+    setWatchlistClickHandler(callback) {
+      this._callback.watchlistClick = callback;
+      this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.watchlistClickHandler.bind(this));
+    }
+
+    setHistoryClickHandler(callback) {
+      this._callback.historyClick = callback;
+      this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.historyClickHandler.bind(this));
+    }
+
+    favoriteClickHandler(evt) {
+      evt.preventDefault();
+      this._callback.favoriteClick();
+    }
+
+    watchlistClickHandler(evt) {
+      evt.preventDefault();
+      this._callback.watchlistClick();
+    }
+
+    historyClickHandler(evt) {
+      evt.preventDefault();
+      this._callback.historyClick();
+    }
+
+  // #handleFormSubmit = (movie) => {
+  //   this.#changeData(movie);
+  // }
 }
 

@@ -30,7 +30,6 @@ export default class MoviePresenter {
     this.#changePopupMode = changePopupMode;
   }
 
-
 init = (movie) => {
   this.#movie = movie;
 
@@ -45,37 +44,25 @@ init = (movie) => {
   this.#cardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
   this.#cardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
   this.#cardComponent.setHistoryClickHandler(this.#handleHistoryClick);
+
   this.#popupComponent.setFormSubmitHandler(this.#handleFormSubmit);
-
-  const moviePresenter = this;
-
-  this.addPostClickHandler(this.#cardComponent, () => {
-    this.#popupComponent.postClickHandler(this.#movie, this.#cardComponent, moviePresenter);
-    // this.#popupComponent.addFavoriteClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
-    // this.#popupComponent.addToWatchlistClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
-    // this.#popupComponent.addToHistoryClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
-  });
+  this.#popupComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+  this.#popupComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
+  this.#popupComponent.setHistoryClickHandler(this.#handleHistoryClick);
 
   if (cardComponent === null || popupComponent === null) {
     renderElement(this.#moviesContainer, this.#cardComponent, RenderPosition.BEFOREEND);
     return;
   }
 
-  // if (this.#moviesContainer.contains(cardComponent.element)) {
   if (this.popupMode === PopupMode.CLOSED) {
+    console.log('обновили карту');
     replace(this.#cardComponent, cardComponent);
   }
 
-  // if (this.#moviesContainer.contains(popupComponent.element)) {
   if (this.popupMode === PopupMode.OPENED) {
     replace(this.#popupComponent, popupComponent);
   }
-}
-
-addPostClickHandler(cardComponent, callback) {
-  cardComponent._callback.postClick = callback;
-  cardComponent.movieInfo = this.#movie;
-  cardComponent.element.querySelector('a').addEventListener('click', cardComponent._callback.postClick);
 }
 
 destroy = () => {
@@ -100,13 +87,11 @@ destroy = () => {
 }
 
 #handlePostClick = () => {
-  this.#popupComponent.postClickHandler();
+  this.#popupComponent.postClickHandler(this.#movie, this.#cardComponent, this);
 }
 
 resetView = () => {
-  console.log('do if');
   if (this.popupMode !== PopupMode.CLOSED) {
-  console.log('if');
     this.#popupComponent.closePopup();
   }
 }

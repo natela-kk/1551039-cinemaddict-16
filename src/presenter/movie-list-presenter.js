@@ -31,14 +31,14 @@ menuComponent = new MenuView();
 moviePresenter = new Map();
 #renderedMoviesCount = NEXT_POSTS_COUNT;
 
-#movies = [];
+movies = [];
 
 constructor(mainContainer) {
   this.#mainContainer = mainContainer;
 }
 
 init = (movies) => {
-  this.#movies = [...movies];
+  this.movies = [...movies];
   renderElement(this.#mainContainer, this.menuComponent, RenderPosition.BEFOREEND);
   this.menuComponent.setFiltersCount();
   this.menuComponent.setActiveFilter(this.#emptyListComponent.element);
@@ -50,14 +50,14 @@ init = (movies) => {
 }
 
 renderMovie = (movie) => {
-  const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleMovieChange, this.handleModeChange);
+  const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleMovieChange.bind(this), this.handleModeChange);
   moviePresenter.init(movie);
   this.moviePresenter.set(movie.id, moviePresenter);
 
 }
 
 #renderMovies = (from, to) => {
-  this.#movies.slice(from, to)
+  this.movies.slice(from, to)
     .forEach((movie) => this.renderMovie(movie));
 }
 
@@ -76,9 +76,9 @@ renderMovie = (movie) => {
 
   renderElement(this.#mainContainer, this.#cardsContainerComponent, RenderPosition.BEFOREEND);
 
-  this.#renderMovies(0, Math.min(this.#movies.length, NEXT_POSTS_COUNT));
+  this.#renderMovies(0, Math.min(this.movies.length, NEXT_POSTS_COUNT));
 
-  if (this.#movies.length > NEXT_POSTS_COUNT) {
+  if (this.movies.length > NEXT_POSTS_COUNT) {
     this.#renderLoadMoreButton();
   }
   renderElement(footer, this.#footerComponent, RenderPosition.BEFOREEND);
@@ -119,12 +119,11 @@ clearMovieList() {
 }
 
 handleMovieChange (updatedMovie) {
-  this.#movies = updateItem(this.#movies, updatedMovie);
+  this.movies = updateItem(this.movies, updatedMovie);
   this.moviePresenter.get(updatedMovie.id).init(updatedMovie);
 }
 
 handleModeChange() {
-  console.log(this);
   this.moviePresenter.forEach((presenter) => presenter.resetView());
 }
 
