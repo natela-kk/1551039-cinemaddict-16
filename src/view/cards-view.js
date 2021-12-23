@@ -47,7 +47,8 @@ export default class CardsView extends AbstractView{
 
   setPostClickHandler = (callback) => {
     this._callback.postClick = callback;
-    this.element.addEventListener('click', this.postClickHandler);
+    const cardComponent = this;
+    this.element.addEventListener('click', this.postClickHandler.bind(cardComponent));
   }
 
   setFavoriteClickHandler(callback) {

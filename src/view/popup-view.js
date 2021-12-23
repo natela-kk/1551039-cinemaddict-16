@@ -1,16 +1,10 @@
 import { mainElement } from '../main.js';
 import CommentView from './comment-view.js';
 import AbstractView from './abstract-view.js';
-
-// const filmcontainers = document.querySelectorAll('.films-list__container');
-// const allPosts = filmcontainers[0].querySelectorAll('.film-card');
-// const topRatedPosts = filmcontainers[2].querySelectorAll('.film-card');
-// const mostCommentedPosts = filmcontainers[3].querySelectorAll('.film-card');
-
+import { PopupMode } from '../presenter/movie-presenter.js';
 
 let checkedEmotion;
 let emotionImages;
-let popup;
 let closeButton;
 
 const getGenreWord = (genres) => genres.length > 1 ? 'Genres' : 'Genre';
@@ -134,10 +128,12 @@ const createPopupTemplate = (movieInfo) => {
 
 export default class PopupView extends AbstractView{
   #popup = null;
+  #changePopupMode = null;
 
-  constructor(movieInfo) {
+  constructor(movieInfo, changePopupMode) {
     super();
     this.#popup = movieInfo;
+    this.#changePopupMode = changePopupMode;
   }
 
   get template() {
@@ -208,21 +204,16 @@ export default class PopupView extends AbstractView{
     };
 
     closePopup() {
-      mainElement.removeChild(popup);
+      // moviePresenter.popupMode = PopupMode.CLOSED;
+      this.element.remove();
       closeButton.removeEventListener('click', this.closeButtonClickHandler);
       document.removeEventListener('keydown', this.documentKeydownHandler);
       document.body.classList.remove('hide-overflow');
     }
 
-    postClickHandler(movie, cardComponent) {
+    postClickHandler(movie, cardComponent, moviePresenter) {
       document.body.classList.add('hide-overflow');
       this.#popup = movie;
-      popup = this.element.querySelector('.film-details');
-
-      if (popup) {
-        mainElement.removeChild(popup);
-      }
-
       this.addCloseButtonClickControl(this.closeButtonClickHandler);
       mainElement.appendChild(this.element);
       movie.comments.forEach((comment) => {
@@ -233,8 +224,10 @@ export default class PopupView extends AbstractView{
 
       this.addEmojiListener();
       this.addInputKeydownControl(cardComponent);
-      popup = document.querySelector('.film-details');
       document.addEventListener('keydown', this.documentKeydownHandler);
+      this.#changePopupMode();
+      moviePresenter.popupMode = PopupMode.OPENED;
+      console.log('OPEN');
     }
 
     setFormSubmitHandler(callback) {

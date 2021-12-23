@@ -4,7 +4,11 @@ import CardsView from '../view/cards-view.js';
 import { renderElement, remove } from '../mock/render';
 import { RenderPosition } from '../mock/generate.js';
 import { replace } from '../mock/utils';
-// import { presenter } from '../main.js';
+
+export const PopupMode = {
+  CLOSED: 'CLOSED',
+  OPENED: 'OPENED',
+};
 
 
 export default class MoviePresenter {
@@ -16,11 +20,14 @@ export default class MoviePresenter {
   #moviesContainer = null;
   #changeData = null;
 
+  #changePopupMode = null;
+  popupMode = PopupMode.CLOSED;
 
-  constructor(moviesContainer, movieListPresenter, changeData) {
+  constructor(moviesContainer, movieListPresenter, changeData, changePopupMode) {
     this.#moviesContainer = moviesContainer;
     this.#movieListPresenter = movieListPresenter;
     this.#changeData = changeData;
+    this.#changePopupMode = changePopupMode;
   }
 
 
@@ -31,16 +38,19 @@ init = (movie) => {
   const popupComponent = this.#popupComponent;
 
   this.#cardComponent = new CardsView(this.#movie);
-  this.#popupComponent = new PopupView(this.#movie);
+  this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter));
+
+  this.#cardComponent.setPostClickHandler(this.#handlePostClick);
 
   this.#cardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
   this.#cardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
   this.#cardComponent.setHistoryClickHandler(this.#handleHistoryClick);
   this.#popupComponent.setFormSubmitHandler(this.#handleFormSubmit);
 
+  const moviePresenter = this;
+
   this.addPostClickHandler(this.#cardComponent, () => {
-    console.log('tap');
-    this.#popupComponent.postClickHandler(this.#movie, this.#cardComponent);
+    this.#popupComponent.postClickHandler(this.#movie, this.#cardComponent, moviePresenter);
     // this.#popupComponent.addFavoriteClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
     // this.#popupComponent.addToWatchlistClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
     // this.#popupComponent.addToHistoryClickHandler(this.#movieListPresenter.menuComponent, this.#cardComponent);
@@ -51,11 +61,13 @@ init = (movie) => {
     return;
   }
 
-  if (this.#moviesContainer.contains(cardComponent.element)) {
+  // if (this.#moviesContainer.contains(cardComponent.element)) {
+  if (this.popupMode === PopupMode.CLOSED) {
     replace(this.#cardComponent, cardComponent);
   }
 
-  if (this.#moviesContainer.contains(popupComponent.element)) {
+  // if (this.#moviesContainer.contains(popupComponent.element)) {
+  if (this.popupMode === PopupMode.OPENED) {
     replace(this.#popupComponent, popupComponent);
   }
 }
@@ -85,6 +97,18 @@ destroy = () => {
 
 #handleFormSubmit = (movie) => {
   this.#changeData(movie);
+}
+
+#handlePostClick = () => {
+  this.#popupComponent.postClickHandler();
+}
+
+resetView = () => {
+  console.log('do if');
+  if (this.popupMode !== PopupMode.CLOSED) {
+  console.log('if');
+    this.#popupComponent.closePopup();
+  }
 }
 
 }
