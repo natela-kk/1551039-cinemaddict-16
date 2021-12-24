@@ -37,7 +37,6 @@ export const replace = (newElement, oldElement) => {
   const oldChild = oldElement instanceof AbstractView ? oldElement.element : oldElement;
 
   const parent = oldChild.parentElement;
-
   if (parent === null) {
     throw new Error('Parent element doesn\'t exist');
   }

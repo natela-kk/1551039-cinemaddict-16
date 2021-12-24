@@ -129,11 +129,13 @@ const createPopupTemplate = (movieInfo) => {
 export default class PopupView extends AbstractView{
   #popup = null;
   #changePopupMode = null;
+  #moviePresenter = null;
 
-  constructor(movieInfo, changePopupMode) {
+  constructor(movieInfo, changePopupMode, moviePresenter) {
     super();
     this.#popup = movieInfo;
     this.#changePopupMode = changePopupMode;
+    this.#moviePresenter = moviePresenter;
   }
 
   get template() {
@@ -208,12 +210,12 @@ export default class PopupView extends AbstractView{
       closeButton.removeEventListener('click', this.closeButtonClickHandler);
       document.removeEventListener('keydown', this.documentKeydownHandler);
       document.body.classList.remove('hide-overflow');
+      this.#moviePresenter.popupMode = PopupMode.CLOSED;
     }
 
     postClickHandler(movie, cardComponent, moviePresenter) {
       this.#changePopupMode();
       moviePresenter.popupMode = PopupMode.OPENED;
-
       document.body.classList.add('hide-overflow');
       this.#popup = movie;
       this.addCloseButtonClickControl(this.closeButtonClickHandler);

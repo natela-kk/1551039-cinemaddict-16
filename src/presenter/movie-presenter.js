@@ -37,7 +37,7 @@ init = (movie) => {
   const popupComponent = this.#popupComponent;
 
   this.#cardComponent = new CardsView(this.#movie);
-  this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter));
+  this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this);
 
   this.#cardComponent.setPostClickHandler(this.#handlePostClick);
 
@@ -56,12 +56,13 @@ init = (movie) => {
   }
 
   if (this.popupMode === PopupMode.CLOSED) {
-    console.log('обновили карту');
     replace(this.#cardComponent, cardComponent);
   }
 
   if (this.popupMode === PopupMode.OPENED) {
     replace(this.#popupComponent, popupComponent);
+    this.#handlePostClick();
+    replace(this.#cardComponent, cardComponent);
   }
 }
 
@@ -92,7 +93,7 @@ destroy = () => {
 
 resetView = () => {
   if (this.popupMode !== PopupMode.CLOSED) {
-    this.#popupComponent.closePopup();
+    this.#popupComponent.closePopup(this);
   }
 }
 
