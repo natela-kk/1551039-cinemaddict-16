@@ -1,5 +1,4 @@
 import AbstractView from './abstract-view.js';
-import { allMovies } from '../main.js';
 export const ACTIVE_CLASS = 'main-navigation__item--active';
 
 const createMenuTemplate = () => (
@@ -41,18 +40,19 @@ export default class MenuView extends AbstractView{
     elementToChange.textContent = titlesList[filter.href.split('#')[1]];
   }
 
-  setFiltersCount() {
+  setFiltersCount(movies) {
     const watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
     const historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
     const favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
-    const watchlistMovies = allMovies.filter((movie) =>
+
+    const watchlistMovies = movies.filter((movie) =>
       movie.userDetails.watchlist);
     watchListCount.textContent = watchlistMovies.length;
-    const historyMovies = allMovies.filter((movie) =>
+    const historyMovies = movies.filter((movie) =>
       movie.userDetails.alreadyWatched);
     historyCount.textContent = historyMovies.length;
 
-    const favoritesMovies = allMovies.filter((movie) =>
+    const favoritesMovies = movies.filter((movie) =>
       movie.userDetails.favorite);
     favoritesCount.textContent = favoritesMovies.length;
   }

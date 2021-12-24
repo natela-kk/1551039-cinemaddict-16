@@ -40,7 +40,7 @@ constructor(mainContainer) {
 init = (movies) => {
   this.movies = [...movies];
   renderElement(this.#mainContainer, this.menuComponent, RenderPosition.BEFOREEND);
-  this.menuComponent.setFiltersCount();
+  this.menuComponent.setFiltersCount(this.movies);
   this.menuComponent.setActiveFilter(this.#emptyListComponent.element);
   this.#renderMovieList();
 }
@@ -121,6 +121,7 @@ clearMovieList() {
 handleMovieChange (updatedMovie) {
   this.movies = updateItem(this.movies, updatedMovie);
   this.moviePresenter.get(updatedMovie.id).init(updatedMovie);
+  this.menuComponent.setFiltersCount(this.movies);
 }
 
 handleModeChange() {
@@ -128,5 +129,4 @@ handleModeChange() {
 }
 
 }
-
 
