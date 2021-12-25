@@ -1,11 +1,11 @@
 import { createElement } from '../mock/render.js';
 
-export default class AbctractView {
+export default class AbstractView {
   #element = null;
   _callback = {};
 
   constructor() {
-    if (new.target === AbctractView) {
+    if (new.target === AbstractView) {
       throw new Error('Can\'t instantiate instantiate AbstractView, only concrete one.');
     }
   }

@@ -1,4 +1,4 @@
-import AbctractView from './abstract-view.js';
+import AbstractView from './abstract-view.js';
 
 const createCardsContainerTemplate = () => (`<section class="films">
   <section class="films-list">
@@ -8,7 +8,7 @@ const createCardsContainerTemplate = () => (`<section class="films">
  </section>
  </section>`);
 
-export default class CradsContainerView extends AbctractView{
+export default class CradsContainerView extends AbstractView{
   get template() {
     return createCardsContainerTemplate();
   }

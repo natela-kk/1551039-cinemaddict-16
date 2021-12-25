@@ -1,25 +1,19 @@
-import { mainElement } from './render-data.js';
+import { mainElement } from '../main.js';
 import CommentView from './comment-view.js';
-import AbctractView from './abstract-view.js';
-
-// const filmcontainers = document.querySelectorAll('.films-list__container');
-// const allPosts = filmcontainers[0].querySelectorAll('.film-card');
-// const topRatedPosts = filmcontainers[2].querySelectorAll('.film-card');
-// const mostCommentedPosts = filmcontainers[3].querySelectorAll('.film-card');
-
+import AbstractView from './abstract-view.js';
+import { PopupMode } from '../presenter/movie-presenter.js';
 
 let checkedEmotion;
 let emotionImages;
-let popup;
 let closeButton;
 
 const getGenreWord = (genres) => genres.length > 1 ? 'Genres' : 'Genre';
 const getWatchlistStatus = (userDetails) => userDetails.watchlist ? ('film-details__control-button--active') : '';
-const getWatchedStatus = (userDetails) => userDetails.already_watched ? ('film-details__control-button--active') : '';
+const getWatchedStatus = (userDetails) => userDetails.alreadyWatched ? ('film-details__control-button--active') : '';
 const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details__control-button--active') : '';
 
-const createPopupTemplate = (thePopup) => {
-  const {filmInfo, comments, userDetails} = thePopup;
+const createPopupTemplate = (movieInfo) => {
+  const {filmInfo, comments, userDetails} = movieInfo;
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
   <div class="film-details__top-container">
@@ -132,17 +126,24 @@ const createPopupTemplate = (thePopup) => {
     </section>`;
 };
 
-export default class PopupView extends AbctractView{
+export default class PopupView extends AbstractView{
   #popup = null;
+  #changePopupMode = null;
+  #moviePresenter = null;
 
-  constructor(popupCard) {
+
+  constructor(movieInfo, changePopupMode, moviePresenter) {
     super();
-    this.#popup = popupCard;
+    this.#popup = movieInfo;
+    this.#changePopupMode = changePopupMode;
+    this.#moviePresenter = moviePresenter;
   }
+
 
   get template() {
     return createPopupTemplate(this.#popup);
   }
+
 
   inputKeydownHandler (evt, commentInput, popupComponent, cardComponent) {
     const form = document.querySelector('.film-details__inner');
@@ -183,7 +184,7 @@ export default class PopupView extends AbctractView{
   addInputKeydownControl(cardComponent) {
     const commentInput = this.element.querySelector('.film-details__comment-input');
     commentInput.addEventListener('keydown', (evt) => {
-      this.element.inputKeydownHandler(evt, commentInput, this.element, cardComponent);
+      this.inputKeydownHandler(evt, commentInput, this.element, cardComponent);
     });
   }
 
@@ -208,33 +209,72 @@ export default class PopupView extends AbctractView{
     };
 
     closePopup() {
-      mainElement.removeChild(popup);
+      this.element.remove();
       closeButton.removeEventListener('click', this.closeButtonClickHandler);
       document.removeEventListener('keydown', this.documentKeydownHandler);
       document.body.classList.remove('hide-overflow');
+      this.#moviePresenter.popupMode = PopupMode.CLOSED;
     }
 
-    postClickHandler(movie, cardComponent) {
+    postClickHandler(movie, cardComponent, moviePresenter) {
+      this.#changePopupMode();
+      moviePresenter.popupMode = PopupMode.OPENED;
       document.body.classList.add('hide-overflow');
-      this.#popup = movie;
-      popup = this.element;
 
-      if (popup) {
-        mainElement.removeChild(popup);
-      }
+      this.#popup = movie;
+
       this.addCloseButtonClickControl(this.closeButtonClickHandler);
       mainElement.appendChild(this.element);
+
       movie.comments.forEach((comment) => {
         const commentComponent = new CommentView(comment);
         this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
         commentComponent.addRemoveControlEvent(this.element, cardComponent);
       });
+
       this.addEmojiListener();
       this.addInputKeydownControl(cardComponent);
-
-      popup = document.querySelector('.film-details');
       document.addEventListener('keydown', this.documentKeydownHandler);
     }
 
+    setFormSubmitHandler(callback) {
+      this._callback.formSubmit = callback;
+      this.element.querySelector('form').addEventListener('submit', this.formSubmitHandler.bind(this));
+    }
+
+    formSubmitHandler(evt) {
+      evt.preventDefault();
+      this._callback.formSubmit(this.#popup);
+    }
+
+    setFavoriteClickHandler(callback) {
+      this._callback.favoriteClick = callback;
+      this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.favoriteClickHandler.bind(this));
+    }
+
+    setWatchlistClickHandler(callback) {
+      this._callback.watchlistClick = callback;
+      this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.watchlistClickHandler.bind(this));
+    }
+
+    setHistoryClickHandler(callback) {
+      this._callback.historyClick = callback;
+      this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.historyClickHandler.bind(this));
+    }
+
+    favoriteClickHandler(evt) {
+      evt.preventDefault();
+      this._callback.favoriteClick();
+    }
+
+    watchlistClickHandler(evt) {
+      evt.preventDefault();
+      this._callback.watchlistClick();
+    }
+
+    historyClickHandler(evt) {
+      evt.preventDefault();
+      this._callback.historyClick();
+    }
 }
 

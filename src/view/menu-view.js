@@ -1,6 +1,5 @@
-import AbctractView from './abstract-view.js';
-
-const ACTIVE_CLASS = 'main-navigation__item--active';
+import AbstractView from './abstract-view.js';
+export const ACTIVE_CLASS = 'main-navigation__item--active';
 
 const createMenuTemplate = () => (
   `<nav class="main-navigation">
@@ -22,7 +21,12 @@ const titlesList = {
   favorites: 'There are no favorite movies now',
 };
 
-export default class MenuView extends AbctractView{
+export default class MenuView extends AbstractView{
+
+  #watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
+  #historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
+  #favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
+
 
   get template() {
     return createMenuTemplate();
@@ -37,21 +41,23 @@ export default class MenuView extends AbctractView{
     }
   }
 
-  setEmptyMessage(elementToChange) {
-    const filterList = this.element.querySelector('.main-navigation__items');
-    let currentFilter = filterList.querySelector(`.${ACTIVE_CLASS}`);
-    filterList.addEventListener('click', (evt) => {
-      if (evt.target.className === 'main-navigation__item' && currentFilter !== evt.target) {
-        currentFilter.classList.remove(ACTIVE_CLASS);
-        currentFilter = evt.target;
-        currentFilter.classList.add(ACTIVE_CLASS);
-        this.changeEmtyTitle(currentFilter, elementToChange);
-      }
-    });
-  }
-
-  changeEmtyTitle(filter, elementToChange) {
+  changeEmptyTitle(filter, elementToChange) {
     elementToChange.textContent = titlesList[filter.href.split('#')[1]];
   }
 
+  setFiltersCount(movies) {
+    const watchlistMovies = movies.filter((movie) =>
+      movie.userDetails.watchlist);
+    this.#watchListCount.textContent = watchlistMovies.length;
+
+    const historyMovies = movies.filter((movie) =>
+      movie.userDetails.alreadyWatched);
+    this.#historyCount.textContent = historyMovies.length;
+
+    const favoritesMovies = movies.filter((movie) =>
+      movie.userDetails.favorite);
+    this.#favoritesCount.textContent = favoritesMovies.length;
+  }
+
 }
+

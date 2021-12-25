@@ -1,16 +1,9 @@
-import MenuView from './menu-view.js';
-import FilterView from './filter-view.js';
-import CardsContainerView from './cards-container-view.js';
-import ButtonView from './button-view.js';
-import AvatarView from './user-name-view.js';
-import { getRandomInteger, getRandomPositiveFloat } from '../mock/utils.js';
-import { getRandomDescription, getCommentsList } from '../mock/structure.js';
-import ExtraView from './extra-view.js';
-import FooterView from './footer-view.js';
-import { renderElement } from '../mock/render.js';
+import { getRandomInteger, getRandomPositiveFloat } from './utils.js';
+import { getRandomDescription, getCommentsList } from './structure.js';
 import dayjs from 'dayjs';
-import EmtyListView from './empty-list-view.js';
-import { allMovies } from './cards-list.js';
+import { POSTSCOUNT } from '../view/extra-view.js';
+import { nanoid } from 'nanoid';
+
 const RANDOM_MIN_DATE = 1;
 const RANDOM_MAX_DATE = 7;
 const RANDOM_MIN_RELEASE_DATE = 20;
@@ -21,10 +14,6 @@ const HOUR = 60;
 const MIN_RATING = 0;
 const MAX_RATING = 10;
 const RATING_DIGITS = 1;
-const footer = document.querySelector('.footer');
-
-export const mainElement = document.querySelector('.main');
-const headerElement = document.querySelector('.header');
 
 export const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',
@@ -54,6 +43,7 @@ const getRuntime = () => {
   }
   return `${runtime}m`;
 };
+
 const generateGenre = () => {
   const genres = ['Comedy', 'Western', 'Drama', 'Cartoon', 'Musical'];
   const genreList = [];
@@ -66,8 +56,8 @@ const generateGenre = () => {
   return genreList;
 };
 
-export const generateMovie = (id) => ({
-  'id': id,
+export const generateMovie = () => ({
+  'id': nanoid(),
   'comments': getCommentsList(),
   'filmInfo': {
     'title': 'A Little Pony Without The Carpet',
@@ -92,29 +82,17 @@ export const generateMovie = (id) => ({
   },
   'userDetails': {
     'watchlist': Boolean(getRandomInteger(0, 1)),
-    'already_watched': Boolean(getRandomInteger(0, 1)),
+    'alreadyWatched': Boolean(getRandomInteger(0, 1)),
     'watching_date': generateDate(),
     'favorite': Boolean(getRandomInteger(0, 1)),
   }
 });
-renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
 
-const menuComponent = new MenuView();
-const emptyListComponent = new EmtyListView();
-renderElement(mainElement, menuComponent, RenderPosition.BEFOREEND);
-menuComponent.setActiveFilter(emptyListComponent.element);
-const cardsContainerComponent = new CardsContainerView();
-renderElement(mainElement, cardsContainerComponent, RenderPosition.BEFOREEND);
-cardsContainerComponent.element.querySelector('.films-list__container').appendChild(emptyListComponent.element);
-menuComponent.setEmptyMessage(emptyListComponent.element);
-if(allMovies.length > 0) {
-  renderElement(mainElement, new FilterView(), RenderPosition.BEFOREEND);
-  const buttonComponent = new ButtonView();
-  renderElement(mainElement, buttonComponent, RenderPosition.BEFOREEND);
-  buttonComponent.addButtonClickHandler();
-  buttonComponent.addClickControlsEvent();
-  renderElement(mainElement, new ExtraView(), RenderPosition.BEFOREEND);
-  renderElement(footer, new FooterView(), RenderPosition.BEFOREEND);
-}
-
+export const getMovieList = () => {
+  const movies = [];
+  for (let i = 1; i <= POSTSCOUNT; i++) {
+    movies.push(generateMovie());
+  }
+  return movies;
+};
 
