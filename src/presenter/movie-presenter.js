@@ -66,33 +66,33 @@ export default class MoviePresenter {
   }
 
   destroy = () => {
-  remove(this.#cardComponent);
+    remove(this.#cardComponent);
   }
 
   #handleFavoriteClick = () => {
-  this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}});
+    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}});
   }
 
   #handleWatchlistClick = () => {
-  this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}});
+    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}});
   }
 
   #handleHistoryClick = () => {
-  this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched}});
+    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched}});
   }
 
   #handleFormSubmit = (movie) => {
-  this.#changeData(movie);
+    this.#changeData(movie);
   }
 
   #handlePostClick = () => {
-  this.#popupComponent.postClickHandler(this.#movie, this.#cardComponent, this);
+    this.#popupComponent.postClickHandler(this.#movie, this.#cardComponent, this);
   }
 
   resetView = () => {
-  if (this.popupMode !== PopupMode.CLOSED) {
-    this.#popupComponent.closePopup(this);
-  }
+    if (this.popupMode !== PopupMode.CLOSED) {
+      this.#popupComponent.closePopup(this);
+    }
   }
 }
 
