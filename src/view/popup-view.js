@@ -131,6 +131,7 @@ export default class PopupView extends AbstractView{
   #changePopupMode = null;
   #moviePresenter = null;
 
+
   constructor(movieInfo, changePopupMode, moviePresenter) {
     super();
     this.#popup = movieInfo;
@@ -138,9 +139,11 @@ export default class PopupView extends AbstractView{
     this.#moviePresenter = moviePresenter;
   }
 
+
   get template() {
     return createPopupTemplate(this.#popup);
   }
+
 
   inputKeydownHandler (evt, commentInput, popupComponent, cardComponent) {
     const form = document.querySelector('.film-details__inner');
@@ -217,7 +220,9 @@ export default class PopupView extends AbstractView{
       this.#changePopupMode();
       moviePresenter.popupMode = PopupMode.OPENED;
       document.body.classList.add('hide-overflow');
+
       this.#popup = movie;
+
       this.addCloseButtonClickControl(this.closeButtonClickHandler);
       mainElement.appendChild(this.element);
 
@@ -271,9 +276,5 @@ export default class PopupView extends AbstractView{
       evt.preventDefault();
       this._callback.historyClick();
     }
-
-  // #handleFormSubmit = (movie) => {
-  //   this.#changeData(movie);
-  // }
 }
 

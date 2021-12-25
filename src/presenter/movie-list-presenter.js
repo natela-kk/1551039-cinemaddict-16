@@ -17,61 +17,65 @@ const NEXT_POSTS_COUNT = 5;
 const footer = document.querySelector('.footer');
 
 export default class MovieListPresenter {
-#mainContainer = null;
+  #mainContainer = null;
 
-#cardsContainerComponent = new CardsContainerView();
-menuComponent = new MenuView();
-#filterComponent = new FilterView();
-#buttonComponent = new ButtonView();
-#avatarComponent = new AvatarView();
-#extraComponent = new ExtraView();
-#footerComponent = new FooterView();
-#emptyListComponent = new EmtyListView();
-#cardsContainer = this.#cardsContainerComponent.element.querySelector('.films-list__container');
-moviePresenter = new Map();
-#renderedMoviesCount = NEXT_POSTS_COUNT;
+  #cardsContainerComponent = new CardsContainerView();
+  menuComponent = new MenuView();
+  #filterComponent = new FilterView();
+  #buttonComponent = new ButtonView();
+  #avatarComponent = new AvatarView();
+  #extraComponent = new ExtraView();
+  #footerComponent = new FooterView();
+  #emptyListComponent = new EmtyListView();
+  moviePresenter = new Map();
+  #cardsContainer = this.#cardsContainerComponent.element.querySelector('.films-list__container');
+  #renderedMoviesCount = NEXT_POSTS_COUNT;
 
-movies = [];
+  movies = [];
 
-constructor(mainContainer) {
+  constructor(mainContainer) {
   this.#mainContainer = mainContainer;
-}
+  }
 
-init = (movies) => {
+  init = (movies) => {
   this.movies = [...movies];
   renderElement(this.#mainContainer, this.menuComponent, RenderPosition.BEFOREEND);
   this.menuComponent.setFiltersCount(this.movies);
   this.menuComponent.setActiveFilter(this.#emptyListComponent.element);
   this.#renderMovieList();
-}
+  }
 
-#renderSort = () => {
+
+  #renderSort = () => {
   renderElement(this.#mainContainer, this.#filterComponent, RenderPosition.BEFOREEND);
-}
+  }
 
-renderMovie = (movie) => {
+  renderMovie = (movie) => {
   const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleMovieChange.bind(this), this.handleModeChange);
   moviePresenter.init(movie);
   this.moviePresenter.set(movie.id, moviePresenter);
+  }
 
-}
+  #renderMovies = (from, to) => {
+  if(this.movies.length === 0) {
+    this.#renderNoMovies();
+  } else {
+    this.movies.slice(from, to)
+      .forEach((movie) => this.renderMovie(movie));
+  }
+  }
 
-#renderMovies = (from, to) => {
-  this.movies.slice(from, to)
-    .forEach((movie) => this.renderMovie(movie));
-}
-
-#renderNoMovies = () => {
+  #renderNoMovies = () => {
   renderElement(this.#cardsContainer, this.#emptyListComponent, RenderPosition.BEFOREEND);
   this.menuComponent.setEmptyMessage(this.#emptyListComponent.element);
-}
+  }
 
-#renderLoadMoreButton = () => {
+  #renderLoadMoreButton = () => {
   renderElement(this.#mainContainer, this.#buttonComponent, RenderPosition.BEFOREEND);
   this.addNextPosts();
-}
+  }
 
-#renderMovieList = () => {
+  #renderMovieList = () => {
   this.#renderSort();
 
   renderElement(this.#mainContainer, this.#cardsContainerComponent, RenderPosition.BEFOREEND);
@@ -82,24 +86,23 @@ renderMovie = (movie) => {
     this.#renderLoadMoreButton();
   }
   renderElement(footer, this.#footerComponent, RenderPosition.BEFOREEND);
+  }
 
-
-}
-
-setEmptyMessage(elementToChange) {
+  setEmptyMessage(elementToChange) {
   const filterList = this.menuComponent.querySelector('.main-navigation__items');
   let currentFilter = filterList.querySelector(`.${ACTIVE_CLASS}`);
+
   filterList.addEventListener('click', (evt) => {
     if (evt.target.className === 'main-navigation__item' && currentFilter !== evt.target) {
       currentFilter.classList.remove(ACTIVE_CLASS);
       currentFilter = evt.target;
       currentFilter.classList.add(ACTIVE_CLASS);
-      this.changeEmtyTitle(currentFilter, elementToChange);
+      this.changeEmptyTitle(currentFilter, elementToChange);
     }
   });
-}
+  }
 
-addNextPosts() {
+  addNextPosts() {
   this.#buttonComponent.element.addEventListener('click', (evt) => {
     evt.preventDefault();
     renderMovies(this.#renderedMoviesCount, this.#renderedMoviesCount + NEXT_POSTS_COUNT);
@@ -108,25 +111,23 @@ addNextPosts() {
       this.#buttonComponent.element.remove();
     }
   });
-}
+  }
 
-clearMovieList() {
+  clearMovieList() {
   this.moviePresenter.forEach((presenter) => presenter.destroy());
   this.moviePresenter.clear();
   this.#renderedMoviesCount = NEXT_POSTS_COUNT;
-
   remove(this.#buttonComponent);
-}
+  }
 
-handleMovieChange (updatedMovie) {
+  handleMovieChange (updatedMovie) {
   this.movies = updateItem(this.movies, updatedMovie);
   this.moviePresenter.get(updatedMovie.id).init(updatedMovie);
   this.menuComponent.setFiltersCount(this.movies);
-}
+  }
 
-handleModeChange() {
+  handleModeChange() {
   this.moviePresenter.forEach((presenter) => presenter.resetView());
-}
-
+  }
 }
 

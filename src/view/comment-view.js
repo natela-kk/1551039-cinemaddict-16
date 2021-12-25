@@ -15,32 +15,32 @@ const createCommentTemplate = (comment) => (`<li class="film-details__comment">
   </li>`);
 
 export default class CommentView extends AbstractView{
-#comment = null;
+  #comment = null;
 
-constructor(comment) {
-  super();
-  this.#comment = comment;
-}
+  constructor(comment) {
+    super();
+    this.#comment = comment;
+  }
 
-get template() {
-  return createCommentTemplate(this.#comment);
-}
+  get template() {
+    return createCommentTemplate(this.#comment);
+  }
 
-addRemoveControlEvent(popupComponent, cardComponent) {
-  const deleteButtonElement = this.element.querySelector('.film-details__comment-delete');
-  deleteButtonElement.addEventListener('click', (evt) => {
-    evt.preventDefault();
-    this.element.remove();
-    this.setCommentsCount(popupComponent, cardComponent);
-  });
-}
+  addRemoveControlEvent(popupComponent, cardComponent) {
+    const deleteButtonElement = this.element.querySelector('.film-details__comment-delete');
+    deleteButtonElement.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      this.element.remove();
+      this.setCommentsCount(popupComponent, cardComponent);
+    });
+  }
 
-setCommentsCount(popupComponent, cardComponent) {
-  const popupCommentsCountElement = popupComponent.querySelector('.film-details__comments-count');
-  const comments = popupComponent.querySelectorAll('.film-details__comment');
-  const newValue = comments.length;
-  popupCommentsCountElement.textContent = newValue;
-  const cardCommentsCountElement =  cardComponent.element.querySelector('.film-card__comments');
-  cardCommentsCountElement.textContent = `${newValue} comments`;
-}
+  setCommentsCount(popupComponent, cardComponent) {
+    const popupCommentsCountElement = popupComponent.querySelector('.film-details__comments-count');
+    const comments = popupComponent.querySelectorAll('.film-details__comment');
+    const newValue = comments.length;
+    popupCommentsCountElement.textContent = newValue;
+    const cardCommentsCountElement =  cardComponent.element.querySelector('.film-card__comments');
+    cardCommentsCountElement.textContent = `${newValue} comments`;
+  }
 }

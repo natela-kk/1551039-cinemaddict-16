@@ -36,14 +36,17 @@ const createCardTemplate = (card) => {
 export default class CardsView extends AbstractView{
   #movieInfo = null;
 
+
   constructor(movieInfo) {
     super();
     this.#movieInfo = movieInfo;
   }
 
+
   get template() {
     return createCardTemplate(this.#movieInfo);
   }
+
 
   setPostClickHandler = (callback) => {
     this._callback.postClick = callback;

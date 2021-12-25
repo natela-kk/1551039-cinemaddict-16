@@ -23,6 +23,11 @@ const titlesList = {
 
 export default class MenuView extends AbstractView{
 
+  #watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
+  #historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
+  #favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
+
+
   get template() {
     return createMenuTemplate();
   }
@@ -36,25 +41,22 @@ export default class MenuView extends AbstractView{
     }
   }
 
-  changeEmtyTitle(filter, elementToChange) {
+  changeEmptyTitle(filter, elementToChange) {
     elementToChange.textContent = titlesList[filter.href.split('#')[1]];
   }
 
   setFiltersCount(movies) {
-    const watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
-    const historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
-    const favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
-
     const watchlistMovies = movies.filter((movie) =>
       movie.userDetails.watchlist);
-    watchListCount.textContent = watchlistMovies.length;
+    this.#watchListCount.textContent = watchlistMovies.length;
+
     const historyMovies = movies.filter((movie) =>
       movie.userDetails.alreadyWatched);
-    historyCount.textContent = historyMovies.length;
+    this.#historyCount.textContent = historyMovies.length;
 
     const favoritesMovies = movies.filter((movie) =>
       movie.userDetails.favorite);
-    favoritesCount.textContent = favoritesMovies.length;
+    this.#favoritesCount.textContent = favoritesMovies.length;
   }
 
 }
