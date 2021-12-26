@@ -13,7 +13,7 @@ import { ACTIVE_CLASS } from '../view/menu-view.js';
 import { allMovies } from '../main.js';
 import { updateItem } from '../mock/utils.js';
 import { sortMovieDateDown, sortMovieRatingDown } from '../mock/utils.js';
-import { SortType } from '../view/sort-view.js';
+import { SortType, ACTIVE_SORT_CLASS } from '../view/sort-view.js';
 
 const NEXT_POSTS_COUNT = 5;
 const footer = document.querySelector('.footer');
@@ -23,7 +23,7 @@ export default class MovieListPresenter {
 
   #cardsContainerComponent = new CardsContainerView();
   menuComponent = new MenuView();
-  #sortComponent = new SortView();
+  sortComponent = new SortView();
   #buttonComponent = new ButtonView();
   #avatarComponent = new AvatarView();
   #extraComponent = new ExtraView();
@@ -77,8 +77,9 @@ export default class MovieListPresenter {
   }
 
   #renderSort = () => {
-    renderElement(this.#mainContainer, this.#sortComponent, RenderPosition.BEFOREEND);
-    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    renderElement(this.#mainContainer, this.sortComponent, RenderPosition.BEFOREEND);
+    this.sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    this.changeActiveSortButton();
   }
 
   renderMovie = (movie) => {
@@ -130,6 +131,19 @@ export default class MovieListPresenter {
         currentFilter = evt.target;
         currentFilter.classList.add(ACTIVE_CLASS);
         this.changeEmptyTitle(currentFilter, elementToChange);
+      }
+    });
+  }
+
+  changeActiveSortButton() {
+    const sortList = this.sortComponent.element;
+    let currentFilter = sortList.querySelector(`.${ACTIVE_SORT_CLASS}`);
+
+    sortList.addEventListener('click', (evt) => {
+      if (evt.target.className === 'sort__button' && currentFilter !== evt.target) {
+        currentFilter.classList.remove(ACTIVE_SORT_CLASS);
+        currentFilter = evt.target;
+        currentFilter.classList.add(ACTIVE_SORT_CLASS);
       }
     });
   }

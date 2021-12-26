@@ -1,5 +1,7 @@
 import AbstractView from './abstract-view.js';
 
+export const ACTIVE_SORT_CLASS = 'sort__button--active';
+
 export const SortType = {
   DEFAULT: 'default',
   DATE: 'date-down',
