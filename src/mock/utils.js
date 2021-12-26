@@ -44,3 +44,17 @@ export const replace = (newElement, oldElement) => {
   }
   parent.replaceChild(newChild, oldChild);
 };
+
+
+export const sortMovieDateDown = (movieA, movieB) => {
+  const dateOne = movieA.filmInfo.release.date.$y;
+  const dateTwo = movieB.filmInfo.release.date.$y;
+  return dateTwo - dateOne;
+};
+
+
+export const sortMovieRatingDown = (movieA, movieB) => {
+  const dateOne = movieA.filmInfo.total_rating;
+  const dateTwo = movieB.filmInfo.total_rating;
+  return dateTwo - dateOne;
+};

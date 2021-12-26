@@ -1,5 +1,5 @@
 import MenuView from '../view/menu-view.js';
-import FilterView from '../view/filter-view.js';
+import SortView from '../view/sort-view.js';
 import CardsContainerView from '../view/cards-container-view.js';
 import ButtonView from '../view/button-view.js';
 import AvatarView from '../view/user-name-view.js';
@@ -10,8 +10,10 @@ import { remove, renderElement } from '../mock/render.js';
 import { RenderPosition } from '../mock/generate.js';
 import MoviePresenter from './movie-presenter.js';
 import { ACTIVE_CLASS } from '../view/menu-view.js';
-import { allMovies, renderMovies } from '../main.js';
+import { allMovies } from '../main.js';
 import { updateItem } from '../mock/utils.js';
+import { sortMovieDateDown, sortMovieRatingDown } from '../mock/utils.js';
+import { SortType } from '../view/sort-view.js';
 
 const NEXT_POSTS_COUNT = 5;
 const footer = document.querySelector('.footer');
@@ -21,7 +23,7 @@ export default class MovieListPresenter {
 
   #cardsContainerComponent = new CardsContainerView();
   menuComponent = new MenuView();
-  #filterComponent = new FilterView();
+  #sortComponent = new SortView();
   #buttonComponent = new ButtonView();
   #avatarComponent = new AvatarView();
   #extraComponent = new ExtraView();
@@ -30,6 +32,8 @@ export default class MovieListPresenter {
   moviePresenter = new Map();
   #cardsContainer = this.#cardsContainerComponent.element.querySelector('.films-list__container');
   #renderedMoviesCount = NEXT_POSTS_COUNT;
+  #currentSortType = SortType.DEFAULT;
+  #sourcedMovies = [];
 
   movies = [];
 
@@ -39,15 +43,42 @@ export default class MovieListPresenter {
 
   init = (movies) => {
     this.movies = [...movies];
+
+    this.#sourcedMovies = [...movies];
+
     renderElement(this.#mainContainer, this.menuComponent, RenderPosition.BEFOREEND);
     this.menuComponent.setFiltersCount(this.movies);
     this.menuComponent.setActiveFilter(this.#emptyListComponent.element);
     this.#renderMovieList();
   }
 
+  #sortMovies = (sortType) => {
+
+    switch (sortType) {
+      case SortType.DATE:
+        this.movies.sort(sortMovieDateDown);
+        break;
+      case SortType.RATING:
+        this.movies.sort(sortMovieRatingDown);
+        break;
+      default:
+        this.movies = [...this.#sourcedMovies];
+    }
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    this.#sortMovies(sortType);
+    this.clearMovieList();
+    this.#renderMovieList();
+  }
 
   #renderSort = () => {
-    renderElement(this.#mainContainer, this.#filterComponent, RenderPosition.BEFOREEND);
+    renderElement(this.#mainContainer, this.#sortComponent, RenderPosition.BEFOREEND);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
   renderMovie = (movie) => {
@@ -57,6 +88,7 @@ export default class MovieListPresenter {
   }
 
   #renderMovies = (from, to) => {
+
     if(this.movies.length === 0) {
       this.#renderNoMovies();
     } else {
@@ -105,7 +137,7 @@ export default class MovieListPresenter {
   addNextPosts() {
     this.#buttonComponent.element.addEventListener('click', (evt) => {
       evt.preventDefault();
-      renderMovies(this.#renderedMoviesCount, this.#renderedMoviesCount + NEXT_POSTS_COUNT);
+      this.#renderMovies(this.#renderedMoviesCount, this.#renderedMoviesCount + NEXT_POSTS_COUNT);
       this.#renderedMoviesCount += NEXT_POSTS_COUNT;
       if (this.#renderedMoviesCount >= allMovies.length) {
         this.#buttonComponent.element.remove();
@@ -123,11 +155,14 @@ export default class MovieListPresenter {
   handleMovieChange (updatedMovie) {
     this.movies = updateItem(this.movies, updatedMovie);
     this.moviePresenter.get(updatedMovie.id).init(updatedMovie);
+    this.#sourcedMovies = updateItem(this.#sourcedMovies, updatedMovie);
     this.menuComponent.setFiltersCount(this.movies);
   }
 
   handleModeChange() {
     this.moviePresenter.forEach((presenter) => presenter.resetView());
   }
+
+
 }
 
