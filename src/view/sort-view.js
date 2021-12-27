@@ -1,6 +1,6 @@
 import AbstractView from './abstract-view.js';
 
-export const ACTIVE_SORT_CLASS = 'sort__button--active';
+const ACTIVE_SORT_CLASS = 'sort__button--active';
 
 export const SortType = {
   DEFAULT: 'default',
@@ -17,6 +17,8 @@ const createFilterTemplate = () => (
 );
 
 export default class SortView extends AbstractView{
+  #currentSortTypeButton = null;
+
   get template() {
     return createFilterTemplate();
   }
@@ -34,4 +36,17 @@ export default class SortView extends AbstractView{
 
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
+
+  changeActiveSortButton() {
+    this.#currentSortTypeButton = this.element.querySelector(`.${ACTIVE_SORT_CLASS}`);
+
+    this.element.addEventListener('click', (evt) => {
+      if (evt.target.className === 'sort__button' && this.#currentSortTypeButton !== evt.target) {
+        this.#currentSortTypeButton.classList.remove(ACTIVE_SORT_CLASS);
+        this.#currentSortTypeButton = evt.target;
+        this.#currentSortTypeButton.classList.add(ACTIVE_SORT_CLASS);
+      }
+    });
+  }
+
 }

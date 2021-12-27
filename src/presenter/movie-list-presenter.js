@@ -13,7 +13,7 @@ import { ACTIVE_CLASS } from '../view/menu-view.js';
 import { allMovies } from '../main.js';
 import { updateItem } from '../mock/utils.js';
 import { sortMovieDateDown, sortMovieRatingDown } from '../mock/utils.js';
-import { SortType, ACTIVE_SORT_CLASS } from '../view/sort-view.js';
+import { SortType } from '../view/sort-view.js';
 
 const NEXT_POSTS_COUNT = 5;
 const footer = document.querySelector('.footer');
@@ -83,7 +83,7 @@ export default class MovieListPresenter {
   #renderSort = () => {
     renderElement(this.#mainContainer, this.sortComponent, RenderPosition.BEFOREEND);
     this.sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    this.changeActiveSortButton();
+    this.sortComponent.changeActiveSortButton();
   }
 
   renderMovie = (movie) => {
@@ -134,19 +134,6 @@ export default class MovieListPresenter {
         this.#currentFilter = evt.target;
         this.#currentFilter.classList.add(ACTIVE_CLASS);
         this.changeEmptyTitle(this.#currentFilter, elementToChange);
-      }
-    });
-  }
-
-  changeActiveSortButton() {
-    const sortList = this.sortComponent.element;
-    this.#currentSortTypeButton = sortList.querySelector(`.${ACTIVE_SORT_CLASS}`);
-
-    sortList.addEventListener('click', (evt) => {
-      if (evt.target.className === 'sort__button' && this.#currentSortTypeButton !== evt.target) {
-        this.#currentSortTypeButton.classList.remove(ACTIVE_SORT_CLASS);
-        this.#currentSortTypeButton = evt.target;
-        this.#currentSortTypeButton.classList.add(ACTIVE_SORT_CLASS);
       }
     });
   }
