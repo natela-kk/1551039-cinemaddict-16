@@ -20,6 +20,8 @@ const footer = document.querySelector('.footer');
 
 export default class MovieListPresenter {
   #mainContainer = null;
+  #currentFilter = null;
+  #currentSortTypeButton = null;
 
   #cardsContainerComponent = new CardsContainerView();
   menuComponent = new MenuView();
@@ -47,9 +49,11 @@ export default class MovieListPresenter {
     this.#sourcedMovies = [...movies];
 
     renderElement(this.#mainContainer, this.menuComponent, RenderPosition.BEFOREEND);
+    this.#renderSort();
     this.menuComponent.setFiltersCount(this.movies);
     this.menuComponent.setActiveFilter(this.#emptyListComponent.element);
     this.#renderMovieList();
+
   }
 
   #sortMovies = (sortType) => {
@@ -109,7 +113,6 @@ export default class MovieListPresenter {
   }
 
   #renderMovieList = () => {
-    this.#renderSort();
 
     renderElement(this.#mainContainer, this.#cardsContainerComponent, RenderPosition.BEFOREEND);
 
@@ -123,27 +126,27 @@ export default class MovieListPresenter {
 
   setEmptyMessage(elementToChange) {
     const filterList = this.menuComponent.querySelector('.main-navigation__items');
-    let currentFilter = filterList.querySelector(`.${ACTIVE_CLASS}`);
+    this.#currentFilter = filterList.querySelector(`.${ACTIVE_CLASS}`);
 
     filterList.addEventListener('click', (evt) => {
-      if (evt.target.className === 'main-navigation__item' && currentFilter !== evt.target) {
-        currentFilter.classList.remove(ACTIVE_CLASS);
-        currentFilter = evt.target;
-        currentFilter.classList.add(ACTIVE_CLASS);
-        this.changeEmptyTitle(currentFilter, elementToChange);
+      if (evt.target.className === 'main-navigation__item' && this.#currentFilter !== evt.target) {
+        this.#currentFilter.classList.remove(ACTIVE_CLASS);
+        this.#currentFilter = evt.target;
+        this.#currentFilter.classList.add(ACTIVE_CLASS);
+        this.changeEmptyTitle(this.#currentFilter, elementToChange);
       }
     });
   }
 
   changeActiveSortButton() {
     const sortList = this.sortComponent.element;
-    let currentFilter = sortList.querySelector(`.${ACTIVE_SORT_CLASS}`);
+    this.#currentSortTypeButton = sortList.querySelector(`.${ACTIVE_SORT_CLASS}`);
 
     sortList.addEventListener('click', (evt) => {
-      if (evt.target.className === 'sort__button' && currentFilter !== evt.target) {
-        currentFilter.classList.remove(ACTIVE_SORT_CLASS);
-        currentFilter = evt.target;
-        currentFilter.classList.add(ACTIVE_SORT_CLASS);
+      if (evt.target.className === 'sort__button' && this.#currentSortTypeButton !== evt.target) {
+        this.#currentSortTypeButton.classList.remove(ACTIVE_SORT_CLASS);
+        this.#currentSortTypeButton = evt.target;
+        this.#currentSortTypeButton.classList.add(ACTIVE_SORT_CLASS);
       }
     });
   }

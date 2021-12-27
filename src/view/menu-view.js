@@ -23,6 +23,8 @@ const titlesList = {
 
 export default class MenuView extends AbstractView{
 
+  #currentFilter = null;
+
   #watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
   #historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
   #favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
@@ -38,6 +40,18 @@ export default class MenuView extends AbstractView{
     if (locationHash) {
       elementToChange.textContent = titlesList[locationHash];
       this.element.querySelector(`a[href="#${locationHash}"`).classList.add(ACTIVE_CLASS);
+    }
+    this._callback.setFilter = this.changeActiveFilter.bind(this);
+    this.element.addEventListener('click', this._callback.setFilter);
+  }
+
+  changeActiveFilter(evt) {
+    this.#currentFilter = this.element.querySelector(`.${ACTIVE_CLASS}`);
+
+    if ((evt.target.className === 'main-navigation__item' || evt.target.className === 'main-navigation__item-count') && this.#currentFilter !== evt.target) {
+      this.#currentFilter.classList.remove(ACTIVE_CLASS);
+      this.#currentFilter = evt.target.closest('.main-navigation__item');
+      this.#currentFilter.classList.add(ACTIVE_CLASS);
     }
   }
 
