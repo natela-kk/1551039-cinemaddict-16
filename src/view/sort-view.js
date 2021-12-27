@@ -21,7 +21,7 @@ export default class SortView extends AbstractView{
 
   constructor() {
     super();
-    this.changeActiveSortButton();
+    this.addSortButtonClickHandler();
   }
 
   get template() {
@@ -42,7 +42,7 @@ export default class SortView extends AbstractView{
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
 
-  changeActiveSortButton() {
+  addSortButtonClickHandler() {
     this.#currentSortTypeButton = this.element.querySelector(`.${ACTIVE_SORT_CLASS}`);
     this.element.addEventListener('click', (evt) => {
       if (evt.target.className === 'sort__button' && this.#currentSortTypeButton !== evt.target) {

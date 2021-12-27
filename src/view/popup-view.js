@@ -1,7 +1,7 @@
 import { mainElement } from '../main.js';
 import CommentView from './comment-view.js';
-import AbstractView from './abstract-view.js';
 import { PopupMode } from '../presenter/movie-presenter.js';
+import SmartView from './smart-view.js';
 
 let checkedEmotion;
 let emotionImages;
@@ -126,22 +126,24 @@ const createPopupTemplate = (movieInfo) => {
     </section>`;
 };
 
-export default class PopupView extends AbstractView{
-  #popup = null;
+export default class PopupView extends SmartView{
+  _data = null;
   #changePopupMode = null;
   #moviePresenter = null;
 
 
   constructor(movieInfo, changePopupMode, moviePresenter) {
     super();
-    this.#popup = movieInfo;
+
+    this._data = movieInfo;
+
     this.#changePopupMode = changePopupMode;
     this.#moviePresenter = moviePresenter;
   }
 
 
   get template() {
-    return createPopupTemplate(this.#popup);
+    return createPopupTemplate(this._data);
   }
 
 
@@ -221,7 +223,7 @@ export default class PopupView extends AbstractView{
       moviePresenter.popupMode = PopupMode.OPENED;
       document.body.classList.add('hide-overflow');
 
-      this.#popup = movie;
+      this._data = movie;
 
       this.addCloseButtonClickControl(this.closeButtonClickHandler);
       mainElement.appendChild(this.element);
@@ -244,7 +246,7 @@ export default class PopupView extends AbstractView{
 
     formSubmitHandler(evt) {
       evt.preventDefault();
-      this._callback.formSubmit(this.#popup);
+      this._callback.formSubmit(this._data);
     }
 
     setFavoriteClickHandler(callback) {
