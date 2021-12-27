@@ -127,7 +127,6 @@ const createPopupTemplate = (movieInfo) => {
 };
 
 export default class PopupView extends SmartView{
-  _data = null;
   #changePopupMode = null;
   #moviePresenter = null;
 
