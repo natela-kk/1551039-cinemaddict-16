@@ -83,7 +83,6 @@ export default class MovieListPresenter {
   #renderSort = () => {
     renderElement(this.#mainContainer, this.sortComponent, RenderPosition.BEFOREEND);
     this.sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    this.sortComponent.changeActiveSortButton();
   }
 
   renderMovie = (movie) => {

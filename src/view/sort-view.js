@@ -19,6 +19,11 @@ const createFilterTemplate = () => (
 export default class SortView extends AbstractView{
   #currentSortTypeButton = null;
 
+  constructor() {
+    super();
+    this.changeActiveSortButton();
+  }
+
   get template() {
     return createFilterTemplate();
   }
@@ -39,7 +44,6 @@ export default class SortView extends AbstractView{
 
   changeActiveSortButton() {
     this.#currentSortTypeButton = this.element.querySelector(`.${ACTIVE_SORT_CLASS}`);
-
     this.element.addEventListener('click', (evt) => {
       if (evt.target.className === 'sort__button' && this.#currentSortTypeButton !== evt.target) {
         this.#currentSortTypeButton.classList.remove(ACTIVE_SORT_CLASS);
