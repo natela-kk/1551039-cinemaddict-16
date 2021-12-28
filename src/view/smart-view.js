@@ -5,6 +5,7 @@ export default class SmartView extends AbstractView{
 
   restoreHandlers() {
   // восстанавливать обработчики событий после перерисовки;
+    throw new Error('Abstract method not implemented: restoreHandlers');
   }
 
   updateElement() {
@@ -25,11 +26,13 @@ export default class SmartView extends AbstractView{
   }
 
   updateData = (update) => {
+    console.log(update);
+
     if (!update) {
       return;
     }
-
-    this._data = {...this._data, ...update};
+    this._data = {...this._data, comments: {...this._data.comments, ...update}};
+        console.log(this._data);
 
     this.updateElement();
   }

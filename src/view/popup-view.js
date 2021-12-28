@@ -2,6 +2,7 @@ import { mainElement } from '../main.js';
 import CommentView from './comment-view.js';
 import { PopupMode } from '../presenter/movie-presenter.js';
 import SmartView from './smart-view.js';
+import { replace } from '../mock/utils';
 
 let checkedEmotion;
 let emotionImages;
@@ -12,7 +13,7 @@ const getWatchlistStatus = (userDetails) => userDetails.watchlist ? ('film-detai
 const getWatchedStatus = (userDetails) => userDetails.alreadyWatched ? ('film-details__control-button--active') : '';
 const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details__control-button--active') : '';
 
-const createPopupTemplate = (movieInfo) => {
+const createPopupTemplate = (movieInfo, selectedEmoji) => {
   const {filmInfo, comments, userDetails} = movieInfo;
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -92,7 +93,7 @@ const createPopupTemplate = (movieInfo) => {
         </ul>
 
         <div class="film-details__new-comment">
-        <div class="film-details__add-emoji-label"></div>
+        <div class="film-details__add-emoji-label"> ${selectedEmoji !== null ? '<span>yes</span>' : '<span>no</span>'}</div>
 
         <label class="film-details__comment-label">
         <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -168,6 +169,8 @@ export default class PopupView extends SmartView{
   }
 
   addEmojiListener() {
+    const popup = this.element;
+//////
     const emotionOptions = this.element.querySelectorAll('input[type="radio"]');
     const emotionPreview = this.element.querySelector('.film-details__add-emoji-label');
     emotionOptions.forEach((option) => {
@@ -178,7 +181,11 @@ export default class PopupView extends SmartView{
           emotionImages[0].remove();
         }
         emotionPreview.insertAdjacentHTML('beforeend', `<img src="./images/emoji/${checkedEmotion.value}.png" width="55" height="55" alt="emoji-${checkedEmotion.value}">`);
+///////
+        replace(this.element, popup);
       });
+      ////
+      ////
     });
   }
 

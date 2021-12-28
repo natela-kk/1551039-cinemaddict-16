@@ -29,7 +29,7 @@ export const updateItem = (items, update) => {
 };
 
 export const replace = (newElement, oldElement) => {
-
+console.log(newElement, oldElement);
   if (newElement === null || oldElement === null) {
     throw new Error('Can\'t replace unexisting elements');
   }
