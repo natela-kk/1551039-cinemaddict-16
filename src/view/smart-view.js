@@ -25,15 +25,24 @@ export default class SmartView extends AbstractView{
     this.restoreHandlers();
   }
 
-  updateData = (update) => {
-    console.log(update);
-
+  updateData = (update, justDataUpdating) => {
     if (!update) {
       return;
     }
-    this._data = {...this._data, comments: {...this._data.comments, ...update}};
-        console.log(this._data);
+
+    this._data = {...this._data, ...update};
+
+    if (justDataUpdating) {
+      return;
+    }
+
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
 
     this.updateElement();
+
+    window.scrollTo(scrollX, scrollY);
+
   }
+
 }

@@ -35,19 +35,13 @@ export default class MoviePresenter {
     const popupComponent = this.#popupComponent;
 
     this.#cardComponent = new CardsView(this.#movie);
-    this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this);
+    this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#cardComponent);
 
     this.#cardComponent.setPostClickHandler(this.#handlePostClick);
 
-    this.#cardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#cardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
-    this.#cardComponent.setHistoryClickHandler(this.#handleHistoryClick);
-
-    this.#popupComponent.setFormSubmitHandler(this.#handleFormSubmit);
-
-    this.#popupComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#popupComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
-    this.#popupComponent.setHistoryClickHandler(this.#handleHistoryClick);
+    this.#cardComponent.setFavoriteClickHandler(this.handleFavoriteClick);
+    this.#cardComponent.setWatchlistClickHandler(this.handleWatchlistClick);
+    this.#cardComponent.setHistoryClickHandler(this.handleHistoryClick);
 
     if (cardComponent === null || popupComponent === null) {
       renderElement(this.#moviesContainer, this.#cardComponent, RenderPosition.BEFOREEND);
@@ -69,24 +63,25 @@ export default class MoviePresenter {
     remove(this.#cardComponent);
   }
 
-  #handleFavoriteClick = () => {
+  handleFavoriteClick = () => {
     this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}});
+
   }
 
-  #handleWatchlistClick = () => {
+  handleWatchlistClick = () => {
     this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}});
   }
 
-  #handleHistoryClick = () => {
+  handleHistoryClick = () => {
     this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched}});
   }
 
-  #handleFormSubmit = (movie) => {
+  handleFormSubmit = (movie) => {
     this.#changeData(movie);
   }
 
   #handlePostClick = () => {
-    this.#popupComponent.postClickHandler(this.#movie, this.#cardComponent, this);
+    this.#popupComponent.postClickHandler(this.#movie, this);
   }
 
   resetView = () => {
