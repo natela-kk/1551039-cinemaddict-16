@@ -65,7 +65,6 @@ export default class MoviePresenter {
 
   handleFavoriteClick = () => {
     this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}});
-
   }
 
   handleWatchlistClick = () => {

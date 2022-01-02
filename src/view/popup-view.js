@@ -92,7 +92,7 @@ const createPopupTemplate = (movieInfo) => {
         </ul>
 
         <div class="film-details__new-comment">
-        <div class="film-details__add-emoji-label"> ${selectedEmoji !== null ? `<img src="./images/emoji/${selectedEmoji}.png" width="55" height="55" alt="emoji-${selectedEmoji}">` : ''}</div>
+        <div class="film-details__add-emoji-label"> ${selectedEmoji ? `<img src="./images/emoji/${selectedEmoji}.png" width="55" height="55" alt="emoji-${selectedEmoji}">` : ''}</div>
 
         <label class="film-details__comment-label">
         <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -135,14 +135,12 @@ export default class PopupView extends SmartView{
     super();
     this.cardComponent = cardComponent;
 
-    this._data = PopupView.parseMovieToData(movieInfo);
+    this._data = movieInfo;
     this.addCommentsList(this._data);
 
     this.#moviePresenter = moviePresenter;
     this.#changePopupMode = changePopupMode;
-
     this.#setInnerHandlers();
-
   }
 
   get template() {
@@ -174,10 +172,16 @@ export default class PopupView extends SmartView{
   emojiChangeHandler(evt) {
     evt.preventDefault();
     checkedEmotion = this.element.querySelector('input[type="radio"]:checked');
+    const checkedEmotionId = checkedEmotion.id;
+
     this.updateData({selectedEmoji: checkedEmotion.value});
+    checkedEmotion = this.element.querySelector(`#${checkedEmotionId}`);
+    checkedEmotion.checked = true;
+
     const commentInput = this.element.querySelector('.film-details__comment-input');
     commentInput.value = this._data.comment ? this._data.comment : '';
     this.addCommentsList(this._data);
+    this.element.scrollTo(this.scrollX, this.scrollY);
   }
 
   addInputKeydownControl() {
@@ -216,6 +220,7 @@ export default class PopupView extends SmartView{
     }
 
     postClickHandler(movie, moviePresenter) {
+
       this.#changePopupMode();
       moviePresenter.popupMode = PopupMode.OPENED;
       document.body.classList.add('hide-overflow');
@@ -239,16 +244,21 @@ export default class PopupView extends SmartView{
 
     setFormSubmitHandler(callback) {
       this._callback.formSubmit = callback;
-      this.element.querySelector('form').addEventListener('submit', this.formSubmitHandler.bind(this));
+
+      this.element.querySelector('form').addEventListener('keydown', this.formSubmitHandler.bind(this));
     }
 
     formSubmitHandler(evt) {
-      evt.preventDefault();
-      this._callback.formSubmit(this._data);
+      if(evt.code === 'Enter') {
+        evt.preventDefault();
+        const commentText = this.element.querySelector('.film-details__comment-input').value;
+        const emojiValue = this.element.querySelector('input[type="radio"]:checked').value;
+        PopupView.parseDataToMovie(this._data, commentText, emojiValue);
+        this._callback.formSubmit(this._data);
+      }
     }
 
     setFavoriteClickHandler(callback) {
-      // console.log(this._data);
       this._callback.favoriteClick = callback;
       this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.favoriteClickHandler.bind(this));
     }
@@ -278,11 +288,22 @@ export default class PopupView extends SmartView{
       this._callback.historyClick();
     }
 
-    static parseMovieToData = (movie) => ({...movie, selectedEmoji: null});
-
-    static parseDataToMovie = (movie, selectedEmoji) => ({...movie, selectedEmoji: selectedEmoji});
+    static parseDataToMovie = (movie, comment, emoji) => {
+      if(movie.selectedEmoji) {
+        movie.selectedEmoji.delete();
+      }
+      if(movie.comment) {
+        movie.comment.delete();
+      }
+      return ({...movie, ok: comment, emoji});
+    }
 
     #setInnerHandlers = () => {
+      this.element.addEventListener('scroll', () => {
+        this.scrollX = this.element.scrollLeft;
+        this.scrollY = this.element.scrollTop;
+      });
+
       this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.emojiChangeHandler.bind(this));
       this.element.querySelector('.film-details__comment-input').addEventListener('input', this.commentInputHandler.bind(this));
 
@@ -295,7 +316,6 @@ export default class PopupView extends SmartView{
 
     restoreHandlers = () => {
       this.#setInnerHandlers();
-      this.setFormSubmitHandler(this._callback.formSubmit);
     }
 
     commentInputHandler(evt) {

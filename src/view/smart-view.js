@@ -36,12 +36,7 @@ export default class SmartView extends AbstractView{
       return;
     }
 
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-
     this.updateElement();
-
-    window.scrollTo(scrollX, scrollY);
 
   }
 
