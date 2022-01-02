@@ -155,10 +155,11 @@ export default class MovieListPresenter {
     remove(this.#buttonComponent);
   }
 
-  handleMovieChange (updatedMovie) {
+  handleMovieChange (updatedMovie, scrollCoordinates) {
     this.movies = updateItem(this.movies, updatedMovie);
-    this.moviePresenter.get(updatedMovie.id).init(updatedMovie);
+    this.moviePresenter.get(updatedMovie.id).init(updatedMovie, scrollCoordinates);
     this.#sourcedMovies = updateItem(this.#sourcedMovies, updatedMovie);
+
     this.menuComponent.setFiltersCount(this.movies);
   }
 

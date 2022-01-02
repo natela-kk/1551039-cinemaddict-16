@@ -28,26 +28,19 @@ export default class MoviePresenter {
     this.#changePopupMode = changePopupMode;
   }
 
-  init = (movie) => {
+  init = (movie, scrollCoords) => {
     this.#movie = movie;
-
     const cardComponent = this.#cardComponent;
     const popupComponent = this.#popupComponent;
 
     this.#cardComponent = new CardsView(this.#movie);
-    this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this);
+    this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#cardComponent, this.#changeData, scrollCoords);
 
     this.#cardComponent.setPostClickHandler(this.#handlePostClick);
 
-    this.#cardComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#cardComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
-    this.#cardComponent.setHistoryClickHandler(this.#handleHistoryClick);
-
-    this.#popupComponent.setFormSubmitHandler(this.#handleFormSubmit);
-
-    this.#popupComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#popupComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
-    this.#popupComponent.setHistoryClickHandler(this.#handleHistoryClick);
+    this.#cardComponent.setFavoriteClickHandler(this.handleFavoriteClick);
+    this.#cardComponent.setWatchlistClickHandler(this.handleWatchlistClick);
+    this.#cardComponent.setHistoryClickHandler(this.handleHistoryClick);
 
     if (cardComponent === null || popupComponent === null) {
       renderElement(this.#moviesContainer, this.#cardComponent, RenderPosition.BEFOREEND);
@@ -69,24 +62,24 @@ export default class MoviePresenter {
     remove(this.#cardComponent);
   }
 
-  #handleFavoriteClick = () => {
-    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}});
+  handleFavoriteClick = (scrollCoordinates) => {
+    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}}, scrollCoordinates);
   }
 
-  #handleWatchlistClick = () => {
-    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}});
+  handleWatchlistClick = (scrollCoordinates) => {
+    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}}, scrollCoordinates);
   }
 
-  #handleHistoryClick = () => {
-    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched}});
+  handleHistoryClick = (scrollCoordinates) => {
+    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched}}, scrollCoordinates);
   }
 
-  #handleFormSubmit = (movie) => {
-    this.#changeData(movie);
+  handleFormSubmit = (movie, scrollCoordinates) => {
+    this.#changeData(movie, scrollCoordinates);
   }
 
   #handlePostClick = () => {
-    this.#popupComponent.postClickHandler(this.#movie, this.#cardComponent, this);
+    this.#popupComponent.postClickHandler(this.#movie, this);
   }
 
   resetView = () => {
