@@ -19,19 +19,20 @@ export default class CommentView extends AbstractView{
 
   constructor(comment) {
     super();
-    this.#comment = comment;
+    this.comment = comment;
   }
 
   get template() {
-    return createCommentTemplate(this.#comment);
+    return createCommentTemplate(this.comment);
   }
 
-  addRemoveControlEvent(popupComponent, cardComponent) {
+  addRemoveControlEvent(movieData, popupComponent) {
     const deleteButtonElement = this.element.querySelector('.film-details__comment-delete');
     deleteButtonElement.addEventListener('click', (evt) => {
       evt.preventDefault();
-      this.element.remove();
-      this.setCommentsCount(popupComponent, cardComponent);
+      const commentToDelete = movieData.comments.find((comment) => comment === this.comment);
+      movieData.comments.splice([movieData.comments.indexOf(commentToDelete)], 1);
+      popupComponent.changeData(movieData, popupComponent.scrollCoordinates);
     });
   }
 

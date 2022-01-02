@@ -160,7 +160,6 @@ export default class MovieListPresenter {
     this.moviePresenter.get(updatedMovie.id).init(updatedMovie, scrollCoordinates);
     this.#sourcedMovies = updateItem(this.#sourcedMovies, updatedMovie);
 
-    this.menuComponent.setFiltersCount(this.movies);
   }
 
   handleModeChange() {

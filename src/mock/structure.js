@@ -14,7 +14,7 @@ const EMOTION_OPTIONS = ['smile', 'sleeping', 'puke', 'angry'];
 
 const getRandomEmotion = () => EMOTION_OPTIONS[getRandomInteger(0, EMOTION_OPTIONS.length - 1)];
 
-const generateComment = () => ({
+export const generateComment = () => ({
   id: nanoid(),
   author: 'Ilya',
   comment: 'a film that changed my life, a true masterpiece, post-credit scene was just amazing omg.',
