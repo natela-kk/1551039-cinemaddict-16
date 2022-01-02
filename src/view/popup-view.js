@@ -129,18 +129,19 @@ const createPopupTemplate = (movieInfo) => {
 export default class PopupView extends SmartView{
   #changePopupMode = null;
   #moviePresenter = null;
+  #changeData = null;
 
-
-  constructor(movieInfo, changePopupMode, moviePresenter, cardComponent) {
+  constructor(movieInfo, changePopupMode, moviePresenter, cardComponent, changeData, scrollCoords) {
     super();
     this.cardComponent = cardComponent;
-
+    this.#changeData = changeData;
     this._data = movieInfo;
     this.addCommentsList(this._data);
-
+    this.scrollCoords = scrollCoords;
     this.#moviePresenter = moviePresenter;
     this.#changePopupMode = changePopupMode;
     this.#setInnerHandlers();
+    this.setCoordinates();
   }
 
   get template() {
@@ -175,13 +176,13 @@ export default class PopupView extends SmartView{
     const checkedEmotionId = checkedEmotion.id;
 
     this.updateData({selectedEmoji: checkedEmotion.value});
+    this.#changeData({...this._data, selectedEmoji: checkedEmotion.value}, this.scrollCoords);
     checkedEmotion = this.element.querySelector(`#${checkedEmotionId}`);
     checkedEmotion.checked = true;
 
     const commentInput = this.element.querySelector('.film-details__comment-input');
     commentInput.value = this._data.comment ? this._data.comment : '';
     this.addCommentsList(this._data);
-    this.element.scrollTo(this.scrollX, this.scrollY);
   }
 
   addInputKeydownControl() {
@@ -220,7 +221,6 @@ export default class PopupView extends SmartView{
     }
 
     postClickHandler(movie, moviePresenter) {
-
       this.#changePopupMode();
       moviePresenter.popupMode = PopupMode.OPENED;
       document.body.classList.add('hide-overflow');
@@ -275,7 +275,7 @@ export default class PopupView extends SmartView{
 
     favoriteClickHandler(evt) {
       evt.preventDefault();
-      this._callback.favoriteClick();
+      this._callback.favoriteClick(this.scrollCoords);
     }
 
     watchlistClickHandler(evt) {
@@ -300,8 +300,8 @@ export default class PopupView extends SmartView{
 
     #setInnerHandlers = () => {
       this.element.addEventListener('scroll', () => {
-        this.scrollX = this.element.scrollLeft;
-        this.scrollY = this.element.scrollTop;
+        this.scrollCoords = [this.element.scrollLeft, this.element.scrollTop];
+        console.log(this.scrollCoords);
       });
 
       this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.emojiChangeHandler.bind(this));
@@ -312,6 +312,14 @@ export default class PopupView extends SmartView{
       this.setFavoriteClickHandler(this.#moviePresenter.handleFavoriteClick);
       this.setWatchlistClickHandler(this.#moviePresenter.handleWatchlistClick);
       this.setHistoryClickHandler(this.#moviePresenter.handleHistoryClick);
+    }
+
+    setCoordinates = () => {
+      if(this.scrollCoords) {
+        console.log(this.scrollCoords);
+        console.log(this.element);
+        this.element.scrollTo(...this.scrollCoords);
+      }
     }
 
     restoreHandlers = () => {

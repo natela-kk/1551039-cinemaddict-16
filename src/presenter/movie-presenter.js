@@ -28,14 +28,13 @@ export default class MoviePresenter {
     this.#changePopupMode = changePopupMode;
   }
 
-  init = (movie) => {
+  init = (movie, scrollCoords) => {
     this.#movie = movie;
-
     const cardComponent = this.#cardComponent;
     const popupComponent = this.#popupComponent;
 
     this.#cardComponent = new CardsView(this.#movie);
-    this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#cardComponent);
+    this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#cardComponent, this.#changeData, scrollCoords);
 
     this.#cardComponent.setPostClickHandler(this.#handlePostClick);
 
@@ -63,8 +62,8 @@ export default class MoviePresenter {
     remove(this.#cardComponent);
   }
 
-  handleFavoriteClick = () => {
-    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}});
+  handleFavoriteClick = (scrollCoords) => {
+    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}}, scrollCoords);
   }
 
   handleWatchlistClick = () => {
