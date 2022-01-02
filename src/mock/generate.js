@@ -8,8 +8,8 @@ const RANDOM_MIN_DATE = 1;
 const RANDOM_MAX_DATE = 7;
 const RANDOM_MIN_RELEASE_DATE = 20;
 const RANDOM_MAX_RELEASE_DATE = 50;
-const MIN_RUNTIME = 30;
-const MAX_RUNTIME = 90;
+const MIN_RUNTIME = 10;
+const MAX_RUNTIME = 30;
 const HOUR = 60;
 const MIN_RATING = 0;
 const MAX_RATING = 10;
@@ -37,11 +37,14 @@ const generateReleaseDate = () => {
 };
 
 const getRuntime = () => {
-  let runtime = getRandomInteger(MIN_RUNTIME, MAX_RUNTIME);
+  const randomNumber = getRandomInteger(MIN_RUNTIME, MAX_RUNTIME);
+  let runtime = dayjs().subtract(randomNumber, 'minute').$m;
+  const runtimeMinutes = `${runtime}m`;
   if (runtime >= HOUR) {
     runtime = `1h ${runtime - HOUR}m`;
+    return runtime;
   }
-  return `${runtime}m`;
+  return runtimeMinutes;
 };
 
 const generateGenre = () => {
