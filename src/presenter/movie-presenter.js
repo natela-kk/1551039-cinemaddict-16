@@ -62,20 +62,20 @@ export default class MoviePresenter {
     remove(this.#cardComponent);
   }
 
-  handleFavoriteClick = (scrollCoords) => {
-    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}}, scrollCoords);
+  handleFavoriteClick = (scrollCoordinates) => {
+    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}}, scrollCoordinates);
   }
 
-  handleWatchlistClick = () => {
-    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}});
+  handleWatchlistClick = (scrollCoordinates) => {
+    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}}, scrollCoordinates);
   }
 
-  handleHistoryClick = () => {
-    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched}});
+  handleHistoryClick = (scrollCoordinates) => {
+    this.#changeData({...this.#movie, userDetails: {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched}}, scrollCoordinates);
   }
 
-  handleFormSubmit = (movie) => {
-    this.#changeData(movie);
+  handleFormSubmit = (movie, scrollCoordinates) => {
+    this.#changeData(movie, scrollCoordinates);
   }
 
   #handlePostClick = () => {
