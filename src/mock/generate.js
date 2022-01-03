@@ -65,7 +65,7 @@ export const generateMovie = () => ({
       'Morgan Freeman'
     ],
     'release': {
-      'date': dayjs.between('1970-06-10', '2021-03-02').format('YYYY'),
+      'date': dayjs.between('1970-06-10', '2021-03-02'),
       'release_country': 'Finland'
     },
     'runtime': getRuntime(),
