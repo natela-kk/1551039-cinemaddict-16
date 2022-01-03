@@ -1,19 +1,18 @@
 import { getRandomInteger, getRandomPositiveFloat } from './utils.js';
 import { getRandomDescription, getCommentsList } from './structure.js';
 import dayjs from 'dayjs';
+import dayjsRandom from 'dayjs-random';
 import { POSTSCOUNT } from '../view/extra-view.js';
 import { nanoid } from 'nanoid';
 
-const RANDOM_MIN_DATE = 1;
-const RANDOM_MAX_DATE = 7;
-const RANDOM_MIN_RELEASE_DATE = 20;
-const RANDOM_MAX_RELEASE_DATE = 50;
 const MIN_RUNTIME = 10;
 const MAX_RUNTIME = 30;
 const HOUR = 60;
 const MIN_RATING = 0;
 const MAX_RATING = 10;
 const RATING_DIGITS = 1;
+
+dayjs.extend(dayjsRandom);
 
 export const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',
@@ -24,16 +23,6 @@ export const RenderPosition = {
 
 export const renderTemplate = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
-};
-
-const generateDate = () => {
-  const randomNumber = getRandomInteger(RANDOM_MIN_DATE, RANDOM_MAX_DATE);
-  return dayjs().add(randomNumber, 'day').format('YYYY-MM-DDThh:mm:ss.Z');
-};
-
-const generateReleaseDate = () => {
-  const randomNumber = getRandomInteger(RANDOM_MIN_RELEASE_DATE, RANDOM_MAX_RELEASE_DATE);
-  return dayjs().subtract(randomNumber, 'year');
 };
 
 const getRuntime = () => {
@@ -76,7 +65,7 @@ export const generateMovie = () => ({
       'Morgan Freeman'
     ],
     'release': {
-      'date': generateReleaseDate(),
+      'date': dayjs.between('1970-06-10', '2021-03-02').format('YYYY'),
       'release_country': 'Finland'
     },
     'runtime': getRuntime(),
@@ -86,7 +75,7 @@ export const generateMovie = () => ({
   'userDetails': {
     'watchlist': Boolean(getRandomInteger(0, 1)),
     'alreadyWatched': Boolean(getRandomInteger(0, 1)),
-    'watching_date': generateDate(),
+    'watching_date': dayjs.between('2020-06-10', '2022-03-02').format('YYYY-MM-DDThh:mm:ss.Z'),
     'favorite': Boolean(getRandomInteger(0, 1)),
   }
 });
