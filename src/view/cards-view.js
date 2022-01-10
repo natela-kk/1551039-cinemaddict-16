@@ -40,10 +40,12 @@ export default class CardsView extends AbstractView{
   constructor(movieInfo) {
     super();
     this.#movieInfo = movieInfo;
+    console.log('конструктор карты');
   }
 
 
   get template() {
+    console.log('template карты');
     return createCardTemplate(this.#movieInfo);
   }
 

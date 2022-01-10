@@ -1,19 +1,30 @@
 import AbstractView from './abstract-view.js';
 export const ACTIVE_CLASS = 'main-navigation__item--active';
 
-const createMenuTemplate = () => (
-  `<nav class="main-navigation">
-  <div class="main-navigation__items">
-    <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
-    <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">0</span></a>
-    <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">0</span></a>
-    <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">0</span></a>
-  </div>
-  <a href="#stats" class="main-navigation__additional">Stats</a>
-</nav>
-</section>`
-);
+const createFilterItemTemplate = (filter, currentFilterType) => {
+  const {type, name, count} = filter;
+  console.log(name, count);
+  return `<a href="#all" class="main-navigation__item ${type === currentFilterType ? 'main-navigation__item--active' : ''} main-navigation__item--active">All movies</a>`;
+};
 
+const createMenuTemplate = (filterItems, currentFilterType) =>
+  // const filterItemsTemplate = filterItems
+  //   .map((filter) => createFilterItemTemplate(filter, currentFilterType))
+  //   .join('');
+  // const {type, name, count} = filter;
+  (
+    `<nav class="main-navigation">
+  <div class="main-navigation__items">
+  <a href="#all" class="main-navigation__item {type === currentFilterType ? 'main-navigation__item--active' : ''} main-navigation__item--active">All movies</a>
+  <a href="#watchlist" class="main-navigation__item {type === currentFilterType ? 'main-navigation__item--active' : ''}">Watchlist <span class="main-navigation__item-count">0</span></a>
+  <a href="#history" class="main-navigation__item {type === currentFilterType ? 'main-navigation__item--active' : ''}">History <span class="main-navigation__item-count">0</span></a>
+  <a href="#favorites" class="main-navigation__item {type === currentFilterType ? 'main-navigation__item--active' : ''}">Favorites <span class="main-navigation__item-count">0</span></a>
+  <a href="#stats" class="main-navigation__additional">Stats</a>
+  </div>
+  </nav>
+  </section>`
+  // ${filterItemsTemplate}
+  );
 const titlesList = {
   all: 'There are no movies in our database',
   watchlist: 'There are no movies to watch now',
@@ -24,14 +35,25 @@ const titlesList = {
 export default class MenuView extends AbstractView{
 
   #currentFilter = null;
+  #filters = null;
 
   #watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
   #historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
   #favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
 
+  constructor(filters, currentFilterType) {
+    super();
+    this.#filters = filters;
+    this.#currentFilter = currentFilterType;
+    // console.log(filters, currentFilterType);
+    console.log('конструктор меню');
+
+  }
 
   get template() {
-    return createMenuTemplate();
+    // console.log(this.#filters, this.#currentFilter);
+    console.log('template меню');
+    return createMenuTemplate(this.#filters, this.#currentFilter);
   }
 
   setActiveFilter(elementToChange) {
@@ -73,5 +95,16 @@ export default class MenuView extends AbstractView{
     this.#favoritesCount.textContent = favoritesMovies.length;
   }
 
+  ///////////
+  setFilterTypeChangeHandler = (callback) => {
+    this._callback.filterTypeChange = callback;
+    this.element.addEventListener('change', this.#filterTypeChangeHandler);
+  }
+
+  #filterTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.filterTypeChange(evt.target.value);
+  }
+//////////
 }
 

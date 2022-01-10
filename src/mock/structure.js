@@ -1,4 +1,4 @@
-import { getRandomInteger } from './utils.js';
+import { getRandomInteger } from './utils/utils.js';
 import { nanoid } from 'nanoid';
 import dayjs from 'dayjs';
 import dayjsRandom from 'dayjs-random';
