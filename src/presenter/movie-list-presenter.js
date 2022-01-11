@@ -1,25 +1,19 @@
-import MenuView from '../view/menu-view.js';
+import { filter } from '../mock/utils/filter.js';
 import SortView from '../view/sort-view.js';
 import CardsContainerView from '../view/cards-container-view.js';
 import ButtonView from '../view/button-view.js';
 import ExtraView from '../view/extra-view.js';
 import FooterView from '../view/footer-view.js';
-import EmtyListView from '../view/empty-list-view.js';
+import NoMoviesView from '../view/no-movies-view.js';
 import { remove, renderElement } from '../mock/render.js';
 import { RenderPosition } from '../mock/generate.js';
 import MoviePresenter from './movie-presenter.js';
-import { ACTIVE_CLASS } from '../view/menu-view.js';
-import { sortMovieDateDown, sortMovieRatingDown } from '../mock/utils/utils.js';
+import { replace, sortMovieDateDown, sortMovieRatingDown } from '../mock/utils/utils.js';
 import { UpdateType, UserAction, SortType } from '../const.js';
+import { FilterType } from '../const.js';
 
 const MOVIES_COUNT_PER_STEP = 5;
-const filters = [
-  {
-    type: 'all',
-    name: 'ALL',
-    count: 0,
-  },
-];
+
 const footer = document.querySelector('.footer');
 
 export default class MovieListPresenter {
@@ -28,44 +22,48 @@ export default class MovieListPresenter {
   #moviesModel = null;
   #sortComponent = null;
   #loadMoreButtonComponent = null;
+  #filterModel = null;
+  #noMoviesComponent = null;
 
   #cardsContainerComponent = new CardsContainerView();
-  menuComponent = new MenuView(filters, 'all');
   #extraComponent = new ExtraView();
   #footerComponent = new FooterView();
-  #emptyListComponent = new EmtyListView();
   moviePresenter = new Map();
   #cardsContainer = this.#cardsContainerComponent.element.querySelector('.films-list__container');
   #renderedMoviesCount = MOVIES_COUNT_PER_STEP;
   #currentSortType = SortType.DEFAULT;
+  #filterType = FilterType.ALL;
 
-  constructor(mainContainer, moviesModel) {
+  constructor(mainContainer, moviesModel, filterModel) {
     this.#mainContainer = mainContainer;
     this.#moviesModel = moviesModel;
+    this.#filterModel = filterModel;
+
     this.#moviesModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get movies() {
+    this.#filterType = this.#filterModel.filter;
+    const movies = this.#moviesModel.movies;
+    const filteredMovies = filter[this.#filterType](movies);
     switch (this.#currentSortType) {
       case SortType.DATE:
-        return [...this.#moviesModel.movies].sort(sortMovieDateDown);
+        return filteredMovies.sort(sortMovieDateDown);
       case SortType.RATING:
-        return [...this.#moviesModel.movies].sort(sortMovieRatingDown);
+        return filteredMovies.sort(sortMovieRatingDown);
     }
-    return this.#moviesModel.movies;
+    return filteredMovies;
   }
 
-    init = () => {
-      // renderElement(this.#mainContainer, this.menuComponent, RenderPosition.BEFOREEND);
-      this.#renderSort();
-      // this.menuComponent.setFiltersCount(this.movies);
-      // this.menuComponent.setActiveFilter(this.#emptyListComponent.element);
-      this.#renderMovieList();
-    }
+  init = () => {
+    this.#renderSort();
+    this.#renderMovieList();
+  }
 
-    #renderMovies = (movies) => {
-      movies.forEach((movie) => this.renderMovie(movie));
-    }
+  #renderMovies = (movies) => {
+    movies.forEach((movie) => this.renderMovie(movie));
+  }
 
   renderMovie = (movie) => {
     const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
@@ -74,8 +72,13 @@ export default class MovieListPresenter {
   }
 
   #renderNoMovies = () => {
-    renderElement(this.#cardsContainer, this.#emptyListComponent, RenderPosition.BEFOREEND);
-    this.setEmptyMessage(this.#emptyListComponent.element);
+    const noMoviesComponent = this.#noMoviesComponent;
+    this.#noMoviesComponent = new NoMoviesView(this.#filterType);
+    if (noMoviesComponent) {
+      replace(this.#noMoviesComponent, noMoviesComponent);
+      return;
+    }
+    renderElement(this.#cardsContainer, this.#noMoviesComponent, RenderPosition.BEFOREEND);
   }
 
   #renderLoadMoreButton = () => {
@@ -86,20 +89,18 @@ export default class MovieListPresenter {
 
   #clearMoviesContainer = ({resetRenderedMoviesCount = false, resetSortType = false} = {}) => {
     const moviesCount = this.movies.length;
-
     this.moviePresenter.forEach((presenter) => presenter.destroy());
     this.moviePresenter.clear();
-
     remove(this.#sortComponent);
-    remove(this.noMoviesComponent);
     remove(this.#loadMoreButtonComponent);
+
+    if(this.noMoviesComponent) {
+      remove(this.noMoviesComponent);
+    }
 
     if (resetRenderedMoviesCount) {
       this.#renderedMoviesCount = MOVIES_COUNT_PER_STEP;
     } else {
-      // На случай, если перерисовка доски вызвана
-      // уменьшением количества задач (например, удаление или перенос в архив)
-      // нужно скорректировать число показанных задач
       this.#renderedMoviesCount = Math.min(moviesCount, this.#renderedMoviesCount);
     }
 
@@ -119,21 +120,6 @@ export default class MovieListPresenter {
       this.#renderLoadMoreButton();
     }
     renderElement(footer, this.#footerComponent, RenderPosition.BEFOREEND);
-  }
-
-  setEmptyMessage(elementToChange) {
-    console.log('menu');
-    const filterList = this.menuComponent.element.querySelector('.main-navigation__items');
-    this.#currentFilter = filterList.querySelector(`.${ACTIVE_CLASS}`);
-
-    filterList.addEventListener('click', (evt) => {
-      if (evt.target.className === 'main-navigation__item' && this.#currentFilter !== evt.target) {
-        this.#currentFilter.classList.remove(ACTIVE_CLASS);
-        this.#currentFilter = evt.target;
-        this.#currentFilter.classList.add(ACTIVE_CLASS);
-        this.changeEmptyTitle(this.#currentFilter, elementToChange);
-      }
-    });
   }
 
   handleLoadMoreButtonClick() {
@@ -163,7 +149,7 @@ export default class MovieListPresenter {
   }
 
   handleViewAction = (actionType, updateType, update, scrollCoordinates) => {
-    console.log(actionType, updateType, update, scrollCoordinates);
+    // console.log(actionType, updateType, update, scrollCoordinates);
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -179,14 +165,11 @@ export default class MovieListPresenter {
         this.#moviesModel.deleteMovie(updateType, update);
         break;
     }
+    // console.log(update.element);
+    // popupComponent.element.scrollTo(...scrollCoordinates);
   }
 
     #handleModelEvent = (updateType, data) => {
-      console.log(updateType, data);
-      // В зависимости от типа изменений решаем, что делать:
-      // - обновить часть списка (например, когда поменялось описание)
-      // - обновить список (например, когда задача ушла в архив)
-      // - обновить всю доску (например, при переключении фильтра)
       switch (updateType) {
         case UpdateType.PATCH:
           // - обновить часть списка (например, когда поменялось описание)
@@ -194,11 +177,11 @@ export default class MovieListPresenter {
           break;
         case UpdateType.MINOR:
           // - обновить список (например, когда задача ушла в архив)
-          this.clearMovies();
+          this.#clearMoviesContainer();
           this.#renderMoviesContainer();
           break;
         case UpdateType.MAJOR:
-          this.clearMovies({resetRenderedTaskCount: true, resetSortType: true});
+          this.#clearMoviesContainer({resetRenderedMoviesCount: true, resetSortType: true});
           this.#renderMoviesContainer();
           // - обновить всю доску (например, при переключении фильтра)
           break;
@@ -209,9 +192,9 @@ export default class MovieListPresenter {
       if (this.#currentSortType === sortType) {
         return;
       }
-
       this.#currentSortType = sortType;
-      this.#clearMoviesContainer({resetRenderedMoviesCount: true});
+
+      this.#clearMoviesContainer();
       this.#renderMoviesContainer();
     }
 

@@ -23,7 +23,6 @@ updateMovie = (updateType, update) => {
     update,
     ...this.#movies.slice(index + 1),
   ];
-
   this._notify(updateType, update);
 }
 

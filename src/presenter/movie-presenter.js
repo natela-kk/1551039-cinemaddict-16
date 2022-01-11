@@ -30,11 +30,13 @@ export default class MoviePresenter {
 
   init = (movie, scrollCoords) => {
     this.#movie = movie;
+    console.log(this.#cardComponent);
     const cardComponent = this.#cardComponent;
     const popupComponent = this.#popupComponent;
 
     this.#cardComponent = new CardsView(this.#movie);
     this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#cardComponent, this.#changeData, scrollCoords);
+    console.log(this.#cardComponent);
 
     this.#cardComponent.setPostClickHandler(this.#handlePostClick);
 
@@ -45,6 +47,7 @@ export default class MoviePresenter {
     /////////ф-я ниже должна быть в попапе
     // this.setDeleteClickHandler(this._callback.deleteClick);
 
+
     if (cardComponent === null || popupComponent === null) {
       renderElement(this.#moviesContainer, this.#cardComponent, RenderPosition.BEFOREEND);
       return;
@@ -54,10 +57,13 @@ export default class MoviePresenter {
       replace(this.#cardComponent, cardComponent);
     }
 
+    console.log(this.popupMode);
     if (this.popupMode === PopupMode.OPENED) {
       replace(this.#popupComponent, popupComponent);
       this.#handlePostClick();
       replace(this.#cardComponent, cardComponent);
+    console.log(this.#popupComponent.element);
+
     }
   }
 
@@ -66,6 +72,7 @@ export default class MoviePresenter {
   }
 
   handleFavoriteClick = (scrollCoordinates) => {
+    console.log(this.#movie.userDetails);
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
@@ -92,17 +99,20 @@ export default class MoviePresenter {
     );
   }
 
-  handleFormSubmit = (update, scrollCoordinates) => {
-    console.log(scrollCoordinates);
+  handleFormSubmit = (movie, scrollCoordinates) => {
+    console.log(movie, scrollCoordinates);
     const isMinorUpdate =
-    !isFavorite(this.#movie.favorite, update.favorite) ||
-    !isWatchlistAdded(this.#movie.watchlist, update.watchlist) ||
-    !isAlreadyWatched(this.#movie.alreadyWatched, update.alreadyWatched);
+    !isFavorite(this.#movie.userDetails.favorite, movie.userDetails.favorite) ||
+    !isWatchlistAdded(this.#movie.userDetails.watchlist, movie.userDetails.watchlist) ||
+    !isAlreadyWatched(this.#movie.userDetails.alreadyWatched, movie.userDetails.alreadyWatched);
+    console.log(isMinorUpdate);
 
     this.#changeData(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_MOVIE,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      update,
+      movie,
+      this.#popupComponent,
+      scrollCoordinates,
     );
     // this.#replaceFormToCard();
   }

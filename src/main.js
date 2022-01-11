@@ -5,6 +5,7 @@ import MovieListPresenter from './presenter/movie-list-presenter.js';
 import { getMovieList } from './mock/generate.js';
 import MoviesModel from './model/movies-model.js';
 import FilterModel from './model/filter-model.js';
+import FilterPresenter from './presenter/filter-presenter.js';
 
 const headerElement = document.querySelector('.header');
 export const mainElement = document.querySelector('.main');
@@ -16,7 +17,8 @@ moviesModel.movies = allMovies;
 
 const filterModel = new FilterModel();
 
-export const movieListPresenter = new MovieListPresenter(mainElement, moviesModel);
-
+export const movieListPresenter = new MovieListPresenter(mainElement, moviesModel, filterModel);
+const filterPresenter = new FilterPresenter(mainElement, filterModel, moviesModel);
 renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
+filterPresenter.init();
 movieListPresenter.init();

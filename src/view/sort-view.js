@@ -3,7 +3,7 @@ import { SortType } from '../const.js';
 
 const ACTIVE_SORT_CLASS = 'sort__button--active';
 
-const createFilterTemplate = (currentSortType) => (
+const createSortTemplate = (currentSortType) => (
   `<ul class="sort">
   <li><a href="#" class="sort__button ${currentSortType === SortType.DEFAULT ? 'sort__button--active' : ''}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
   <li><a href="#" class="sort__button ${currentSortType === SortType.DATE ? 'sort__button--active' : ''}" data-sort-type="${SortType.DATE}">Sort by date</a></li>
@@ -21,7 +21,7 @@ export default class SortView extends AbstractView{
   }
 
   get template() {
-    return createFilterTemplate(this.#currentSortType);
+    return createSortTemplate(this.#currentSortType);
   }
 
   setSortTypeChangeHandler = (callback) => {
