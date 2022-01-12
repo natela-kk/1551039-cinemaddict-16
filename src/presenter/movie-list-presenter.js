@@ -149,11 +149,15 @@ export default class MovieListPresenter {
   }
 
   handleViewAction = (actionType, updateType, update, scrollCoordinates) => {
-    // console.log(actionType, updateType, update, scrollCoordinates);
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
+
+    if (this.#filterType === 'all') {
+      updateType = 'PATCH';
+    } else {
+      updateType = 'MINOR';
+    }
+    console.log(updateType);
+
+    // this.moviePresenter.get(update.id).init(update, scrollCoordinates);
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
         this.#moviesModel.updateMovie(updateType, update);
@@ -170,6 +174,7 @@ export default class MovieListPresenter {
   }
 
     #handleModelEvent = (updateType, data) => {
+      console.log(updateType);
       switch (updateType) {
         case UpdateType.PATCH:
           // - обновить часть списка (например, когда поменялось описание)
