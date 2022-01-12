@@ -4,6 +4,7 @@ import { PopupMode } from '../presenter/movie-presenter.js';
 import SmartView from './smart-view.js';
 import { generateComment } from '../mock/structure.js';
 import dayjs from 'dayjs';
+import he from 'he';
 
 let checkedEmotion;
 let closeButton;
