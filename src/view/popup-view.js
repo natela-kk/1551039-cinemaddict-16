@@ -133,9 +133,8 @@ export default class PopupView extends SmartView{
   #moviePresenter = null;
   changeData = null;
 
-  constructor(movieInfo, changePopupMode, moviePresenter, cardComponent, changeData, scrollCoords) {
+  constructor(movieInfo, changePopupMode, moviePresenter, changeData, scrollCoords) {
     super();
-    this.cardComponent = cardComponent;
     this.changeData = changeData;
     this._data = movieInfo;
     this.scrollCoordinates = scrollCoords;
@@ -195,7 +194,10 @@ export default class PopupView extends SmartView{
 
     postClickHandler(movie, moviePresenter) {
       this.#changePopupMode();
+      console.log(moviePresenter.popupMode);
       moviePresenter.popupMode = PopupMode.OPENED;
+      console.log(moviePresenter.popupMode);
+
       document.body.classList.add('hide-overflow');
 
       this._data = movie;

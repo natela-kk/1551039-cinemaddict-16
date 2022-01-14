@@ -12,9 +12,9 @@ export const PopupMode = {
 
 export default class MoviePresenter {
   #movie = null;
-  #popupComponent = null;
+  popupComponent = null;
   #movieListPresenter = null;
-  #cardComponent = null;
+  cardComponent = null;
   #moviesContainer = null;
   #changeData = null;
   #changePopupMode = null;
@@ -30,45 +30,42 @@ export default class MoviePresenter {
 
   init = (movie, scrollCoords) => {
     this.#movie = movie;
-    // console.log(this.#cardComponent);
-    const cardComponent = this.#cardComponent;
-    const popupComponent = this.#popupComponent;
+    const cardComponent = this.cardComponent;
+    const popupComponent = this.popupComponent;
 
-    this.#cardComponent = new CardsView(this.#movie);
-    this.#popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#cardComponent, this.#changeData, scrollCoords);
+    this.cardComponent = new CardsView(this.#movie);
+    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData, scrollCoords);
 
-    this.#cardComponent.setPostClickHandler(this.#handlePostClick);
+    this.cardComponent.setPostClickHandler(this.#handlePostClick);
 
-    this.#cardComponent.setFavoriteClickHandler(this.handleFavoriteClick);
-    this.#cardComponent.setWatchlistClickHandler(this.handleWatchlistClick);
-    this.#cardComponent.setHistoryClickHandler(this.handleHistoryClick);
-    // this.#taskEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
-    /////////ф-я ниже должна быть в попапе
-    // this.setDeleteClickHandler(this._callback.deleteClick);
-
+    this.cardComponent.setFavoriteClickHandler(this.handleFavoriteClick);
+    this.cardComponent.setWatchlistClickHandler(this.handleWatchlistClick);
+    this.cardComponent.setHistoryClickHandler(this.handleHistoryClick);
 
     if (cardComponent === null || popupComponent === null) {
-      renderElement(this.#moviesContainer, this.#cardComponent, RenderPosition.BEFOREEND);
+      renderElement(this.#moviesContainer, this.cardComponent, RenderPosition.BEFOREEND);
       return;
     }
 
     if (this.popupMode === PopupMode.CLOSED) {
-      replace(this.#cardComponent, cardComponent);
+      replace(this.cardComponent, cardComponent);
     }
 
-    console.log(this.popupMode);
     if (this.popupMode === PopupMode.OPENED) {
-      replace(this.#popupComponent, popupComponent);
       this.#handlePostClick();
-      replace(this.#cardComponent, cardComponent);
+      replace(this.popupComponent, popupComponent);
+      // if (!cardComponent.element || this.#cardComponent.element) {
+      replace(this.cardComponent, cardComponent);
+      // }
     }
   }
 
   destroy = () => {
-    remove(this.#cardComponent);
+    remove(this.cardComponent);
   }
 
   handleFavoriteClick = (scrollCoordinates) => {
+
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
@@ -87,7 +84,6 @@ export default class MoviePresenter {
   }
 
   handleHistoryClick = (scrollCoordinates) => {
-    // console.log(scrollCoordinates);
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
@@ -97,44 +93,27 @@ export default class MoviePresenter {
   }
 
   handleFormSubmit = (movie, scrollCoordinates) => {
-    // console.log(movie, scrollCoordinates);
     const isMinorUpdate =
     !isFavorite(this.#movie.userDetails.favorite, movie.userDetails.favorite) ||
     !isWatchlistAdded(this.#movie.userDetails.watchlist, movie.userDetails.watchlist) ||
     !isAlreadyWatched(this.#movie.userDetails.alreadyWatched, movie.userDetails.alreadyWatched);
-    // console.log(isMinorUpdate);
 
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       movie,
-      this.#popupComponent,
+      this.popupComponent,
       scrollCoordinates,
     );
-    // this.#replaceFormToCard();
   }
 
-  // #handleDeleteClick = (movie) => {
-  //   this.#changeData(
-  //     UserAction.DELETE_TASK,
-  //     UpdateType.MINOR,
-  //     movie,
-  //   );
-  // }
-  /////////ф-я ниже должна быть в попапе
-
-  // setDeleteClickHandler = (callback) => {
-  //   this._callback.deleteClick = callback;
-  //   this.element.querySelector('.card__delete').addEventListener('click', this.#formDeleteClickHandler);
-  // }
-
   #handlePostClick = () => {
-    this.#popupComponent.postClickHandler(this.#movie, this);
+    this.popupComponent.postClickHandler(this.#movie, this);
   }
 
   resetView = () => {
     if (this.popupMode !== PopupMode.CLOSED) {
-      this.#popupComponent.closePopup(this);
+      this.popupComponent.closePopup(this);
     }
   }
 }

@@ -98,11 +98,7 @@ export default class MovieListPresenter {
       remove(this.noMoviesComponent);
     }
 
-    if (resetRenderedMoviesCount) {
-      this.#renderedMoviesCount = MOVIES_COUNT_PER_STEP;
-    } else {
-      this.#renderedMoviesCount = Math.min(moviesCount, this.#renderedMoviesCount);
-    }
+    this.#renderedMoviesCount = resetRenderedMoviesCount ? MOVIES_COUNT_PER_STEP : Math.min(moviesCount, this.#renderedMoviesCount);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
@@ -143,24 +139,30 @@ export default class MovieListPresenter {
   }
 
   handleMovieChange (updatedMovie, scrollCoordinates) {
-    // this.movies = updateItem(this.movies, updatedMovie);
     this.moviePresenter.get(updatedMovie.id).init(updatedMovie, scrollCoordinates);
-    // this.#sourcedMovies = updateItem(this.#sourcedMovies, updatedMovie);
   }
 
   handleViewAction = (actionType, updateType, update, scrollCoordinates) => {
-
-    if (this.#filterType === 'all') {
-      updateType = 'PATCH';
-    } else {
-      updateType = 'MINOR';
-    }
-    console.log(updateType);
-
-    // this.moviePresenter.get(update.id).init(update, scrollCoordinates);
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
-        this.#moviesModel.updateMovie(updateType, update);
+        this.#moviesModel.updateMovie('PATCH', update);
+        if (this.#filterType !== 'all' && this.moviePresenter.get(update.id)) {
+          const movie = this.moviePresenter.get(update.id);
+          if(movie.popupMode === 'OPENED') {
+            movie.popupComponent.closePopup();
+            this.#moviesModel.updateMovie('MINOR', update);
+            const updatedMovie = this.moviePresenter.get(update.id);
+            if (updatedMovie) {
+              updatedMovie.popupComponent.postClickHandler(update, this.moviePresenter);
+              this.moviePresenter.get(update.id).popupMode = 'OPENED';
+            } else {
+              movie.popupComponent.postClickHandler(update, this.moviePresenter);
+              movie.popupMode = 'OPENED';
+            }
+          } else {
+            this.#moviesModel.updateMovie('MINOR', update);
+          }
+        }
         break;
       case UserAction.ADD_MOVIE:
         this.#moviesModel.addMovie(updateType, update);
@@ -169,68 +171,62 @@ export default class MovieListPresenter {
         this.#moviesModel.deleteMovie(updateType, update);
         break;
     }
-    // console.log(update.element);
-    // popupComponent.element.scrollTo(...scrollCoordinates);
   }
 
-    #handleModelEvent = (updateType, data) => {
-      console.log(updateType);
-      switch (updateType) {
-        case UpdateType.PATCH:
-          // - обновить часть списка (например, когда поменялось описание)
-          this.moviePresenter.get(data.id).init(data);
-          break;
-        case UpdateType.MINOR:
-          // - обновить список (например, когда задача ушла в архив)
-          this.#clearMoviesContainer();
-          this.#renderMoviesContainer();
-          break;
-        case UpdateType.MAJOR:
-          this.#clearMoviesContainer({resetRenderedMoviesCount: true, resetSortType: true});
-          this.#renderMoviesContainer();
-          // - обновить всю доску (например, при переключении фильтра)
-          break;
-      }
+  #handleModelEvent = (updateType, data) => {
+    console.log(updateType);
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.moviePresenter.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearMoviesContainer();
+        this.#renderMoviesContainer();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearMoviesContainer({resetRenderedMoviesCount: true, resetSortType: true});
+        this.#renderMoviesContainer();
+        break;
     }
-
-    #handleSortTypeChange = (sortType) => {
-      if (this.#currentSortType === sortType) {
-        return;
-      }
-      this.#currentSortType = sortType;
-
-      this.#clearMoviesContainer();
-      this.#renderMoviesContainer();
-    }
-
-#renderMoviesContainer = () => {
-  const movies = this.movies;
-  const moviesCount = movies.length;
-
-  if(moviesCount === 0) {
-    this.#renderNoMovies();
-    return;
   }
 
-  this.#renderSort();
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    this.#currentSortType = sortType;
 
-  this.#renderMovies(movies.slice(0, Math.min(moviesCount, this.#renderedMoviesCount)));
-
-  if (moviesCount > this.#renderedMoviesCount) {
-    this.#renderLoadMoreButton();
+    this.#clearMoviesContainer();
+    this.#renderMoviesContainer();
   }
-}
 
-    #renderSort = () => {
-      this.#sortComponent = new SortView(this.#currentSortType);
-      this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-      renderElement(this.#mainContainer, this.#sortComponent, RenderPosition.BEFOREEND);
+  #renderMoviesContainer = () => {
+    const movies = this.movies;
+    const moviesCount = movies.length;
+
+    if(moviesCount === 0) {
+      this.#renderNoMovies();
+      return;
     }
 
-    handleModeChange() {
-      // this.#taskNewPresenter.destroy();
-      this.moviePresenter.forEach((presenter) => presenter.resetView());
+    this.#renderSort();
+
+    this.#renderMovies(movies.slice(0, Math.min(moviesCount, this.#renderedMoviesCount)));
+
+    if (moviesCount > this.#renderedMoviesCount) {
+      this.#renderLoadMoreButton();
     }
+  }
+
+  #renderSort = () => {
+    this.#sortComponent = new SortView(this.#currentSortType);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    renderElement(this.#mainContainer, this.#sortComponent, RenderPosition.BEFOREEND);
+  }
+
+  handleModeChange() {
+    this.moviePresenter.forEach((presenter) => presenter.resetView());
+  }
 
 
 }
