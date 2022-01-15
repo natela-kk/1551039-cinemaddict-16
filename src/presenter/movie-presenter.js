@@ -28,13 +28,11 @@ export default class MoviePresenter {
     this.#changePopupMode = changePopupMode;
   }
 
-  init = (movie, scrollCoords) => {
+  initCard = (movie) => {
     this.#movie = movie;
     const cardComponent = this.cardComponent;
-    const popupComponent = this.popupComponent;
 
     this.cardComponent = new CardsView(this.#movie);
-    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData, scrollCoords);
 
     this.cardComponent.setPostClickHandler(this.#handlePostClick);
 
@@ -42,7 +40,7 @@ export default class MoviePresenter {
     this.cardComponent.setWatchlistClickHandler(this.handleWatchlistClick);
     this.cardComponent.setHistoryClickHandler(this.handleHistoryClick);
 
-    if (cardComponent === null || popupComponent === null) {
+    if (cardComponent === null) {
       renderElement(this.#moviesContainer, this.cardComponent, RenderPosition.BEFOREEND);
       return;
     }
@@ -52,11 +50,18 @@ export default class MoviePresenter {
     }
 
     if (this.popupMode === PopupMode.OPENED) {
+      replace(this.cardComponent, cardComponent);
+    }
+  }
+
+  initPopup = (movie) => {
+    this.#movie = movie;
+    const popupComponent = this.popupComponent;
+    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData);
+
+    if (this.popupMode === PopupMode.OPENED) {
       this.#handlePostClick();
       replace(this.popupComponent, popupComponent);
-      // if (!cardComponent.element || this.#cardComponent.element) {
-      replace(this.cardComponent, cardComponent);
-      // }
     }
   }
 
@@ -92,7 +97,7 @@ export default class MoviePresenter {
     );
   }
 
-  handleFormSubmit = (movie, scrollCoordinates) => {
+  handleFormSubmit = (movie) => {
     const isMinorUpdate =
     !isFavorite(this.#movie.userDetails.favorite, movie.userDetails.favorite) ||
     !isWatchlistAdded(this.#movie.userDetails.watchlist, movie.userDetails.watchlist) ||
@@ -102,8 +107,7 @@ export default class MoviePresenter {
       UserAction.UPDATE_MOVIE,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       movie,
-      this.popupComponent,
-      scrollCoordinates,
+      this.popupComponent.scrollCoordinates,
     );
   }
 

@@ -4,7 +4,6 @@ import { PopupMode } from '../presenter/movie-presenter.js';
 import SmartView from './smart-view.js';
 import { generateComment } from '../mock/structure.js';
 import dayjs from 'dayjs';
-import he from 'he';
 
 let checkedEmotion;
 let closeButton;
@@ -132,12 +131,12 @@ export default class PopupView extends SmartView{
   #changePopupMode = null;
   #moviePresenter = null;
   changeData = null;
+  scrollCoordinates = [0, 0];
 
-  constructor(movieInfo, changePopupMode, moviePresenter, changeData, scrollCoords) {
+  constructor(movieInfo, changePopupMode, moviePresenter, changeData) {
     super();
     this.changeData = changeData;
     this._data = movieInfo;
-    this.scrollCoordinates = scrollCoords;
     this.#moviePresenter = moviePresenter;
     this.#changePopupMode = changePopupMode;
     this.#setInnerHandlers();
@@ -194,9 +193,7 @@ export default class PopupView extends SmartView{
 
     postClickHandler(movie, moviePresenter) {
       this.#changePopupMode();
-      console.log(moviePresenter.popupMode);
       moviePresenter.popupMode = PopupMode.OPENED;
-      console.log(moviePresenter.popupMode);
 
       document.body.classList.add('hide-overflow');
 
@@ -228,7 +225,7 @@ export default class PopupView extends SmartView{
         evt.preventDefault();
         const commentText = this.element.querySelector('.film-details__comment-input').value;
         this._data = PopupView.parseDataToMovie(this._data, commentText, emoji.value);
-        this._callback.formSubmit(this._data, this.scrollCoordinates);
+        this._callback.formSubmit(this._data);
       }
     }
 
@@ -249,6 +246,7 @@ export default class PopupView extends SmartView{
 
     favoriteClickHandler(evt) {
       evt.preventDefault();
+      console.log(this.scrollCoordinates);
       this._callback.favoriteClick(this.scrollCoordinates);
     }
 
@@ -272,12 +270,18 @@ export default class PopupView extends SmartView{
       const newComment = generateComment();
 
       movie.comments.push({...newComment, comment: comment, emotion: emoji, date: dayjs().format('YYYY/MM/DD HH:mm')});
-      return (movie);
+      return movie;
+    }
+
+    deleteComment = (movie, comment) => {
+      movie.comments.splice([movie.comments.indexOf(comment)], 1);
+      this._data = movie;
     }
 
     #setInnerHandlers = () => {
       this.element.addEventListener('scroll', () => {
         this.scrollCoordinates = [this.element.scrollLeft, this.element.scrollTop];
+        console.log(this.scrollCoordinates);
       });
 
       this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.emojiChangeHandler.bind(this));

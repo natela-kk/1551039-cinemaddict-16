@@ -1,5 +1,6 @@
 import AbstractView from './abstract-view.js';
 import he from 'he';
+import { UserAction, UpdateType } from '../const.js';
 
 const createCommentTemplate = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">
@@ -33,7 +34,13 @@ export default class CommentView extends AbstractView{
       evt.preventDefault();
       const commentToDelete = movieData.comments.find((comment) => comment === this.comment);
       movieData.comments.splice([movieData.comments.indexOf(commentToDelete)], 1);
-      popupComponent.changeData(movieData, popupComponent.scrollCoordinates);
+      popupComponent.changeData(
+        UserAction.UPDATE_MOVIE,
+        UpdateType.PATCH,
+        movieData,
+        popupComponent.scrollCoordinates,
+      );
+      popupComponent.deleteComment(movieData, commentToDelete);
     });
   }
 

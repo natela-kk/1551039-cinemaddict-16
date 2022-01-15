@@ -2,7 +2,6 @@ import { filter } from '../mock/utils/filter.js';
 import SortView from '../view/sort-view.js';
 import CardsContainerView from '../view/cards-container-view.js';
 import ButtonView from '../view/button-view.js';
-import ExtraView from '../view/extra-view.js';
 import FooterView from '../view/footer-view.js';
 import NoMoviesView from '../view/no-movies-view.js';
 import { remove, renderElement } from '../mock/render.js';
@@ -18,7 +17,6 @@ const footer = document.querySelector('.footer');
 
 export default class MovieListPresenter {
   #mainContainer = null;
-  #currentFilter = null;
   #moviesModel = null;
   #sortComponent = null;
   #loadMoreButtonComponent = null;
@@ -26,7 +24,6 @@ export default class MovieListPresenter {
   #noMoviesComponent = null;
 
   #cardsContainerComponent = new CardsContainerView();
-  #extraComponent = new ExtraView();
   #footerComponent = new FooterView();
   moviePresenter = new Map();
   #cardsContainer = this.#cardsContainerComponent.element.querySelector('.films-list__container');
@@ -67,7 +64,8 @@ export default class MovieListPresenter {
 
   renderMovie = (movie) => {
     const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
-    moviePresenter.init(movie);
+    moviePresenter.initCard(movie);
+    moviePresenter.initPopup(movie);
     this.moviePresenter.set(movie.id, moviePresenter);
   }
 
@@ -131,53 +129,41 @@ export default class MovieListPresenter {
     }
   }
 
-  clearMovieList() {
-    this.moviePresenter.forEach((presenter) => presenter.destroy());
-    this.moviePresenter.clear();
-    this.#renderedMoviesCount = MOVIES_COUNT_PER_STEP;
-    remove(this.#loadMoreButtonComponent);
-  }
-
-  handleMovieChange (updatedMovie, scrollCoordinates) {
-    this.moviePresenter.get(updatedMovie.id).init(updatedMovie, scrollCoordinates);
-  }
-
   handleViewAction = (actionType, updateType, update, scrollCoordinates) => {
     switch (actionType) {
       case UserAction.UPDATE_MOVIE:
-        this.#moviesModel.updateMovie('PATCH', update);
         if (this.#filterType !== 'all' && this.moviePresenter.get(update.id)) {
-          const movie = this.moviePresenter.get(update.id);
-          if(movie.popupMode === 'OPENED') {
-            movie.popupComponent.closePopup();
-            this.#moviesModel.updateMovie('MINOR', update);
-            const updatedMovie = this.moviePresenter.get(update.id);
-            if (updatedMovie) {
-              updatedMovie.popupComponent.postClickHandler(update, this.moviePresenter);
-              this.moviePresenter.get(update.id).popupMode = 'OPENED';
-            } else {
-              movie.popupComponent.postClickHandler(update, this.moviePresenter);
-              movie.popupMode = 'OPENED';
-            }
+          const oldPopup = this.moviePresenter.get(update.id).popupComponent;
+          this.#moviesModel.updateMovie('MINOR', update, scrollCoordinates);
+          if (this.moviePresenter.get(update.id)) {
+            const updatedPopup = this.moviePresenter.get(update.id).popupComponent;
+            replace(updatedPopup, oldPopup);
+            this.moviePresenter.get(update.id).popupComponent.postClickHandler(update, this.moviePresenter);
           } else {
-            this.#moviesModel.updateMovie('MINOR', update);
+            this.#moviesModel.updateMovie('PATCH_POPUP', update);
           }
+        } else if (this.#filterType === 'all') {
+          this.#moviesModel.updateMovie('PATCH', update);
         }
-        break;
-      case UserAction.ADD_MOVIE:
-        this.#moviesModel.addMovie(updateType, update);
-        break;
-      case UserAction.DELETE_MOVIE:
-        this.#moviesModel.deleteMovie(updateType, update);
+        this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...scrollCoordinates);
         break;
     }
   }
 
   #handleModelEvent = (updateType, data) => {
-    console.log(updateType);
     switch (updateType) {
       case UpdateType.PATCH:
-        this.moviePresenter.get(data.id).init(data);
+        this.moviePresenter.get(data.id).initCard(data);
+        this.moviePresenter.get(data.id).initPopup(data);
+        break;
+      case UpdateType.PATCH_POPUP:
+        {
+          const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
+          this.moviePresenter.set(data.id, moviePresenter);
+          this.moviePresenter.get(data.id).initPopup(data);
+          this.moviePresenter.get(data.id).popupComponent.postClickHandler(data, moviePresenter);
+          replace(this.moviePresenter.get(data.id).popupComponent, document.querySelector('form'));
+        }
         break;
       case UpdateType.MINOR:
         this.#clearMoviesContainer();

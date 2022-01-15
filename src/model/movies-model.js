@@ -11,7 +11,7 @@ get movies() {
   return this.#movies;
 }
 
-updateMovie = (updateType, update) => {
+updateMovie = (updateType, update, scrollCoordinates) => {
   const index = this.#movies.findIndex((movie) => movie.id === update.id);
 
   if (index === -1) {
@@ -23,7 +23,7 @@ updateMovie = (updateType, update) => {
     update,
     ...this.#movies.slice(index + 1),
   ];
-  this._notify(updateType, update);
+  this._notify(updateType, update, scrollCoordinates);
 }
 
 addMovie = (updateType, update) => {
