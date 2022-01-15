@@ -141,7 +141,6 @@ export default class MovieListPresenter {
           const updatedPresenter = this.moviePresenter.get(update.id);
 
           if (updatedPresenter && document.querySelector('form')) {
-            // (oldPresenter.popupMode === 'OPENED' || updatedPresenter.popupMode === 'OPENED')) {
             replace(updatedPresenter.popupComponent, oldPresenter.popupComponent);
             updatedPresenter.popupComponent.postClickHandler(update, this.moviePresenter);
             updatedPresenter.popupMode = 'OPENED';
