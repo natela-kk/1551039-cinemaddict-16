@@ -203,7 +203,6 @@ export default class PopupView extends SmartView{
       mainElement.appendChild(this.element);
 
       document.addEventListener('keydown', this.documentKeydownHandler);
-      this.setCoordinates();
     }
 
     addCommentsList() {
@@ -246,18 +245,17 @@ export default class PopupView extends SmartView{
 
     favoriteClickHandler(evt) {
       evt.preventDefault();
-      console.log(this.scrollCoordinates);
-      this._callback.favoriteClick(this.scrollCoordinates);
+      this._callback.favoriteClick();
     }
 
     watchlistClickHandler(evt) {
       evt.preventDefault();
-      this._callback.watchlistClick(this.scrollCoordinates);
+      this._callback.watchlistClick();
     }
 
     historyClickHandler(evt) {
       evt.preventDefault();
-      this._callback.historyClick(this.scrollCoordinates);
+      this._callback.historyClick();
     }
 
     static parseDataToMovie = (movie, comment, emoji) => {
@@ -273,15 +271,9 @@ export default class PopupView extends SmartView{
       return movie;
     }
 
-    deleteComment = (movie, comment) => {
-      movie.comments.splice([movie.comments.indexOf(comment)], 1);
-      this._data = movie;
-    }
-
     #setInnerHandlers = () => {
       this.element.addEventListener('scroll', () => {
         this.scrollCoordinates = [this.element.scrollLeft, this.element.scrollTop];
-        console.log(this.scrollCoordinates);
       });
 
       this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.emojiChangeHandler.bind(this));
@@ -292,12 +284,6 @@ export default class PopupView extends SmartView{
       this.setFavoriteClickHandler(this.#moviePresenter.handleFavoriteClick);
       this.setWatchlistClickHandler(this.#moviePresenter.handleWatchlistClick);
       this.setHistoryClickHandler(this.#moviePresenter.handleHistoryClick);
-    }
-
-    setCoordinates = () => {
-      if(this.scrollCoordinates) {
-        this.element.scrollTo(...this.scrollCoordinates);
-      }
     }
 
     restoreHandlers = () => {

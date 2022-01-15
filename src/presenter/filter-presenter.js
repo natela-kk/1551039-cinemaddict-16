@@ -68,11 +68,11 @@ export default class FilterPresenter {
     this.init();
   }
 
-  #handleFilterTypeChange = (filterType) => {
+  #handleFilterTypeChange = (filterType, scrollCoordinates) => {
     if (this.#filterModel.filter === filterType) {
       return;
     }
 
-    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+    this.#filterModel.setFilter(UpdateType.MAJOR, filterType, scrollCoordinates);
   }
 }

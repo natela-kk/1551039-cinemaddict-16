@@ -22,6 +22,7 @@ export default class MovieListPresenter {
   #loadMoreButtonComponent = null;
   #filterModel = null;
   #noMoviesComponent = null;
+  scrollCoordinates = [0, 0];
 
   #cardsContainerComponent = new CardsContainerView();
   #footerComponent = new FooterView();
@@ -54,8 +55,8 @@ export default class MovieListPresenter {
   }
 
   init = () => {
-    this.#renderSort();
     this.#renderMovieList();
+    this.#renderSort();
   }
 
   #renderMovies = (movies) => {
@@ -130,39 +131,61 @@ export default class MovieListPresenter {
   }
 
   handleViewAction = (actionType, updateType, update, scrollCoordinates) => {
+    this.scrollCoordinates = scrollCoordinates;
     switch (actionType) {
-      case UserAction.UPDATE_MOVIE:
-        if (this.#filterType !== 'all' && this.moviePresenter.get(update.id)) {
-          const oldPopup = this.moviePresenter.get(update.id).popupComponent;
-          this.#moviesModel.updateMovie('MINOR', update, scrollCoordinates);
-          if (this.moviePresenter.get(update.id)) {
-            const updatedPopup = this.moviePresenter.get(update.id).popupComponent;
-            replace(updatedPopup, oldPopup);
-            this.moviePresenter.get(update.id).popupComponent.postClickHandler(update, this.moviePresenter);
-          } else {
+      case UserAction.UPDATE_MOVIE: {
+        const oldPresenter = this.moviePresenter.get(update.id);
+
+        if (this.#filterType !== 'all' && oldPresenter) {
+          this.#moviesModel.updateMovie('MINOR', update);
+          const updatedPresenter = this.moviePresenter.get(update.id);
+
+          if (updatedPresenter && document.querySelector('form')) {
+            // (oldPresenter.popupMode === 'OPENED' || updatedPresenter.popupMode === 'OPENED')) {
+            replace(updatedPresenter.popupComponent, oldPresenter.popupComponent);
+            updatedPresenter.popupComponent.postClickHandler(update, this.moviePresenter);
+            updatedPresenter.popupMode = 'OPENED';
+
+          } else if (document.querySelector('form')) {
             this.#moviesModel.updateMovie('PATCH_POPUP', update);
           }
+
         } else if (this.#filterType === 'all') {
           this.#moviesModel.updateMovie('PATCH', update);
+
+        } else if (!oldPresenter) {
+          this.#moviesModel.updateMovie('PATCH_POPUP', update);
         }
-        this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...scrollCoordinates);
+
+        if(document.querySelector('form') && this.moviePresenter.get(update.id)) {
+          this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...this.scrollCoordinates);
+        }
         break;
+      }
     }
   }
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
-      case UpdateType.PATCH:
-        this.moviePresenter.get(data.id).initCard(data);
-        this.moviePresenter.get(data.id).initPopup(data);
+      case UpdateType.PATCH: {
+        const newPresenter = this.moviePresenter.get(data.id);
+        newPresenter.initCard(data);
+        newPresenter.initPopup(data);
+        if(document.querySelector('form') && document.querySelector('form') !== newPresenter.popupComponent.element.querySelector('form')){
+          replace(newPresenter.popupComponent, document.querySelector('form'));
+          newPresenter.popupComponent.postClickHandler(data, this.moviePresenter);
+          newPresenter.popupComponent.element.scrollTo(...this.scrollCoordinates);
+        }
         break;
+      }
       case UpdateType.PATCH_POPUP:
         {
           const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
           this.moviePresenter.set(data.id, moviePresenter);
-          this.moviePresenter.get(data.id).initPopup(data);
-          this.moviePresenter.get(data.id).popupComponent.postClickHandler(data, moviePresenter);
-          replace(this.moviePresenter.get(data.id).popupComponent, document.querySelector('form'));
+          const newPresenter = this.moviePresenter.get(data.id);
+          newPresenter.initPopup(data);
+          replace(newPresenter.popupComponent, document.querySelector('form'));
+          newPresenter.popupComponent.postClickHandler(data, moviePresenter);
         }
         break;
       case UpdateType.MINOR:
@@ -182,7 +205,7 @@ export default class MovieListPresenter {
     }
     this.#currentSortType = sortType;
 
-    this.#clearMoviesContainer();
+    this.#clearMoviesContainer({resetRenderedMoviesCount: true});
     this.#renderMoviesContainer();
   }
 
@@ -207,7 +230,7 @@ export default class MovieListPresenter {
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    renderElement(this.#mainContainer, this.#sortComponent, RenderPosition.BEFOREEND);
+    renderElement(this.#cardsContainerComponent, this.#sortComponent, RenderPosition.BEFOREBEGIN);
   }
 
   handleModeChange() {

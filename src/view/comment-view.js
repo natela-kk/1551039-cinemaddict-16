@@ -40,7 +40,6 @@ export default class CommentView extends AbstractView{
         movieData,
         popupComponent.scrollCoordinates,
       );
-      popupComponent.deleteComment(movieData, commentToDelete);
     });
   }
 

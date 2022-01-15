@@ -63,37 +63,38 @@ export default class MoviePresenter {
       this.#handlePostClick();
       replace(this.popupComponent, popupComponent);
     }
+    this.popupComponent.element.scrollTo(...this.popupComponent.scrollCoordinates);
   }
 
   destroy = () => {
     remove(this.cardComponent);
   }
 
-  handleFavoriteClick = (scrollCoordinates) => {
+  handleFavoriteClick = () => {
 
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
       {...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}},
-      scrollCoordinates
+      this.popupComponent.scrollCoordinates,
     );
   }
 
-  handleWatchlistClick = (scrollCoordinates) => {
+  handleWatchlistClick = () => {
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
       {...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}},
-      scrollCoordinates
+      this.popupComponent.scrollCoordinates,
     );
   }
 
-  handleHistoryClick = (scrollCoordinates) => {
+  handleHistoryClick = () => {
     this.#changeData(
       UserAction.UPDATE_MOVIE,
       UpdateType.MINOR,
       {...this.#movie, userDetails: {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched}},
-      scrollCoordinates
+      this.popupComponent.scrollCoordinates,
     );
   }
 

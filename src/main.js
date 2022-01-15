@@ -17,8 +17,8 @@ moviesModel.movies = allMovies;
 
 const filterModel = new FilterModel();
 
-export const movieListPresenter = new MovieListPresenter(mainElement, moviesModel, filterModel);
 const filterPresenter = new FilterPresenter(mainElement, filterModel, moviesModel);
+export const movieListPresenter = new MovieListPresenter(mainElement, moviesModel, filterModel);
 renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
 filterPresenter.init();
 movieListPresenter.init();

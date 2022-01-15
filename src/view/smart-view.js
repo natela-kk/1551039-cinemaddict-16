@@ -4,7 +4,6 @@ export default class SmartView extends AbstractView{
   _data = {};
 
   restoreHandlers() {
-  // восстанавливать обработчики событий после перерисовки;
     throw new Error('Abstract method not implemented: restoreHandlers');
   }
 
@@ -12,16 +11,12 @@ export default class SmartView extends AbstractView{
     const prevElement = this.element;
     const parent = prevElement.parentElement;
 
-    // удалить старый DOM-элемент компонента;
     this.removeElement();
 
-    // создать новый DOM-элемент;
     const newElement = this.element;
 
-    // поместить новый элемент вместо старого;
     parent.replaceChild(newElement, prevElement);
 
-    // восстановить обработчики событий, вызвав restoreHandlers.
     this.restoreHandlers();
   }
 
