@@ -131,13 +131,12 @@ export default class PopupView extends SmartView{
   #changePopupMode = null;
   #moviePresenter = null;
   changeData = null;
+  scrollCoordinates = [0, 0];
 
-  constructor(movieInfo, changePopupMode, moviePresenter, cardComponent, changeData, scrollCoords) {
+  constructor(movieInfo, changePopupMode, moviePresenter, changeData) {
     super();
-    this.cardComponent = cardComponent;
     this.changeData = changeData;
     this._data = movieInfo;
-    this.scrollCoordinates = scrollCoords;
     this.#moviePresenter = moviePresenter;
     this.#changePopupMode = changePopupMode;
     this.#setInnerHandlers();
@@ -195,6 +194,7 @@ export default class PopupView extends SmartView{
     postClickHandler(movie, moviePresenter) {
       this.#changePopupMode();
       moviePresenter.popupMode = PopupMode.OPENED;
+
       document.body.classList.add('hide-overflow');
 
       this._data = movie;
@@ -203,7 +203,6 @@ export default class PopupView extends SmartView{
       mainElement.appendChild(this.element);
 
       document.addEventListener('keydown', this.documentKeydownHandler);
-      this.setCoordinates();
     }
 
     addCommentsList() {
@@ -225,7 +224,7 @@ export default class PopupView extends SmartView{
         evt.preventDefault();
         const commentText = this.element.querySelector('.film-details__comment-input').value;
         this._data = PopupView.parseDataToMovie(this._data, commentText, emoji.value);
-        this._callback.formSubmit(this._data, this.scrollCoordinates);
+        this._callback.formSubmit(this._data);
       }
     }
 
@@ -246,17 +245,17 @@ export default class PopupView extends SmartView{
 
     favoriteClickHandler(evt) {
       evt.preventDefault();
-      this._callback.favoriteClick(this.scrollCoordinates);
+      this._callback.favoriteClick();
     }
 
     watchlistClickHandler(evt) {
       evt.preventDefault();
-      this._callback.watchlistClick(this.scrollCoordinates);
+      this._callback.watchlistClick();
     }
 
     historyClickHandler(evt) {
       evt.preventDefault();
-      this._callback.historyClick(this.scrollCoordinates);
+      this._callback.historyClick();
     }
 
     static parseDataToMovie = (movie, comment, emoji) => {
@@ -269,7 +268,7 @@ export default class PopupView extends SmartView{
       const newComment = generateComment();
 
       movie.comments.push({...newComment, comment: comment, emotion: emoji, date: dayjs().format('YYYY/MM/DD HH:mm')});
-      return (movie);
+      return movie;
     }
 
     #setInnerHandlers = () => {
@@ -285,12 +284,6 @@ export default class PopupView extends SmartView{
       this.setFavoriteClickHandler(this.#moviePresenter.handleFavoriteClick);
       this.setWatchlistClickHandler(this.#moviePresenter.handleWatchlistClick);
       this.setHistoryClickHandler(this.#moviePresenter.handleHistoryClick);
-    }
-
-    setCoordinates = () => {
-      if(this.scrollCoordinates) {
-        this.element.scrollTo(...this.scrollCoordinates);
-      }
     }
 
     restoreHandlers = () => {

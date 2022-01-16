@@ -1,31 +1,27 @@
 import AbstractView from './abstract-view.js';
+import { SortType } from '../const.js';
 
 const ACTIVE_SORT_CLASS = 'sort__button--active';
 
-export const SortType = {
-  DEFAULT: 'default',
-  DATE: 'date-down',
-  RATING: 'rating-down',
-};
-
-const createFilterTemplate = () => (
+const createSortTemplate = (currentSortType) => (
   `<ul class="sort">
-  <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
-  <li><a href="#" class="sort__button" data-sort-type="${SortType.DATE}">Sort by date</a></li>
-  <li><a href="#" class="sort__button" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
+  <li><a href="#" class="sort__button ${currentSortType === SortType.DEFAULT ? 'sort__button--active' : ''}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
+  <li><a href="#" class="sort__button ${currentSortType === SortType.DATE ? 'sort__button--active' : ''}" data-sort-type="${SortType.DATE}">Sort by date</a></li>
+  <li><a href="#" class="sort__button ${currentSortType === SortType.RATING ? 'sort__button--active' : ''}" data-sort-type="${SortType.RATING}">Sort by rating</a></li>
 </ul>`
 );
 
 export default class SortView extends AbstractView{
-  #currentSortTypeButton = null;
+  #currentSortType = null;
 
-  constructor() {
+  constructor(currentSortType) {
     super();
+    this.#currentSortType = currentSortType;
     this.addSortButtonClickHandler();
   }
 
   get template() {
-    return createFilterTemplate();
+    return createSortTemplate(this.#currentSortType);
   }
 
   setSortTypeChangeHandler = (callback) => {
@@ -43,12 +39,12 @@ export default class SortView extends AbstractView{
   }
 
   addSortButtonClickHandler() {
-    this.#currentSortTypeButton = this.element.querySelector(`.${ACTIVE_SORT_CLASS}`);
+    this.#currentSortType = this.element.querySelector(`.${ACTIVE_SORT_CLASS}`);
     this.element.addEventListener('click', (evt) => {
-      if (evt.target.className === 'sort__button' && this.#currentSortTypeButton !== evt.target) {
-        this.#currentSortTypeButton.classList.remove(ACTIVE_SORT_CLASS);
-        this.#currentSortTypeButton = evt.target;
-        this.#currentSortTypeButton.classList.add(ACTIVE_SORT_CLASS);
+      if (evt.target.className === 'sort__button' && this.#currentSortType !== evt.target) {
+        this.#currentSortType.classList.remove(ACTIVE_SORT_CLASS);
+        this.#currentSortType = evt.target;
+        this.#currentSortType.classList.add(ACTIVE_SORT_CLASS);
       }
     });
   }

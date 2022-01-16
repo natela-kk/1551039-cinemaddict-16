@@ -1,4 +1,4 @@
-import AbstractView from '../view/abstract-view.js';
+import AbstractView from '../../view/abstract-view.js';
 
 export const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
@@ -14,25 +14,10 @@ export const getRandomPositiveFloat = (min, max, digits) => {
   return result.toFixed(digits);
 };
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 export const replace = (newElement, oldElement) => {
   if (newElement === null || oldElement === null) {
     throw new Error('Can\'t replace unexisting elements');
   }
-
   const newChild = newElement instanceof AbstractView ? newElement.element : newElement;
   const oldChild = oldElement instanceof AbstractView ? oldElement.element : oldElement;
 
@@ -57,3 +42,7 @@ export const sortMovieRatingDown = (movieA, movieB) => {
   const dateTwo = movieB.filmInfo.total_rating;
   return dateTwo - dateOne;
 };
+
+export const isFavorite = (favorite, updatedFavorite) => (favorite === updatedFavorite);
+export const isWatchlistAdded = (favorite, updatedFavorite) => (favorite === updatedFavorite);
+export const isAlreadyWatched = (favorite, updatedFavorite) => (favorite === updatedFavorite);
