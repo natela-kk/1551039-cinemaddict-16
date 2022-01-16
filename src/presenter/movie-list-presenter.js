@@ -130,37 +130,32 @@ export default class MovieListPresenter {
     }
   }
 
-  handleViewAction = (actionType, updateType, update, scrollCoordinates) => {
+  handleViewAction = (update, scrollCoordinates) => {
     this.scrollCoordinates = scrollCoordinates;
-    switch (actionType) {
-      case UserAction.UPDATE_MOVIE: {
-        const oldPresenter = this.moviePresenter.get(update.id);
+    const oldPresenter = this.moviePresenter.get(update.id);
 
-        if (this.#filterType !== 'all' && oldPresenter) {
-          this.#moviesModel.updateMovie('MINOR', update);
-          const updatedPresenter = this.moviePresenter.get(update.id);
+    if (this.#filterType !== 'all' && oldPresenter) {
+      this.#moviesModel.updateMovie('MINOR', update);
+      const updatedPresenter = this.moviePresenter.get(update.id);
 
-          if (updatedPresenter && document.querySelector('form')) {
-            replace(updatedPresenter.popupComponent, oldPresenter.popupComponent);
-            updatedPresenter.popupComponent.postClickHandler(update, this.moviePresenter);
-            updatedPresenter.popupMode = 'OPENED';
+      if (updatedPresenter && document.querySelector('form')) {
+        replace(updatedPresenter.popupComponent, oldPresenter.popupComponent);
+        updatedPresenter.popupComponent.postClickHandler(update, this.moviePresenter);
+        updatedPresenter.popupMode = 'OPENED';
 
-          } else if (document.querySelector('form')) {
-            this.#moviesModel.updateMovie('PATCH_POPUP', update);
-          }
-
-        } else if (this.#filterType === 'all') {
-          this.#moviesModel.updateMovie('PATCH', update);
-
-        } else if (!oldPresenter) {
-          this.#moviesModel.updateMovie('PATCH_POPUP', update);
-        }
-
-        if(document.querySelector('form') && this.moviePresenter.get(update.id)) {
-          this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...this.scrollCoordinates);
-        }
-        break;
+      } else if (document.querySelector('form')) {
+        this.#moviesModel.updateMovie('PATCH_POPUP', update);
       }
+
+    } else if (this.#filterType === 'all') {
+      this.#moviesModel.updateMovie('PATCH', update);
+
+    } else if (!oldPresenter) {
+      this.#moviesModel.updateMovie('PATCH_POPUP', update);
+    }
+
+    if(document.querySelector('form') && this.moviePresenter.get(update.id)) {
+      this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...this.scrollCoordinates);
     }
   }
 

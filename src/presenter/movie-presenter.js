@@ -71,10 +71,7 @@ export default class MoviePresenter {
   }
 
   handleFavoriteClick = () => {
-
     this.#changeData(
-      UserAction.UPDATE_MOVIE,
-      UpdateType.MINOR,
       {...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}},
       this.popupComponent.scrollCoordinates,
     );
@@ -82,8 +79,6 @@ export default class MoviePresenter {
 
   handleWatchlistClick = () => {
     this.#changeData(
-      UserAction.UPDATE_MOVIE,
-      UpdateType.MINOR,
       {...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}},
       this.popupComponent.scrollCoordinates,
     );
@@ -91,22 +86,13 @@ export default class MoviePresenter {
 
   handleHistoryClick = () => {
     this.#changeData(
-      UserAction.UPDATE_MOVIE,
-      UpdateType.MINOR,
       {...this.#movie, userDetails: {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched}},
       this.popupComponent.scrollCoordinates,
     );
   }
 
   handleFormSubmit = (movie) => {
-    const isMinorUpdate =
-    !isFavorite(this.#movie.userDetails.favorite, movie.userDetails.favorite) ||
-    !isWatchlistAdded(this.#movie.userDetails.watchlist, movie.userDetails.watchlist) ||
-    !isAlreadyWatched(this.#movie.userDetails.alreadyWatched, movie.userDetails.alreadyWatched);
-
     this.#changeData(
-      UserAction.UPDATE_MOVIE,
-      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       movie,
       this.popupComponent.scrollCoordinates,
     );
