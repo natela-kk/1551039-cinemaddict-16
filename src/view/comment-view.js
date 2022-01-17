@@ -1,6 +1,5 @@
 import AbstractView from './abstract-view.js';
 import he from 'he';
-import { UserAction, UpdateType } from '../const.js';
 
 const createCommentTemplate = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">

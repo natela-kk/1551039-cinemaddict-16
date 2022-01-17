@@ -8,7 +8,7 @@ import { remove, renderElement } from '../mock/render.js';
 import { RenderPosition } from '../mock/generate.js';
 import MoviePresenter from './movie-presenter.js';
 import { replace, sortMovieDateDown, sortMovieRatingDown } from '../mock/utils/utils.js';
-import { UpdateType, UserAction, SortType } from '../const.js';
+import { UpdateType, SortType } from '../const.js';
 import { FilterType } from '../const.js';
 
 const MOVIES_COUNT_PER_STEP = 5;
@@ -86,8 +86,9 @@ export default class MovieListPresenter {
     this.#loadMoreButtonComponent.setClickHandler(this.handleLoadMoreButtonClick.bind(this));
   }
 
-  #clearMoviesContainer = ({resetRenderedMoviesCount = false, resetSortType = false} = {}) => {
+  clearMoviesContainer = ({resetRenderedMoviesCount = false, resetSortType = false} = {}) => {
     const moviesCount = this.movies.length;
+
     this.moviePresenter.forEach((presenter) => presenter.destroy());
     this.moviePresenter.clear();
     remove(this.#sortComponent);
@@ -183,11 +184,11 @@ export default class MovieListPresenter {
         }
         break;
       case UpdateType.MINOR:
-        this.#clearMoviesContainer();
+        this.clearMoviesContainer();
         this.#renderMoviesContainer();
         break;
       case UpdateType.MAJOR:
-        this.#clearMoviesContainer({resetRenderedMoviesCount: true, resetSortType: true});
+        this.clearMoviesContainer({resetRenderedMoviesCount: true, resetSortType: true});
         this.#renderMoviesContainer();
         break;
     }
@@ -199,7 +200,7 @@ export default class MovieListPresenter {
     }
     this.#currentSortType = sortType;
 
-    this.#clearMoviesContainer({resetRenderedMoviesCount: true});
+    this.clearMoviesContainer({resetRenderedMoviesCount: true});
     this.#renderMoviesContainer();
   }
 

@@ -1,4 +1,6 @@
 import AbstractView from './abstract-view.js';
+import { MenuItem } from '../const.js';
+
 export const ACTIVE_CLASS = 'main-navigation__item--active';
 
 const createFilterItemTemplate = (filter, currentFilterType) => {
@@ -15,7 +17,7 @@ const createMenuTemplate = (filterItems, currentFilterType) => {
   <div class="main-navigation__items">
   ${filterItemsTemplate}
   </div>
-  <a href="#stats" class="main-navigation__additional">Stats</a>
+  <a href="#stats" class="main-navigation__additional" name = ${MenuItem.STATISTICS}>Stats</a>
   </nav>
   </section>`
   );
@@ -25,19 +27,25 @@ export default class MenuView extends AbstractView{
 
   #currentFilter = null;
   #filters = null;
-  #watchListCount = null;
-  #historyCount = null;
-  #favoritesCount = null;
+  #statsComponent = null;
+  #movieListPresenter = null;
+  // #watchListCount = null;
+  // #historyCount = null;
+  // #favoritesCount = null;
 
-  constructor(filters, currentFilterType) {
+
+  constructor(filters, currentFilterType, statsComponent, movieListPresenter) {
     super();
     this.#filters = filters;
     this.#currentFilter = currentFilterType;
-    this.#watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
-    this.#historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
-    this.#favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
-    this.setActiveFilter();
+    this.#statsComponent = statsComponent;
+    this.#movieListPresenter = movieListPresenter;
 
+    // this.#watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
+    // this.#historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
+    // this.#favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
+    this.setActiveFilter();
+    this.statiscticLink = this.element.querySelector('a[href="#stats"]');
   }
 
   get template() {
@@ -70,9 +78,41 @@ export default class MenuView extends AbstractView{
   }
 
   #filterTypeChangeHandler = (evt) => {
-    if(evt.target.tagName === 'A') {
+    if(evt.target.tagName === 'A' && evt.target.className !=='main-navigation__additional') {
       evt.preventDefault();
+
       this._callback.filterTypeChange(evt.target.name);
+    }
+  }
+
+  // setShowStats() {
+  //   this.statiscticLink.addEventListener('click', this.showStats.bind(this));
+  // }
+
+  // showStats(evt) {
+  //   console.log(this.statiscticLink);
+  //   evt.preventDefault();
+  //   this.#movieListPresenter.clearMoviesContainer();
+  // }
+
+  setMenuClickHandler = (callback) => {
+    this._callback.menuClick = callback;
+    this.element.addEventListener('click', this.#menuClickHandler);
+  }
+
+  setMenuItem = (menuItem) => {
+    const item = this.element.querySelector(`[value=${menuItem}]`);
+
+    if (item !== null) {
+      item.checked = true;
+    }
+  }
+
+  #menuClickHandler = (evt) => {
+    if (evt.target.tagName === 'A') {
+      console.log(evt.target.tagName);
+      evt.preventDefault();
+      // this._callback.menuClick(evt.target.name);
     }
   }
 }

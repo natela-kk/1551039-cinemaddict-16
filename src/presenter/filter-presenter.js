@@ -9,13 +9,16 @@ export default class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;
   #moviesModel = null;
+  #statsComponent = null;
+  filterComponent = null;
+  #movieListPresenter = null;
 
-  #filterComponent = null;
-
-  constructor(filterContainer, filterModel, moviesModel) {
+  constructor(filterContainer, filterModel, moviesModel, statsComponent, movieListPresenter) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#moviesModel = moviesModel;
+    this.#statsComponent = statsComponent;
+    this.#movieListPresenter = movieListPresenter;
 
     this.#moviesModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -50,17 +53,17 @@ export default class FilterPresenter {
 
   init = () => {
     const filters = this.filters;
-    const prevFilterComponent = this.#filterComponent;
+    const prevFilterComponent = this.filterComponent;
 
-    this.#filterComponent = new MenuView(filters, this.#filterModel.filter);
-    this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
+    this.filterComponent = new MenuView(filters, this.#filterModel.filter, this.#statsComponent, this.#movieListPresenter);
+    this.filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
-      renderElement(this.#filterContainer, this.#filterComponent, RenderPosition.AFTERBEGIN);
+      renderElement(this.#filterContainer, this.filterComponent, RenderPosition.AFTERBEGIN);
       return;
     }
 
-    replace(this.#filterComponent, prevFilterComponent);
+    replace(this.filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
   }
 
@@ -69,10 +72,11 @@ export default class FilterPresenter {
   }
 
   #handleFilterTypeChange = (filterType, scrollCoordinates) => {
-    if (this.#filterModel.filter === filterType) {
+console.log(filterType);
+    if (this.#filterModel.filter === filterType && filterType === 'STATISTICS') {
       return;
     }
-
+console.log(filterType);
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType, scrollCoordinates);
   }
 }
