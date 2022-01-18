@@ -28,18 +28,16 @@ export default class MenuView extends AbstractView{
   #currentFilter = null;
   #filters = null;
   #statsComponent = null;
-  #movieListPresenter = null;
   // #watchListCount = null;
   // #historyCount = null;
   // #favoritesCount = null;
 
 
-  constructor(filters, currentFilterType, statsComponent, movieListPresenter) {
+  constructor(filters, currentFilterType, statsComponent) {
     super();
     this.#filters = filters;
     this.#currentFilter = currentFilterType;
     this.#statsComponent = statsComponent;
-    this.#movieListPresenter = movieListPresenter;
 
     // this.#watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
     // this.#historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
@@ -65,9 +63,12 @@ export default class MenuView extends AbstractView{
   changeActiveFilter(evt) {
     this.#currentFilter = this.element.querySelector(`.${ACTIVE_CLASS}`);
 
-    if ((evt.target.className === 'main-navigation__item' || evt.target.className === 'main-navigation__item-count') && this.#currentFilter !== evt.target) {
+    if ((evt.target.tagName === 'A' || evt.target.className === 'main-navigation__item-count') && this.#currentFilter !== evt.target) {
       this.#currentFilter.classList.remove(ACTIVE_CLASS);
       this.#currentFilter = evt.target.closest('.main-navigation__item');
+      if(this.#currentFilter === null) {
+        this.#currentFilter = evt.target;
+      }
       this.#currentFilter.classList.add(ACTIVE_CLASS);
     }
   }
@@ -78,10 +79,11 @@ export default class MenuView extends AbstractView{
   }
 
   #filterTypeChangeHandler = (evt) => {
-    if(evt.target.tagName === 'A' && evt.target.className !=='main-navigation__additional') {
-      evt.preventDefault();
 
-      this._callback.filterTypeChange(evt.target.name);
+    if(evt.target.classList.contains('main-navigation__item') ||  evt.target.className === 'main-navigation__item-count') {
+      evt.preventDefault();
+      const filter = evt.target.closest('.main-navigation__item ');
+      this._callback.filterTypeChange(filter.name);
     }
   }
 
@@ -109,10 +111,15 @@ export default class MenuView extends AbstractView{
   }
 
   #menuClickHandler = (evt) => {
-    if (evt.target.tagName === 'A') {
-      console.log(evt.target.tagName);
+    if (evt.target.tagName === 'A' ||  evt.target.className === 'main-navigation__item-count') {
       evt.preventDefault();
-      // this._callback.menuClick(evt.target.name);
+      let filter;
+      if (evt.target.className === 'main-navigation__item' || evt.target.className === 'main-navigation__item-count') {
+        filter =  evt.target.closest('.main-navigation__item ');
+      } else {
+        filter =  evt.target;
+      }
+      this._callback.menuClick(filter.name.toUpperCase());
     }
   }
 }

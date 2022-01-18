@@ -13,15 +13,11 @@ export default class FilterPresenter {
   filterComponent = null;
   #movieListPresenter = null;
 
-  constructor(filterContainer, filterModel, moviesModel, statsComponent, movieListPresenter) {
+  constructor(filterContainer, filterModel, moviesModel, statsComponent) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#moviesModel = moviesModel;
     this.#statsComponent = statsComponent;
-    this.#movieListPresenter = movieListPresenter;
-
-    this.#moviesModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get filters() {
@@ -55,7 +51,7 @@ export default class FilterPresenter {
     const filters = this.filters;
     const prevFilterComponent = this.filterComponent;
 
-    this.filterComponent = new MenuView(filters, this.#filterModel.filter, this.#statsComponent, this.#movieListPresenter);
+    this.filterComponent = new MenuView(filters, this.#filterModel.filter, this.#statsComponent);
     this.filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
@@ -65,18 +61,19 @@ export default class FilterPresenter {
 
     replace(this.filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
+
+    // this.#moviesModel.addObserver(this.#handleModelEvent);
+    // this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
-  #handleModelEvent = () => {
+  handleModelEvent = () => {
     this.init();
   }
 
-  #handleFilterTypeChange = (filterType, scrollCoordinates) => {
-console.log(filterType);
+  #handleFilterTypeChange = (filterType) => {
     if (this.#filterModel.filter === filterType && filterType === 'STATISTICS') {
       return;
     }
-console.log(filterType);
-    this.#filterModel.setFilter(UpdateType.MAJOR, filterType, scrollCoordinates);
+    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 }

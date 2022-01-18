@@ -20,49 +20,72 @@ moviesModel.movies = allMovies;
 const filterModel = new FilterModel();
 
 const statsComponent = new StatsView();
-export const movieListPresenter = new MovieListPresenter(mainElement, moviesModel, filterModel);
-const filterPresenter = new FilterPresenter(mainElement, filterModel, moviesModel, statsComponent, movieListPresenter);
+const filterPresenter = new FilterPresenter(mainElement, filterModel, moviesModel, statsComponent);
+export const movieListPresenter = new MovieListPresenter(mainElement, moviesModel, filterModel, filterPresenter);
 renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
 
-const handleSiteMenuClick = (menuItem) => {
+export const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.ALL:
+      console.log('all');
       // Скрыть статистику
-      // Показать фильтры
       // Показать доску
-      // Показать форму добавления новой задачи
-      // Убрать выделение с ADD NEW TASK после сохранения
+      if(!document.querySelector('.films-list__container')) {
+        movieListPresenter.init();
+      }
+      statsComponent.element.classList.add('visually-hidden');
       break;
     case MenuItem.WATCHLIST:
+      console.log('WATCHLIST');
+      if(!document.querySelector('.films-list__container')) {
+        movieListPresenter.init();
+      } else {
+        movieListPresenter.clearMoviesContainer();
+        movieListPresenter.renderMoviesContainer();
+      }
+      statsComponent.element.classList.add('visually-hidden');
       // Скрыть статистику
-      // Показать фильтры
       // Показать доску
-      // Показать форму добавления новой задачи
-      // Убрать выделение с ADD NEW TASK после сохранения
       break;
     case MenuItem.HISTORY:
+      console.log('HISTORY');
+      if(!document.querySelector('.films-list__container')) {
+        movieListPresenter.init();
+      } else {
+        movieListPresenter.clearMoviesContainer();
+        movieListPresenter.renderMoviesContainer();
+      }
+      statsComponent.element.classList.add('visually-hidden');
       // Скрыть статистику
-      // Показать фильтры
       // Показать доску
-      // Показать форму добавления новой задачи
-      // Убрать выделение с ADD NEW TASK после сохранения
       break;
     case MenuItem.FAVORITES:
-      // Показать фильтры
+      console.log('FAVORITES');
+      if(!document.querySelector('.films-list__container')) {
+        movieListPresenter.init();
+      } else {
+        movieListPresenter.clearMoviesContainer();
+        movieListPresenter.renderMoviesContainer();
+      }
+      statsComponent.element.classList.add('visually-hidden');
       // Показать доску
       // Скрыть статистику
       break;
     case MenuItem.STATISTICS:
+      console.log('STATISTICS');
+      movieListPresenter.destroy();
+      // movieListPresenter.clearMoviesContainer();
+      statsComponent.element.classList.remove('visually-hidden');
+      statsComponent.showStatistic();
       // Скрыть фильтры
       // Скрыть доску
       // Показать статистику
       break;
   }
 };
+statsComponent.movies = movieListPresenter.movies;
+// statsComponent.movies = 'ok';
 
 filterPresenter.init();
 movieListPresenter.init();
 renderElement(mainElement, statsComponent, RenderPosition.BEFOREEND);
-filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
-
-// filterPresenter.filterComponent.setShowStats(movieListPresenter);
