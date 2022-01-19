@@ -24,6 +24,14 @@ export const FilterType = {
   FAVORITES: 'favorites',
 };
 
+export const StatisticFilter = {
+  TODAY: 'today',
+  WEEK: 'week',
+  MONTH: 'month',
+  YEAR: 'year',
+  ALL_TIME: 'all-time',
+};
+
 export const MenuItem = {
   ALL: 'ALL',
   WATCHLIST: 'WATCHLIST',

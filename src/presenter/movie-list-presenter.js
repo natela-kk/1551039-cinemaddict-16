@@ -61,12 +61,11 @@ export default class MovieListPresenter {
   init = () => {
     this.#renderMovieList();
 
-    // if(!document.querySelector('.sort')) {
-      this.#renderSort();
-    // }
+    this.#renderSort();
 
     this.#moviesModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#filterPresenter.addObservers();
   }
 
   #renderMovies = (movies) => {
@@ -123,6 +122,7 @@ export default class MovieListPresenter {
 
     this.#moviesModel.removeObserver(this.#handleModelEvent);
     this.#moviesModel.removeObserver(this.#handleModelEvent);
+    this.#filterPresenter.removeObservers();
   }
 
   #renderMovieList = () => {

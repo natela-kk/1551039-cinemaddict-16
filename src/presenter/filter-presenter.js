@@ -18,6 +18,8 @@ export default class FilterPresenter {
     this.#filterModel = filterModel;
     this.#moviesModel = moviesModel;
     this.#statsComponent = statsComponent;
+
+    // this.addObservers();
   }
 
   get filters() {
@@ -61,9 +63,6 @@ export default class FilterPresenter {
 
     replace(this.filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
-
-    // this.#moviesModel.addObserver(this.#handleModelEvent);
-    // this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   handleModelEvent = () => {
@@ -75,5 +74,15 @@ export default class FilterPresenter {
       return;
     }
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+  }
+
+  addObservers() {
+    this.#moviesModel.addObserver(this.handleModelEvent);
+    this.#filterModel.addObserver(this.handleModelEvent);
+  }
+
+  removeObservers() {
+    this.#moviesModel.removeObserver(this.handleModelEvent);
+    this.#filterModel.removeObserver(this.handleModelEvent);
   }
 }

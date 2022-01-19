@@ -3,11 +3,14 @@ import { Chart } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { filter } from '../mock/utils/filter.js';
 import { FilterType } from '../const.js';
+import { StatisticFilter as StatisticFilter } from '../const.js';
+import dayjs from 'dayjs';
+import { movieListPresenter } from '../main.js';
 
 console.log(Chart);
 console.log(ChartDataLabels);
 
-const createStatsTemplate = (movies, runtime) => (
+const createStatsTemplate = (movies, runtime, topGenre) => (
   `<section class="statistic visually-hidden">
     <p class="statistic__rank">
       Your rank
@@ -45,7 +48,7 @@ const createStatsTemplate = (movies, runtime) => (
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">Drama</p>
+        <p class="statistic__item-text">${topGenre}</p>
       </li>
     </ul>
 
@@ -56,33 +59,112 @@ const createStatsTemplate = (movies, runtime) => (
 );
 
 export default class StatsView extends SmartView {
+  #currentFilter = 'all-time';
+
   #movies = [];
 
   set movies(movies) {
-    console.log(movies);
     this.#movies = [...movies];
   }
 
   get movies() {
-    return this.#movies;
-  }
-
-  getTotalWatchingTime() {
-    const alreadyWatchedMovies = filter[FilterType.HISTORY](this.#movies);
-
-    const wathedFilmsRuntime = alreadyWatchedMovies.map((current) => Number((current.filmInfo.runtime).replace(/[^0-9]/g,'')));
-    const totalWatchedRuntime = wathedFilmsRuntime.reduce((a, b) => a + b);
-console.log(totalWatchedRuntime);
-    return totalWatchedRuntime;
+    return filter[FilterType.HISTORY](this.#movies);
   }
 
   get template() {
-    return createStatsTemplate(this.#movies, this.getTotalWatchingTime());
+    return createStatsTemplate(this.#movies, this.getTotalWatchingTime(), this.getTopGenre());
+  }
+
+  init() {
+    this.showStatistic();
+  }
+
+  getTotalWatchingTime() {
+    const wathedFilmsRuntime = this.movies.map((current) => Number((current.filmInfo.runtime).replace(/[^0-9]/g,'')));
+    const totalWatchedRuntime = wathedFilmsRuntime.reduce((a, b) => a + b);
+    this.getTopGenre();
+    return totalWatchedRuntime;
+  }
+
+  getTopGenre() {
+    console.log(this.movies);
+    const wathedFilmsGenres = [].concat(...this.movies.map((current) => current.filmInfo.genre));
+    const genreList = [...(new Set(wathedFilmsGenres))];
+    const genreListArray = [];
+    genreList.forEach((genreName) => {
+      const array = [];
+      wathedFilmsGenres.forEach((watchedGenre) => {
+        if (watchedGenre === genreName) {
+          array.push(watchedGenre);
+        }
+        return array;
+      });
+      genreListArray.push(array);
+      this.genresListArray = genreListArray;
+      return genreListArray;
+    });
+    const lengths = genreListArray.map((a)=> a.length);
+    const topGenreIndex = lengths.indexOf(Math.max.apply(Math, lengths));
+    const topGenre = genreListArray[topGenreIndex];
+    return topGenre[0];
+  }
+
+
+  setStaticFilterChange() {
+    this.element.querySelector('.statistic__filters').addEventListener('change', this.staticFilterChange.bind(this));
+  }
+
+  filterStatistic(filterName) {
+    switch(filterName) {
+      case StatisticFilter.TODAY:
+      {
+        this.movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'day'));
+        console.log(this.movies);
+        break;
+      }
+      case StatisticFilter.WEEK:
+      {
+        this.movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'week'));
+        console.log(this.movies);
+        break;
+      }
+      case StatisticFilter.MONTH:
+      {
+        this.movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'month'));
+        console.log(this.movies);
+        break;
+      }
+      case StatisticFilter.YEAR:
+      {
+        this.movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'year'));
+        console.log(this.movies);
+        break;
+      }
+      case StatisticFilter.ALL_TIME:
+        this.movies = movieListPresenter.movies;
+        console.log(this.movies);
+        break;
+    }
+  }
+
+  staticFilterChange(evt) {
+    evt.preventDefault();
+    this.filterStatistic(evt.target.value);
+  }
+
+  getGenreCount(genre) {
+    let sameGenresLength;
+    this.genresListArray.forEach((sameGenres) => {
+      if (sameGenres[0] === genre) {
+        sameGenresLength = sameGenres.length;
+      }
+    });
+
+    return sameGenresLength;
   }
 
   showStatistic() {
-    // console.log(this.movies);
-    this.getTotalWatchingTime();
+
     const BAR_HEIGHT = 50;
     const statisticCtx = document.querySelector('.statistic__chart');
 
@@ -92,9 +174,9 @@ console.log(totalWatchedRuntime);
       plugins: [ChartDataLabels],
       type: 'horizontalBar',
       data: {
-        labels: ['Sci-Fi', 'Animation', 'Fantasy', 'Comedy', 'TV Series'],
+        labels: ['Musical', 'Drama', 'Comedy', 'Cartoon', 'Western'],
         datasets: [{
-          data: [11, 8, 7, 4, 3],
+          data: [this.getGenreCount('Musical'), this.getGenreCount('Drama'), this.getGenreCount('Comedy'), this.getGenreCount('Cartoon'), this.getGenreCount('Western')],
           backgroundColor: '#ffe800',
           hoverBackgroundColor: '#ffe800',
           anchor: 'start',
@@ -145,6 +227,7 @@ console.log(totalWatchedRuntime);
         },
       },
     });
+    this.setStaticFilterChange();
     return myChart;
   }
 }

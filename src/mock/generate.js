@@ -75,7 +75,7 @@ export const generateMovie = () => ({
   'userDetails': {
     'watchlist': Boolean(getRandomInteger(0, 1)),
     'alreadyWatched': Boolean(getRandomInteger(0, 1)),
-    'watching_date': dayjs.between('2020-06-10', '2022-03-02').format('YYYY-MM-DDThh:mm:ss.Z'),
+    'watching_date': dayjs.between('2021-12-12', dayjs()),
     'favorite': Boolean(getRandomInteger(0, 1)),
   }
 });

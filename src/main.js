@@ -30,9 +30,12 @@ export const handleSiteMenuClick = (menuItem) => {
       console.log('all');
       // Скрыть статистику
       // Показать доску
-      if(!document.querySelector('.films-list__container')) {
-        movieListPresenter.init();
-      }
+      // if(!document.querySelector('.films-list__container')) {
+      movieListPresenter.destroy();
+      movieListPresenter.init();
+      console.log('35');
+
+      // }
       statsComponent.element.classList.add('visually-hidden');
       break;
     case MenuItem.WATCHLIST:
@@ -74,9 +77,8 @@ export const handleSiteMenuClick = (menuItem) => {
     case MenuItem.STATISTICS:
       console.log('STATISTICS');
       movieListPresenter.destroy();
-      // movieListPresenter.clearMoviesContainer();
       statsComponent.element.classList.remove('visually-hidden');
-      statsComponent.showStatistic();
+      statsComponent.init();
       // Скрыть фильтры
       // Скрыть доску
       // Показать статистику
@@ -84,7 +86,7 @@ export const handleSiteMenuClick = (menuItem) => {
   }
 };
 statsComponent.movies = movieListPresenter.movies;
-// statsComponent.movies = 'ok';
+
 
 filterPresenter.init();
 movieListPresenter.init();
