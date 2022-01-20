@@ -9,17 +9,12 @@ export default class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;
   #moviesModel = null;
-  #statsComponent = null;
   filterComponent = null;
-  #movieListPresenter = null;
 
-  constructor(filterContainer, filterModel, moviesModel, statsComponent) {
+  constructor(filterContainer, filterModel, moviesModel) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#moviesModel = moviesModel;
-    this.#statsComponent = statsComponent;
-
-    // this.addObservers();
   }
 
   get filters() {
@@ -53,7 +48,7 @@ export default class FilterPresenter {
     const filters = this.filters;
     const prevFilterComponent = this.filterComponent;
 
-    this.filterComponent = new MenuView(filters, this.#filterModel.filter, this.#statsComponent);
+    this.filterComponent = new MenuView(filters, this.#filterModel.filter);
     this.filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {

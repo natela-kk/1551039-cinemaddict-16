@@ -27,21 +27,12 @@ export default class MenuView extends AbstractView{
 
   #currentFilter = null;
   #filters = null;
-  #statsComponent = null;
-  // #watchListCount = null;
-  // #historyCount = null;
-  // #favoritesCount = null;
 
-
-  constructor(filters, currentFilterType, statsComponent) {
+  constructor(filters, currentFilterType) {
     super();
     this.#filters = filters;
     this.#currentFilter = currentFilterType;
-    this.#statsComponent = statsComponent;
 
-    // this.#watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
-    // this.#historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
-    // this.#favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
     this.setActiveFilter();
     this.statiscticLink = this.element.querySelector('a[href="#stats"]');
   }
@@ -61,6 +52,7 @@ export default class MenuView extends AbstractView{
   }
 
   changeActiveFilter(evt) {
+    evt.preventDefault();
     this.#currentFilter = this.element.querySelector(`.${ACTIVE_CLASS}`);
 
     if ((evt.target.tagName === 'A' || evt.target.className === 'main-navigation__item-count') && this.#currentFilter !== evt.target) {
@@ -87,32 +79,14 @@ export default class MenuView extends AbstractView{
     }
   }
 
-  // setShowStats() {
-  //   this.statiscticLink.addEventListener('click', this.showStats.bind(this));
-  // }
-
-  // showStats(evt) {
-  //   console.log(this.statiscticLink);
-  //   evt.preventDefault();
-  //   this.#movieListPresenter.clearMoviesContainer();
-  // }
-
   setMenuClickHandler = (callback) => {
     this._callback.menuClick = callback;
     this.element.addEventListener('click', this.#menuClickHandler);
   }
 
-  setMenuItem = (menuItem) => {
-    const item = this.element.querySelector(`[value=${menuItem}]`);
-
-    if (item !== null) {
-      item.checked = true;
-    }
-  }
-
   #menuClickHandler = (evt) => {
+    evt.preventDefault();
     if (evt.target.tagName === 'A' ||  evt.target.className === 'main-navigation__item-count') {
-      evt.preventDefault();
       let filter;
       if (evt.target.className === 'main-navigation__item' || evt.target.className === 'main-navigation__item-count') {
         filter =  evt.target.closest('.main-navigation__item ');

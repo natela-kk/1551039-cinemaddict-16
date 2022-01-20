@@ -8,6 +8,8 @@ import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import StatsView from './view/stats-view.js';
 import { MenuItem } from './const.js';
+import { filter } from './mock/utils/filter.js';
+import { FilterType } from './const.js';
 
 const headerElement = document.querySelector('.header');
 export const mainElement = document.querySelector('.main');
@@ -19,75 +21,44 @@ moviesModel.movies = allMovies;
 
 const filterModel = new FilterModel();
 
-const statsComponent = new StatsView();
-const filterPresenter = new FilterPresenter(mainElement, filterModel, moviesModel, statsComponent);
+const filterPresenter = new FilterPresenter(mainElement, filterModel, moviesModel);
 export const movieListPresenter = new MovieListPresenter(mainElement, moviesModel, filterModel, filterPresenter);
 renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
 
-export const handleSiteMenuClick = (menuItem) => {
-  switch (menuItem) {
-    case MenuItem.ALL:
-      console.log('all');
-      // Скрыть статистику
-      // Показать доску
-      // if(!document.querySelector('.films-list__container')) {
-      movieListPresenter.destroy();
-      movieListPresenter.init();
-      console.log('35');
+export const watchedMovies = filter[FilterType.HISTORY](movieListPresenter.movies);
 
-      // }
-      statsComponent.element.classList.add('visually-hidden');
-      break;
-    case MenuItem.WATCHLIST:
-      console.log('WATCHLIST');
-      if(!document.querySelector('.films-list__container')) {
-        movieListPresenter.init();
-      } else {
-        movieListPresenter.clearMoviesContainer();
-        movieListPresenter.renderMoviesContainer();
-      }
-      statsComponent.element.classList.add('visually-hidden');
-      // Скрыть статистику
-      // Показать доску
-      break;
-    case MenuItem.HISTORY:
-      console.log('HISTORY');
-      if(!document.querySelector('.films-list__container')) {
-        movieListPresenter.init();
-      } else {
-        movieListPresenter.clearMoviesContainer();
-        movieListPresenter.renderMoviesContainer();
-      }
-      statsComponent.element.classList.add('visually-hidden');
-      // Скрыть статистику
-      // Показать доску
-      break;
-    case MenuItem.FAVORITES:
-      console.log('FAVORITES');
-      if(!document.querySelector('.films-list__container')) {
-        movieListPresenter.init();
-      } else {
-        movieListPresenter.clearMoviesContainer();
-        movieListPresenter.renderMoviesContainer();
-      }
-      statsComponent.element.classList.add('visually-hidden');
-      // Показать доску
-      // Скрыть статистику
-      break;
-    case MenuItem.STATISTICS:
-      console.log('STATISTICS');
-      movieListPresenter.destroy();
-      statsComponent.element.classList.remove('visually-hidden');
-      statsComponent.init();
-      // Скрыть фильтры
-      // Скрыть доску
-      // Показать статистику
-      break;
+export const handleSiteMenuClick = (menuItem) => {
+  console.log(menuItem);
+  if(menuItem === MenuItem.STATISTICS) {
+    const statsComponent = new StatsView(watchedMovies, 'all-time');
+    movieListPresenter.destroy();
+    renderElement(mainElement, statsComponent, RenderPosition.BEFOREEND);
+    statsComponent.element.classList.remove('visually-hidden');
+    statsComponent.init();
+  } else {
+    const statisticElement = document.querySelector('.statistic');
+    if(statisticElement) {
+      statisticElement.remove();
+    }
+
+    if(!document.querySelector('.films-list__container')) {
+      movieListPresenter.init();
+    } else {
+      movieListPresenter.clearMoviesContainer();
+      movieListPresenter.renderMoviesContainer();
+      filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
+    }
   }
 };
-statsComponent.movies = movieListPresenter.movies;
 
+export const updateStatistic = (movies, currentFilter) => {
+  const newStatsComponent = new StatsView(movies, currentFilter);
+  document.querySelector('.statistic').remove();
+  renderElement(mainElement, newStatsComponent, RenderPosition.BEFOREEND);
+  newStatsComponent.element.classList.remove('visually-hidden');
+  newStatsComponent.init();
+  newStatsComponent.setStaticFilterChange();
+};
 
 filterPresenter.init();
 movieListPresenter.init();
-renderElement(mainElement, statsComponent, RenderPosition.BEFOREEND);

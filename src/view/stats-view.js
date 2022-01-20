@@ -1,16 +1,13 @@
 import SmartView from './smart-view.js';
 import { Chart } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { filter } from '../mock/utils/filter.js';
-import { FilterType } from '../const.js';
 import { StatisticFilter as StatisticFilter } from '../const.js';
 import dayjs from 'dayjs';
 import { movieListPresenter } from '../main.js';
+import { updateStatistic } from '../main.js';
+import { watchedMovies } from '../main.js';
 
-console.log(Chart);
-console.log(ChartDataLabels);
-
-const createStatsTemplate = (movies, runtime, topGenre) => (
+const createStatsTemplate = (movies, runtime, topGenre, currentFilter) => (
   `<section class="statistic visually-hidden">
     <p class="statistic__rank">
       Your rank
@@ -21,19 +18,19 @@ const createStatsTemplate = (movies, runtime, topGenre) => (
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
       <p class="statistic__filters-description">Show stats:</p>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" checked>
+      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" ${currentFilter === 'all-time' ? 'checked' : ''}>
       <label for="statistic-all-time" class="statistic__filters-label">All time</label>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today">
+      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today" ${currentFilter === 'today' ? 'checked' : ''}>
       <label for="statistic-today" class="statistic__filters-label">Today</label>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week">
+      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week" ${currentFilter === 'week' ? 'checked' : ''}>
       <label for="statistic-week" class="statistic__filters-label">Week</label>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month">
+      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month" ${currentFilter === 'month' ? 'checked' : ''}>
       <label for="statistic-month" class="statistic__filters-label">Month</label>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year">
+      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year" ${currentFilter === 'year' ? 'checked' : ''}>
       <label for="statistic-year" class="statistic__filters-label">Year</label>
     </form>
 
@@ -59,56 +56,59 @@ const createStatsTemplate = (movies, runtime, topGenre) => (
 );
 
 export default class StatsView extends SmartView {
-  #currentFilter = 'all-time';
+  #movies = null;
+  #currentFilter = null;
 
-  #movies = [];
-
-  set movies(movies) {
-    this.#movies = [...movies];
-  }
-
-  get movies() {
-    return filter[FilterType.HISTORY](this.#movies);
+  constructor(movies, currentFilter) {
+    super();
+    this.#movies = movies;
+    this.#currentFilter = currentFilter;
   }
 
   get template() {
-    return createStatsTemplate(this.#movies, this.getTotalWatchingTime(), this.getTopGenre());
+    return createStatsTemplate(this.#movies, this.getTotalWatchingTime(), this.getTopGenre(), this.#currentFilter);
   }
 
   init() {
     this.showStatistic();
+    this.setStaticFilterChange();
   }
 
   getTotalWatchingTime() {
-    const wathedFilmsRuntime = this.movies.map((current) => Number((current.filmInfo.runtime).replace(/[^0-9]/g,'')));
-    const totalWatchedRuntime = wathedFilmsRuntime.reduce((a, b) => a + b);
-    this.getTopGenre();
-    return totalWatchedRuntime;
+    const wathedFilmsRuntime = this.#movies.map((current) => Number((current.filmInfo.runtime).replace(/[^0-9]/g,'')));
+    if(wathedFilmsRuntime.length !== 0) {
+      const totalWatchedRuntime = wathedFilmsRuntime.reduce((a, b) => a + b);
+      return totalWatchedRuntime;
+    } else {
+      return 0;
+    }
   }
 
   getTopGenre() {
-    console.log(this.movies);
-    const wathedFilmsGenres = [].concat(...this.movies.map((current) => current.filmInfo.genre));
-    const genreList = [...(new Set(wathedFilmsGenres))];
-    const genreListArray = [];
-    genreList.forEach((genreName) => {
-      const array = [];
-      wathedFilmsGenres.forEach((watchedGenre) => {
-        if (watchedGenre === genreName) {
-          array.push(watchedGenre);
-        }
-        return array;
+    if(this.#movies.length !== 0) {
+      const wathedFilmsGenres = [].concat(...this.#movies.map((current) => current.filmInfo.genre));
+      const genreList = [...(new Set(wathedFilmsGenres))];
+      const genreListArray = [];
+      genreList.forEach((genreName) => {
+        const array = [];
+        wathedFilmsGenres.forEach((watchedGenre) => {
+          if (watchedGenre === genreName) {
+            array.push(watchedGenre);
+          }
+          return array;
+        });
+        genreListArray.push(array);
+        this.genresListArray = genreListArray;
+        return genreListArray;
       });
-      genreListArray.push(array);
-      this.genresListArray = genreListArray;
-      return genreListArray;
-    });
-    const lengths = genreListArray.map((a)=> a.length);
-    const topGenreIndex = lengths.indexOf(Math.max.apply(Math, lengths));
-    const topGenre = genreListArray[topGenreIndex];
-    return topGenre[0];
+      const lengths = genreListArray.map((a)=> a.length);
+      const topGenreIndex = lengths.indexOf(Math.max.apply(Math, lengths));
+      const topGenre = genreListArray[topGenreIndex];
+      return topGenre[0];
+    } else {
+      return '';
+    }
   }
-
 
   setStaticFilterChange() {
     this.element.querySelector('.statistic__filters').addEventListener('change', this.staticFilterChange.bind(this));
@@ -118,31 +118,36 @@ export default class StatsView extends SmartView {
     switch(filterName) {
       case StatisticFilter.TODAY:
       {
-        this.movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'day'));
-        console.log(this.movies);
+        this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'day'));
+        this.#currentFilter = StatisticFilter.TODAY;
+        updateStatistic(this.#movies, this.#currentFilter);
         break;
       }
       case StatisticFilter.WEEK:
       {
-        this.movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'week'));
-        console.log(this.movies);
+        this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'week'));
+        this.#currentFilter = StatisticFilter.WEEK;
+        updateStatistic(this.#movies, this.#currentFilter);
         break;
       }
       case StatisticFilter.MONTH:
       {
-        this.movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'month'));
-        console.log(this.movies);
+        this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'month'));
+        this.#currentFilter = StatisticFilter.MONTH;
+        updateStatistic(this.#movies, this.#currentFilter);
         break;
       }
       case StatisticFilter.YEAR:
       {
-        this.movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'year'));
-        console.log(this.movies);
+        this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'year'));
+        this.#currentFilter = StatisticFilter.YEAR;
+        updateStatistic(this.#movies, this.#currentFilter);
         break;
       }
       case StatisticFilter.ALL_TIME:
-        this.movies = movieListPresenter.movies;
-        console.log(this.movies);
+        this.#movies = watchedMovies;
+        this.#currentFilter = StatisticFilter.ALL_TIME;
+        updateStatistic(this.#movies, this.#currentFilter);
         break;
     }
   }
@@ -153,18 +158,21 @@ export default class StatsView extends SmartView {
   }
 
   getGenreCount(genre) {
-    let sameGenresLength;
-    this.genresListArray.forEach((sameGenres) => {
-      if (sameGenres[0] === genre) {
-        sameGenresLength = sameGenres.length;
-      }
-    });
+    if(this.genresListArray) {
+      let sameGenresLength;
+      this.genresListArray.forEach((sameGenres) => {
+        if (sameGenres[0] === genre) {
+          sameGenresLength = sameGenres.length;
+        }
+      });
 
-    return sameGenresLength;
+      return sameGenresLength;
+    } else {
+      return 0;
+    }
   }
 
   showStatistic() {
-
     const BAR_HEIGHT = 50;
     const statisticCtx = document.querySelector('.statistic__chart');
 
@@ -227,7 +235,6 @@ export default class StatsView extends SmartView {
         },
       },
     });
-    this.setStaticFilterChange();
     return myChart;
   }
 }

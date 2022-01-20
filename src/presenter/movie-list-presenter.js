@@ -40,9 +40,6 @@ export default class MovieListPresenter {
     this.#moviesModel = moviesModel;
     this.#filterModel = filterModel;
     this.#filterPresenter = filterPresenter;
-
-    // this.#moviesModel.addObserver(this.#handleModelEvent);
-    // this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get movies() {
@@ -62,6 +59,8 @@ export default class MovieListPresenter {
     this.#renderMovieList();
 
     this.#renderSort();
+
+    this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
 
     this.#moviesModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -116,12 +115,14 @@ export default class MovieListPresenter {
 
   destroy = () => {
     this.clearMoviesContainer({resetRenderedMoviesCount: true, resetSortType: true});
-    // this.#cardsContainerComponent.element.remove();
     remove(this.#cardsContainerComponent);
-    // remove(this.#cardsContainer);
+    this.removeObservers();
+  }
 
+
+  removeObservers() {
     this.#moviesModel.removeObserver(this.#handleModelEvent);
-    this.#moviesModel.removeObserver(this.#handleModelEvent);
+    this.#filterModel.removeObserver(this.#handleModelEvent);
     this.#filterPresenter.removeObservers();
   }
 
@@ -138,7 +139,6 @@ export default class MovieListPresenter {
       this.#renderLoadMoreButton();
     }
     renderElement(footer, this.#footerComponent, RenderPosition.BEFOREEND);
-    this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   }
 
   handleLoadMoreButtonClick() {
@@ -155,7 +155,6 @@ export default class MovieListPresenter {
   }
 
   handleViewAction = (update, scrollCoordinates) => {
-    console.log(update);
     this.scrollCoordinates = scrollCoordinates;
     const oldPresenter = this.moviePresenter.get(update.id);
 
@@ -195,6 +194,7 @@ export default class MovieListPresenter {
           newPresenter.popupComponent.postClickHandler(data, this.moviePresenter);
           newPresenter.popupComponent.element.scrollTo(...this.scrollCoordinates);
         }
+
         break;
       }
       case UpdateType.PATCH_POPUP:
@@ -216,6 +216,7 @@ export default class MovieListPresenter {
         this.renderMoviesContainer();
         break;
     }
+    this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   }
 
   #handleSortTypeChange = (sortType) => {
@@ -243,7 +244,6 @@ export default class MovieListPresenter {
     if (moviesCount > this.#renderedMoviesCount) {
       this.#renderLoadMoreButton();
     }
-    this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   }
 
   #renderSort = () => {

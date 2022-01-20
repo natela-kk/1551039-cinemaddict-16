@@ -26,28 +26,4 @@ updateMovie = (updateType, update) => {
   this._notify(updateType, update);
 }
 
-addMovie = (updateType, update) => {
-  this.#movies = [
-    update,
-    ...this.#movies,
-  ];
-
-  this._notify(updateType, update);
-}
-
-deleteMovie = (updateType, update) => {
-  const index = this.#movies.findIndex((task) => task.id === update.id);
-
-  if (index === -1) {
-    throw new Error('Can\'t delete unexisting movie');
-  }
-
-  this.#movies = [
-    ...this.#movies.slice(0, index),
-    ...this.#movies.slice(index + 1),
-  ];
-
-  this._notify(updateType);
-}
-
 }
