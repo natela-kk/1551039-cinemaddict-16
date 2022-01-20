@@ -2,8 +2,7 @@ import PopupView from '../view/popup-view';
 import CardsView from '../view/cards-view.js';
 import { renderElement, remove } from '../mock/render';
 import { RenderPosition } from '../mock/generate.js';
-import { replace, isFavorite, isAlreadyWatched, isWatchlistAdded } from '../mock/utils/utils';
-import {UserAction, UpdateType} from '../const.js';
+import { replace } from '../mock/utils/utils';
 
 export const PopupMode = {
   CLOSED: 'CLOSED',
