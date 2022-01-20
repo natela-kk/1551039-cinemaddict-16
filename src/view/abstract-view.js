@@ -1,4 +1,4 @@
-import { createElement } from '../mock/render.js';
+import {createElement} from '../mock/render.js';
 
 export default class AbstractView {
   #element = null;
@@ -11,7 +11,7 @@ export default class AbstractView {
   }
 
   get element() {
-    if(!this.#element) {
+    if (!this.#element) {
       this.#element = createElement(this.template);
     }
     return this.#element;

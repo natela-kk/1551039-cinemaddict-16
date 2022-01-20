@@ -1,6 +1,5 @@
 import AbstractView from './abstract-view.js';
 import he from 'he';
-import { UserAction, UpdateType } from '../const.js';
 
 const createCommentTemplate = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">
@@ -16,7 +15,7 @@ const createCommentTemplate = (comment) => (`<li class="film-details__comment">
   </div>
   </li>`);
 
-export default class CommentView extends AbstractView{
+export default class CommentView extends AbstractView {
   comment = null;
 
   constructor(comment) {
@@ -46,7 +45,7 @@ export default class CommentView extends AbstractView{
     const comments = popupComponent.querySelectorAll('.film-details__comment');
     const newValue = comments.length;
     popupCommentsCountElement.textContent = newValue;
-    const cardCommentsCountElement =  cardComponent.element.querySelector('.film-card__comments');
+    const cardCommentsCountElement = cardComponent.element.querySelector('.film-card__comments');
     cardCommentsCountElement.textContent = `${newValue} comments`;
   }
 }

@@ -1,9 +1,9 @@
-import { getRandomInteger, getRandomPositiveFloat } from './utils/utils.js';
-import { getRandomDescription, getCommentsList } from './structure.js';
+import {getRandomInteger, getRandomPositiveFloat} from './utils/utils.js';
+import {getRandomDescription, getCommentsList} from './structure.js';
 import dayjs from 'dayjs';
 import dayjsRandom from 'dayjs-random';
-import { POSTSCOUNT } from '../view/extra-view.js';
-import { nanoid } from 'nanoid';
+import {POSTSCOUNT} from '../view/extra-view.js';
+import {nanoid} from 'nanoid';
 
 const MIN_RUNTIME = 10;
 const MAX_RUNTIME = 30;
@@ -75,7 +75,7 @@ export const generateMovie = () => ({
   'userDetails': {
     'watchlist': Boolean(getRandomInteger(0, 1)),
     'alreadyWatched': Boolean(getRandomInteger(0, 1)),
-    'watching_date': dayjs.between('2020-06-10', '2022-03-02').format('YYYY-MM-DDThh:mm:ss.Z'),
+    'watching_date': dayjs.between('2021-12-12', dayjs()),
     'favorite': Boolean(getRandomInteger(0, 1)),
   }
 });

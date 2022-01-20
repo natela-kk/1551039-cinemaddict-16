@@ -7,7 +7,7 @@ const createUserNameTemplate = () => (
 </section>`
 );
 
-export default class AvatarView extends AbstractView{
+export default class AvatarView extends AbstractView {
   get template() {
     return createUserNameTemplate();
   }

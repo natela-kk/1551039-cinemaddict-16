@@ -1,4 +1,6 @@
 import AbstractView from './abstract-view.js';
+import {MenuItem} from '../const.js';
+
 export const ACTIVE_CLASS = 'main-navigation__item--active';
 
 const createFilterItemTemplate = (filter, currentFilterType) => {
@@ -15,29 +17,22 @@ const createMenuTemplate = (filterItems, currentFilterType) => {
   <div class="main-navigation__items">
   ${filterItemsTemplate}
   </div>
-  <a href="#stats" class="main-navigation__additional">Stats</a>
+  <a href="#stats" class="main-navigation__additional" name = ${MenuItem.STATISTICS}>Stats</a>
   </nav>
   </section>`
   );
 };
 
-export default class MenuView extends AbstractView{
-
+export default class MenuView extends AbstractView {
   #currentFilter = null;
   #filters = null;
-  #watchListCount = null;
-  #historyCount = null;
-  #favoritesCount = null;
 
   constructor(filters, currentFilterType) {
     super();
     this.#filters = filters;
     this.#currentFilter = currentFilterType;
-    this.#watchListCount = this.element.querySelector('a[href="#watchlist"]').querySelector('span');
-    this.#historyCount = this.element.querySelector('a[href="#history"]').querySelector('span');
-    this.#favoritesCount = this.element.querySelector('a[href="#favorites"]').querySelector('span');
-    this.setActiveFilter();
 
+    this.setActiveFilter();
   }
 
   get template() {
@@ -55,11 +50,15 @@ export default class MenuView extends AbstractView{
   }
 
   changeActiveFilter(evt) {
+    evt.preventDefault();
     this.#currentFilter = this.element.querySelector(`.${ACTIVE_CLASS}`);
 
-    if ((evt.target.className === 'main-navigation__item' || evt.target.className === 'main-navigation__item-count') && this.#currentFilter !== evt.target) {
+    if ((evt.target.tagName === 'A' || evt.target.className === 'main-navigation__item-count') && this.#currentFilter !== evt.target) {
       this.#currentFilter.classList.remove(ACTIVE_CLASS);
       this.#currentFilter = evt.target.closest('.main-navigation__item');
+      if (this.#currentFilter === null) {
+        this.#currentFilter = evt.target;
+      }
       this.#currentFilter.classList.add(ACTIVE_CLASS);
     }
   }
@@ -67,13 +66,33 @@ export default class MenuView extends AbstractView{
   setFilterTypeChangeHandler = (callback) => {
     this._callback.filterTypeChange = callback;
     this.element.addEventListener('click', this.#filterTypeChangeHandler);
-  }
+  };
 
   #filterTypeChangeHandler = (evt) => {
-    if(evt.target.tagName === 'A') {
+
+    if (evt.target.classList.contains('main-navigation__item') || evt.target.className === 'main-navigation__item-count') {
       evt.preventDefault();
-      this._callback.filterTypeChange(evt.target.name);
+      const filter = evt.target.closest('.main-navigation__item ');
+      this._callback.filterTypeChange(filter.name);
     }
-  }
+  };
+
+  setMenuClickHandler = (callback) => {
+    this._callback.menuClick = callback;
+    this.element.addEventListener('click', this.#menuClickHandler);
+  };
+
+  #menuClickHandler = (evt) => {
+    evt.preventDefault();
+    if (evt.target.tagName === 'A' || evt.target.className === 'main-navigation__item-count') {
+      let filter;
+      if (evt.target.className === 'main-navigation__item' || evt.target.className === 'main-navigation__item-count') {
+        filter = evt.target.closest('.main-navigation__item ');
+      } else {
+        filter = evt.target;
+      }
+      this._callback.menuClick(filter.name.toUpperCase());
+    }
+  };
 }
 

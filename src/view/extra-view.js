@@ -19,7 +19,7 @@ const createExtraTemplate = () => (
 </div>`
 );
 
-export default class ExtraView extends AbstractView{
+export default class ExtraView extends AbstractView {
   get template() {
     return createExtraTemplate();
   }

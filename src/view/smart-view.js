@@ -1,6 +1,6 @@
 import AbstractView from './abstract-view.js';
 
-export default class SmartView extends AbstractView{
+export default class SmartView extends AbstractView {
   _data = {};
 
   restoreHandlers() {
@@ -32,7 +32,5 @@ export default class SmartView extends AbstractView{
     }
 
     this.updateElement();
-
-  }
-
+  };
 }
