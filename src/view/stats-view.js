@@ -5,7 +5,8 @@ import { StatisticFilter as StatisticFilter } from '../const.js';
 import dayjs from 'dayjs';
 import { movieListPresenter } from '../main.js';
 import { updateStatistic } from '../main.js';
-import { watchedMovies } from '../main.js';
+import { filter } from '../mock/utils/filter.js';
+import { FilterType } from '../const.js';
 
 const createStatsTemplate = (movies, runtime, topGenre, currentFilter) => (
   `<section class="statistic visually-hidden">
@@ -105,9 +106,8 @@ export default class StatsView extends SmartView {
       const topGenreIndex = lengths.indexOf(Math.max.apply(Math, lengths));
       const topGenre = genreListArray[topGenreIndex];
       return topGenre[0];
-    } else {
-      return '';
     }
+    return '';
   }
 
   setStaticFilterChange() {
@@ -145,7 +145,7 @@ export default class StatsView extends SmartView {
         break;
       }
       case StatisticFilter.ALL_TIME:
-        this.#movies = watchedMovies;
+        this.#movies = filter[FilterType.HISTORY](movieListPresenter.movies);
         this.#currentFilter = StatisticFilter.ALL_TIME;
         updateStatistic(this.#movies, this.#currentFilter);
         break;
@@ -167,9 +167,8 @@ export default class StatsView extends SmartView {
       });
 
       return sameGenresLength;
-    } else {
-      return 0;
     }
+    return 0;
   }
 
   showStatistic() {
@@ -178,7 +177,7 @@ export default class StatsView extends SmartView {
 
     statisticCtx.height = BAR_HEIGHT * 5;
 
-    const myChart = new Chart(statisticCtx, {
+    return new Chart(statisticCtx, {
       plugins: [ChartDataLabels],
       type: 'horizontalBar',
       data: {
@@ -235,6 +234,5 @@ export default class StatsView extends SmartView {
         },
       },
     });
-    return myChart;
   }
 }

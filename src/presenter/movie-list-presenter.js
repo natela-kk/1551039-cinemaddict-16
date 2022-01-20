@@ -181,6 +181,7 @@ export default class MovieListPresenter {
     if(document.querySelector('.film-details__inner') && this.moviePresenter.get(update.id)) {
       this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...this.scrollCoordinates);
     }
+    this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   }
 
   #handleModelEvent = (updateType, data) => {
@@ -216,7 +217,6 @@ export default class MovieListPresenter {
         this.renderMoviesContainer();
         break;
     }
-    this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   }
 
   #handleSortTypeChange = (sortType) => {

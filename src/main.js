@@ -25,10 +25,9 @@ const filterPresenter = new FilterPresenter(mainElement, filterModel, moviesMode
 export const movieListPresenter = new MovieListPresenter(mainElement, moviesModel, filterModel, filterPresenter);
 renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
 
-export const watchedMovies = filter[FilterType.HISTORY](movieListPresenter.movies);
 
 export const handleSiteMenuClick = (menuItem) => {
-  console.log(menuItem);
+  const watchedMovies = filter[FilterType.HISTORY](movieListPresenter.movies);
   if(menuItem === MenuItem.STATISTICS) {
     const statsComponent = new StatsView(watchedMovies, 'all-time');
     movieListPresenter.destroy();
