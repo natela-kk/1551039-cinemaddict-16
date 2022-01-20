@@ -33,26 +33,23 @@ const createCardTemplate = (card) => {
       </article>`;
 };
 
-export default class CardsView extends AbstractView{
+export default class CardsView extends AbstractView {
   #movieInfo = null;
-
 
   constructor(movieInfo) {
     super();
     this.#movieInfo = movieInfo;
   }
 
-
   get template() {
     return createCardTemplate(this.#movieInfo);
   }
-
 
   setPostClickHandler = (callback) => {
     this._callback.postClick = callback;
     const cardComponent = this;
     this.element.querySelector('a').addEventListener('click', this.postClickHandler.bind(cardComponent));
-  }
+  };
 
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;

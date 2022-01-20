@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view.js';
-import { MenuItem } from '../const.js';
+import {MenuItem} from '../const.js';
 
 export const ACTIVE_CLASS = 'main-navigation__item--active';
 
@@ -23,8 +23,7 @@ const createMenuTemplate = (filterItems, currentFilterType) => {
   );
 };
 
-export default class MenuView extends AbstractView{
-
+export default class MenuView extends AbstractView {
   #currentFilter = null;
   #filters = null;
 
@@ -34,7 +33,6 @@ export default class MenuView extends AbstractView{
     this.#currentFilter = currentFilterType;
 
     this.setActiveFilter();
-    this.statiscticLink = this.element.querySelector('a[href="#stats"]');
   }
 
   get template() {
@@ -58,7 +56,7 @@ export default class MenuView extends AbstractView{
     if ((evt.target.tagName === 'A' || evt.target.className === 'main-navigation__item-count') && this.#currentFilter !== evt.target) {
       this.#currentFilter.classList.remove(ACTIVE_CLASS);
       this.#currentFilter = evt.target.closest('.main-navigation__item');
-      if(this.#currentFilter === null) {
+      if (this.#currentFilter === null) {
         this.#currentFilter = evt.target;
       }
       this.#currentFilter.classList.add(ACTIVE_CLASS);
@@ -68,33 +66,33 @@ export default class MenuView extends AbstractView{
   setFilterTypeChangeHandler = (callback) => {
     this._callback.filterTypeChange = callback;
     this.element.addEventListener('click', this.#filterTypeChangeHandler);
-  }
+  };
 
   #filterTypeChangeHandler = (evt) => {
 
-    if(evt.target.classList.contains('main-navigation__item') ||  evt.target.className === 'main-navigation__item-count') {
+    if (evt.target.classList.contains('main-navigation__item') || evt.target.className === 'main-navigation__item-count') {
       evt.preventDefault();
       const filter = evt.target.closest('.main-navigation__item ');
       this._callback.filterTypeChange(filter.name);
     }
-  }
+  };
 
   setMenuClickHandler = (callback) => {
     this._callback.menuClick = callback;
     this.element.addEventListener('click', this.#menuClickHandler);
-  }
+  };
 
   #menuClickHandler = (evt) => {
     evt.preventDefault();
-    if (evt.target.tagName === 'A' ||  evt.target.className === 'main-navigation__item-count') {
+    if (evt.target.tagName === 'A' || evt.target.className === 'main-navigation__item-count') {
       let filter;
       if (evt.target.className === 'main-navigation__item' || evt.target.className === 'main-navigation__item-count') {
-        filter =  evt.target.closest('.main-navigation__item ');
+        filter = evt.target.closest('.main-navigation__item ');
       } else {
-        filter =  evt.target;
+        filter = evt.target;
       }
       this._callback.menuClick(filter.name.toUpperCase());
     }
-  }
+  };
 }
 

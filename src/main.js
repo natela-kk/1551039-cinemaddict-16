@@ -1,15 +1,15 @@
-import { renderElement } from './mock/render.js';
-import { RenderPosition } from './mock/generate.js';
+import {renderElement} from './mock/render.js';
+import {RenderPosition} from './mock/generate.js';
 import AvatarView from './view/user-name-view.js';
 import MovieListPresenter from './presenter/movie-list-presenter.js';
-import { getMovieList } from './mock/generate.js';
+import {getMovieList} from './mock/generate.js';
 import MoviesModel from './model/movies-model.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import StatsView from './view/stats-view.js';
-import { MenuItem } from './const.js';
-import { filter } from './mock/utils/filter.js';
-import { FilterType } from './const.js';
+import {MenuItem} from './const.js';
+import {filter} from './mock/utils/filter.js';
+import {FilterType} from './const.js';
 
 const headerElement = document.querySelector('.header');
 export const mainElement = document.querySelector('.main');
@@ -28,7 +28,7 @@ renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
 
 export const handleSiteMenuClick = (menuItem) => {
   const watchedMovies = filter[FilterType.HISTORY](movieListPresenter.movies);
-  if(menuItem === MenuItem.STATISTICS) {
+  if (menuItem === MenuItem.STATISTICS) {
     const statsComponent = new StatsView(watchedMovies, 'all-time');
     movieListPresenter.destroy();
     renderElement(mainElement, statsComponent, RenderPosition.BEFOREEND);
@@ -36,11 +36,11 @@ export const handleSiteMenuClick = (menuItem) => {
     statsComponent.init();
   } else {
     const statisticElement = document.querySelector('.statistic');
-    if(statisticElement) {
+    if (statisticElement) {
       statisticElement.remove();
     }
 
-    if(!document.querySelector('.films-list__container')) {
+    if (!document.querySelector('.films-list__container')) {
       movieListPresenter.init();
     } else {
       movieListPresenter.clearMoviesContainer();

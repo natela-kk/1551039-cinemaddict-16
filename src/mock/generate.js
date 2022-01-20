@@ -1,9 +1,9 @@
-import { getRandomInteger, getRandomPositiveFloat } from './utils/utils.js';
-import { getRandomDescription, getCommentsList } from './structure.js';
+import {getRandomInteger, getRandomPositiveFloat} from './utils/utils.js';
+import {getRandomDescription, getCommentsList} from './structure.js';
 import dayjs from 'dayjs';
 import dayjsRandom from 'dayjs-random';
-import { POSTSCOUNT } from '../view/extra-view.js';
-import { nanoid } from 'nanoid';
+import {POSTSCOUNT} from '../view/extra-view.js';
+import {nanoid} from 'nanoid';
 
 const MIN_RUNTIME = 10;
 const MAX_RUNTIME = 30;

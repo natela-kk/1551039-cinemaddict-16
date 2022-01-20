@@ -1,8 +1,8 @@
 import PopupView from '../view/popup-view';
 import CardsView from '../view/cards-view.js';
-import { renderElement, remove } from '../mock/render';
-import { RenderPosition } from '../mock/generate.js';
-import { replace } from '../mock/utils/utils';
+import {renderElement, remove} from '../mock/render';
+import {RenderPosition} from '../mock/generate.js';
+import {replace} from '../mock/utils/utils';
 
 export const PopupMode = {
   CLOSED: 'CLOSED',
@@ -51,7 +51,7 @@ export default class MoviePresenter {
     if (this.popupMode === PopupMode.OPENED) {
       replace(this.cardComponent, cardComponent);
     }
-  }
+  };
 
   initPopup = (movie) => {
     this.#movie = movie;
@@ -63,49 +63,67 @@ export default class MoviePresenter {
       replace(this.popupComponent, popupComponent);
     }
     this.popupComponent.element.scrollTo(...this.popupComponent.scrollCoordinates);
-  }
+  };
 
   destroy = () => {
     remove(this.cardComponent);
-  }
+  };
 
   handleFavoriteClick = () => {
     this.#changeData(
-      {...this.#movie, userDetails: {...this.#movie.userDetails, favorite: !this.#movie.userDetails.favorite}},
+      {
+        ...this.#movie,
+        userDetails: {
+          ...this.#movie.userDetails,
+          favorite: !this.#movie.userDetails.favorite
+        }
+      },
       this.popupComponent.scrollCoordinates,
     );
-  }
+  };
 
   handleWatchlistClick = () => {
     this.#changeData(
-      {...this.#movie, userDetails: {...this.#movie.userDetails, watchlist: !this.#movie.userDetails.watchlist}},
+      {
+        ...this.#movie,
+        userDetails: {
+          ...this.#movie.userDetails,
+          watchlist: !this.#movie.userDetails.watchlist
+        }
+      },
       this.popupComponent.scrollCoordinates,
     );
-  }
+  };
 
   handleHistoryClick = () => {
     this.#changeData(
-      {...this.#movie, userDetails: {...this.#movie.userDetails, alreadyWatched: !this.#movie.userDetails.alreadyWatched}},
+      {
+        ...this.#movie,
+        userDetails: {
+          ...this.#movie.userDetails,
+          alreadyWatched: !this.#movie.userDetails.alreadyWatched
+        }
+      },
       this.popupComponent.scrollCoordinates,
     );
-  }
+  };
 
   handleFormSubmit = (movie) => {
     this.#changeData(
       movie,
       this.popupComponent.scrollCoordinates,
     );
-  }
+  };
 
   #handlePostClick = () => {
     this.popupComponent.postClickHandler(this.#movie, this);
-  }
+  };
 
   resetView = () => {
     if (this.popupMode !== PopupMode.CLOSED) {
       this.popupComponent.closePopup(this);
     }
-  }
+  };
 }
 
 

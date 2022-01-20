@@ -1,8 +1,8 @@
 import MenuView from '../view/menu-view.js';
-import { remove, renderElement } from '../mock/render.js';
-import { RenderPosition } from '../mock/generate.js';
-import { replace } from '../mock/utils/utils.js';
-import { filter } from '../mock/utils/filter.js';
+import {remove, renderElement} from '../mock/render.js';
+import {RenderPosition} from '../mock/generate.js';
+import {replace} from '../mock/utils/utils.js';
+import {filter} from '../mock/utils/filter.js';
 import {FilterType, UpdateType} from '../const.js';
 
 export default class FilterPresenter {
@@ -58,18 +58,18 @@ export default class FilterPresenter {
 
     replace(this.filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
-  }
+  };
 
   handleModelEvent = () => {
     this.init();
-  }
+  };
 
   #handleFilterTypeChange = (filterType) => {
     if (this.#filterModel.filter === filterType && filterType === 'STATISTICS') {
       return;
     }
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
-  }
+  };
 
   addObservers() {
     this.#moviesModel.addObserver(this.handleModelEvent);

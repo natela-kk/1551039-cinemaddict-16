@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view.js';
-import { FilterType } from '../const.js';
+import {FilterType} from '../const.js';
 
 const NoMoviesTextType = {
   [FilterType.ALL]: 'There are no movies in our database',
@@ -13,11 +13,10 @@ const createEmtyListTemplate = (filterType) => {
   return (`<h2 class="films-list__title">${noTaskMovieValue}</h2>`);
 };
 
-export default class NoMoviesView extends AbstractView{
+export default class NoMoviesView extends AbstractView {
   constructor(data) {
     super();
     this._data = data;
-    console.log(this._data);
   }
 
   get template() {

@@ -1,12 +1,12 @@
 import SmartView from './smart-view.js';
-import { Chart } from 'chart.js';
+import {Chart} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { StatisticFilter as StatisticFilter } from '../const.js';
+import {StatisticFilter as StatisticFilter} from '../const.js';
 import dayjs from 'dayjs';
-import { movieListPresenter } from '../main.js';
-import { updateStatistic } from '../main.js';
-import { filter } from '../mock/utils/filter.js';
-import { FilterType } from '../const.js';
+import {movieListPresenter} from '../main.js';
+import {updateStatistic} from '../main.js';
+import {filter} from '../mock/utils/filter.js';
+import {FilterType} from '../const.js';
 
 const createStatsTemplate = (movies, runtime, topGenre, currentFilter) => (
   `<section class="statistic visually-hidden">
@@ -42,7 +42,7 @@ const createStatsTemplate = (movies, runtime, topGenre, currentFilter) => (
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
-        <p class="statistic__item-text">${Math.floor(runtime/60).toFixed(0)} <span class="statistic__item-description">h</span> ${runtime - (Math.floor(runtime/60).toFixed(0)*60)} <span class="statistic__item-description">m</span></p>
+        <p class="statistic__item-text">${Math.floor(runtime / 60).toFixed(0)} <span class="statistic__item-description">h</span> ${runtime - (Math.floor(runtime / 60).toFixed(0) * 60)} <span class="statistic__item-description">m</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
@@ -76,17 +76,13 @@ export default class StatsView extends SmartView {
   }
 
   getTotalWatchingTime() {
-    const wathedFilmsRuntime = this.#movies.map((current) => Number((current.filmInfo.runtime).replace(/[^0-9]/g,'')));
-    if(wathedFilmsRuntime.length !== 0) {
-      const totalWatchedRuntime = wathedFilmsRuntime.reduce((a, b) => a + b);
-      return totalWatchedRuntime;
-    } else {
-      return 0;
-    }
+    const wathedFilmsRuntime = this.#movies.map((current) => Number((current.filmInfo.runtime).replace(/[^0-9]/g, '')));
+
+    return wathedFilmsRuntime.length > 0 ? wathedFilmsRuntime.reduce((a, b) => a + b) : 0;
   }
 
   getTopGenre() {
-    if(this.#movies.length !== 0) {
+    if (this.#movies.length !== 0) {
       const wathedFilmsGenres = [].concat(...this.#movies.map((current) => current.filmInfo.genre));
       const genreList = [...(new Set(wathedFilmsGenres))];
       const genreListArray = [];
@@ -102,7 +98,7 @@ export default class StatsView extends SmartView {
         this.genresListArray = genreListArray;
         return genreListArray;
       });
-      const lengths = genreListArray.map((a)=> a.length);
+      const lengths = genreListArray.map((a) => a.length);
       const topGenreIndex = lengths.indexOf(Math.max.apply(Math, lengths));
       const topGenre = genreListArray[topGenreIndex];
       return topGenre[0];
@@ -115,30 +111,26 @@ export default class StatsView extends SmartView {
   }
 
   filterStatistic(filterName) {
-    switch(filterName) {
-      case StatisticFilter.TODAY:
-      {
+    switch (filterName) {
+      case StatisticFilter.TODAY: {
         this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'day'));
         this.#currentFilter = StatisticFilter.TODAY;
         updateStatistic(this.#movies, this.#currentFilter);
         break;
       }
-      case StatisticFilter.WEEK:
-      {
+      case StatisticFilter.WEEK: {
         this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'week'));
         this.#currentFilter = StatisticFilter.WEEK;
         updateStatistic(this.#movies, this.#currentFilter);
         break;
       }
-      case StatisticFilter.MONTH:
-      {
+      case StatisticFilter.MONTH: {
         this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'month'));
         this.#currentFilter = StatisticFilter.MONTH;
         updateStatistic(this.#movies, this.#currentFilter);
         break;
       }
-      case StatisticFilter.YEAR:
-      {
+      case StatisticFilter.YEAR: {
         this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'year'));
         this.#currentFilter = StatisticFilter.YEAR;
         updateStatistic(this.#movies, this.#currentFilter);
@@ -158,7 +150,7 @@ export default class StatsView extends SmartView {
   }
 
   getGenreCount(genre) {
-    if(this.genresListArray) {
+    if (this.genresListArray) {
       let sameGenresLength;
       this.genresListArray.forEach((sameGenres) => {
         if (sameGenres[0] === genre) {

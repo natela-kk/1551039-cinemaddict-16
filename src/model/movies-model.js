@@ -1,6 +1,6 @@
 import AbstractObservable from '../mock/utils/abstract-observable.js';
 
-export default class MoviesModel extends AbstractObservable{
+export default class MoviesModel extends AbstractObservable {
   #movies = [];
 
   set movies(movies) {
@@ -24,6 +24,6 @@ export default class MoviesModel extends AbstractObservable{
       ...this.#movies.slice(index + 1),
     ];
     this._notify(updateType, update);
-  }
+  };
 
 }

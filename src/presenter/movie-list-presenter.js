@@ -1,16 +1,20 @@
-import { filter } from '../mock/utils/filter.js';
+import {filter} from '../mock/utils/filter.js';
 import SortView from '../view/sort-view.js';
 import CardsContainerView from '../view/cards-container-view.js';
 import ButtonView from '../view/button-view.js';
 import FooterView from '../view/footer-view.js';
 import NoMoviesView from '../view/no-movies-view.js';
-import { remove, renderElement } from '../mock/render.js';
-import { RenderPosition } from '../mock/generate.js';
+import {remove, renderElement} from '../mock/render.js';
+import {RenderPosition} from '../mock/generate.js';
 import MoviePresenter from './movie-presenter.js';
-import { replace, sortMovieDateDown, sortMovieRatingDown } from '../mock/utils/utils.js';
-import { UpdateType, SortType } from '../const.js';
-import { FilterType } from '../const.js';
-import { handleSiteMenuClick } from '../main.js';
+import {
+  replace,
+  sortMovieDateDown,
+  sortMovieRatingDown
+} from '../mock/utils/utils.js';
+import {UpdateType, SortType} from '../const.js';
+import {FilterType} from '../const.js';
+import {handleSiteMenuClick} from '../main.js';
 
 const MOVIES_COUNT_PER_STEP = 5;
 
@@ -65,18 +69,18 @@ export default class MovieListPresenter {
     this.#moviesModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
     this.#filterPresenter.addObservers();
-  }
+  };
 
   #renderMovies = (movies) => {
     movies.forEach((movie) => this.renderMovie(movie));
-  }
+  };
 
   renderMovie = (movie) => {
     const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
     moviePresenter.initCard(movie);
     moviePresenter.initPopup(movie);
     this.moviePresenter.set(movie.id, moviePresenter);
-  }
+  };
 
   #renderNoMovies = () => {
     const noMoviesComponent = this.#noMoviesComponent;
@@ -86,15 +90,18 @@ export default class MovieListPresenter {
       return;
     }
     renderElement(this.#cardsContainer, this.#noMoviesComponent, RenderPosition.BEFOREEND);
-  }
+  };
 
   #renderLoadMoreButton = () => {
     this.#loadMoreButtonComponent = new ButtonView();
     renderElement(this.#cardsContainer, this.#loadMoreButtonComponent, RenderPosition.AFTEREND);
     this.#loadMoreButtonComponent.setClickHandler(this.handleLoadMoreButtonClick.bind(this));
-  }
+  };
 
-  clearMoviesContainer = ({resetRenderedMoviesCount = false, resetSortType = false} = {}) => {
+  clearMoviesContainer = ({
+    resetRenderedMoviesCount = false,
+    resetSortType = false
+  } = {}) => {
     const moviesCount = this.movies.length;
 
     this.moviePresenter.forEach((presenter) => presenter.destroy());
@@ -102,7 +109,7 @@ export default class MovieListPresenter {
     remove(this.#sortComponent);
     remove(this.#loadMoreButtonComponent);
 
-    if(this.noMoviesComponent) {
+    if (this.noMoviesComponent) {
       remove(this.noMoviesComponent);
     }
 
@@ -111,13 +118,16 @@ export default class MovieListPresenter {
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
-  }
+  };
 
   destroy = () => {
-    this.clearMoviesContainer({resetRenderedMoviesCount: true, resetSortType: true});
+    this.clearMoviesContainer({
+      resetRenderedMoviesCount: true,
+      resetSortType: true
+    });
     remove(this.#cardsContainerComponent);
     this.removeObservers();
-  }
+  };
 
 
   removeObservers() {
@@ -139,7 +149,7 @@ export default class MovieListPresenter {
       this.#renderLoadMoreButton();
     }
     renderElement(footer, this.#footerComponent, RenderPosition.BEFOREEND);
-  }
+  };
 
   handleLoadMoreButtonClick() {
     const moviesCount = this.movies.length;
@@ -178,11 +188,11 @@ export default class MovieListPresenter {
       this.#moviesModel.updateMovie('PATCH_POPUP', update);
     }
 
-    if(document.querySelector('.film-details__inner') && this.moviePresenter.get(update.id)) {
+    if (document.querySelector('.film-details__inner') && this.moviePresenter.get(update.id)) {
       this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...this.scrollCoordinates);
     }
     this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
-  }
+  };
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
@@ -190,7 +200,7 @@ export default class MovieListPresenter {
         const newPresenter = this.moviePresenter.get(data.id);
         newPresenter.initCard(data);
         newPresenter.initPopup(data);
-        if(document.querySelector('.film-details__inner') && document.querySelector('.film-details__inner') !== newPresenter.popupComponent.element.querySelector('.film-details__inner')){
+        if (document.querySelector('.film-details__inner') && document.querySelector('.film-details__inner') !== newPresenter.popupComponent.element.querySelector('.film-details__inner')) {
           replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
           newPresenter.popupComponent.postClickHandler(data, this.moviePresenter);
           newPresenter.popupComponent.element.scrollTo(...this.scrollCoordinates);
@@ -198,26 +208,28 @@ export default class MovieListPresenter {
 
         break;
       }
-      case UpdateType.PATCH_POPUP:
-        {
-          const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
-          this.moviePresenter.set(data.id, moviePresenter);
-          const newPresenter = this.moviePresenter.get(data.id);
-          newPresenter.initPopup(data);
-          replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
-          newPresenter.popupComponent.postClickHandler(data, moviePresenter);
-        }
+      case UpdateType.PATCH_POPUP: {
+        const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
+        this.moviePresenter.set(data.id, moviePresenter);
+        const newPresenter = this.moviePresenter.get(data.id);
+        newPresenter.initPopup(data);
+        replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
+        newPresenter.popupComponent.postClickHandler(data, moviePresenter);
+      }
         break;
       case UpdateType.MINOR:
         this.clearMoviesContainer();
         this.renderMoviesContainer();
         break;
       case UpdateType.MAJOR:
-        this.clearMoviesContainer({resetRenderedMoviesCount: true, resetSortType: true});
+        this.clearMoviesContainer({
+          resetRenderedMoviesCount: true,
+          resetSortType: true
+        });
         this.renderMoviesContainer();
         break;
     }
-  }
+  };
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -226,13 +238,13 @@ export default class MovieListPresenter {
     this.#currentSortType = sortType;
     this.clearMoviesContainer({resetRenderedMoviesCount: true});
     this.renderMoviesContainer();
-  }
+  };
 
   renderMoviesContainer = () => {
     const movies = this.movies;
     const moviesCount = movies.length;
 
-    if(moviesCount === 0) {
+    if (moviesCount === 0) {
       this.#renderNoMovies();
       return;
     }
@@ -244,13 +256,13 @@ export default class MovieListPresenter {
     if (moviesCount > this.#renderedMoviesCount) {
       this.#renderLoadMoreButton();
     }
-  }
+  };
 
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
     renderElement(this.#cardsContainerComponent, this.#sortComponent, RenderPosition.BEFOREBEGIN);
-  }
+  };
 
   handleModeChange() {
     this.moviePresenter.forEach((presenter) => presenter.resetView());

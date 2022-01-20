@@ -1,4 +1,4 @@
-import { RenderPosition } from './generate';
+import {RenderPosition} from './generate';
 import AbstractView from '../view/abstract-view';
 
 export const renderElement = (container, element, place) => {
