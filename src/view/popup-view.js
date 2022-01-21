@@ -135,6 +135,7 @@ const createPopupTemplate = (movieInfo) => {
 export default class PopupView extends SmartView {
   #changePopupMode = null;
   #moviePresenter = null;
+  comments = null;
   changeData = null;
   scrollCoordinates = [0, 0];
 
@@ -210,10 +211,16 @@ export default class PopupView extends SmartView {
     document.addEventListener('keydown', this.documentKeydownHandler);
   }
 
+  getComments(comments) {
+    console.log(comments);
+    this.comments = comments;
+    console.log(this.comments);
+  }
+
   addCommentsList() {
-    const commentsModel = new CommentsModel(new ApiService(`${END_POINT}/comments/:${this._data.id}`, AUTHORIZATION));
-    commentsModel.init();
-    console.log(commentsModel.comments);
+    const commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
+    commentsModel.init(this.getComments);
+    console.log(this.comments);
     // this._data.comments.forEach((comment) => {
     //   const commentComponent = new CommentView(comment);
     //   this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);

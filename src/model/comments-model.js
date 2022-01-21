@@ -11,15 +11,14 @@ export default class CommentsModel extends AbstractObservable {
     }
 
     get comments() {
+      console.log(this.#comments);//пустой массив
       return this.#comments;
     }
 
-    init = async () => {
+    init = async (setComments) => {
       try {
-        console.log(await this.#apiService.comments);
         const comments = await this.#apiService.comments;
-        // this.#comments = comments.map(this.#adaptToClient);
-        this.#comments = comments;
+        setComments(comments);
       } catch(err) {
         this.#comments = [];
       }

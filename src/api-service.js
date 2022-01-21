@@ -65,7 +65,6 @@ export default class ApiService {
       url,
       {method, body, headers},
     );
-      console.log(response);
     try {
       ApiService.checkStatus(response);
       return response;
