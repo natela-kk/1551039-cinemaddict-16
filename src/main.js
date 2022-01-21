@@ -2,7 +2,7 @@ import {renderElement} from './mock/render.js';
 import {RenderPosition} from './mock/generate.js';
 import AvatarView from './view/user-name-view.js';
 import MovieListPresenter from './presenter/movie-list-presenter.js';
-import {getMovieList} from './mock/generate.js';
+// import {getMovieList} from './mock/generate.js';
 import MoviesModel from './model/movies-model.js';
 import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
@@ -10,14 +10,19 @@ import StatsView from './view/stats-view.js';
 import {MenuItem} from './const.js';
 import {filter} from './mock/utils/filter.js';
 import {FilterType} from './const.js';
+import ApiService from './api-service.js';
 
+export const AUTHORIZATION = 'Basic ghcfk6r64ft';
+export const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/';
+
+const moviesModel = new MoviesModel(new ApiService(END_POINT, AUTHORIZATION));
 const headerElement = document.querySelector('.header');
 export const mainElement = document.querySelector('.main');
 
-export const allMovies = getMovieList();
+// export const allMovies = getMovieList();
 
-const moviesModel = new MoviesModel();
-moviesModel.movies = allMovies;
+// moviesModel.movies = allMovies;
+
 
 const filterModel = new FilterModel();
 
@@ -61,3 +66,5 @@ export const updateStatistic = (movies, currentFilter) => {
 
 filterPresenter.init();
 movieListPresenter.init();
+
+moviesModel.init();

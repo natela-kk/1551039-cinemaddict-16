@@ -1,9 +1,7 @@
 import AbstractView from './abstract-view.js';
+// / <span class="film-card__year">${filmInfo.release.date.format('YYYY')}</span>
 
-const getFilmDescription = (description) => {
-  const text = description.join(' ');
-  return text.length > 140 ? `${text.substr(0, 139)}...` : text;
-};
+const getFilmDescription = (description) => description.length > 140 ? `${description.substr(0, 139)}...` : description;
 
 const getWatchlistStatus = (userDetails) => userDetails.watchlist === true ? ('film-card__controls-item--active') : '';
 const getWatchedStatus = (userDetails) => userDetails.alreadyWatched === true ? ('film-card__controls-item--active') : '';
@@ -12,12 +10,13 @@ const getFavoriteStatus = (userDetails) => userDetails.favorite === true ? ('fil
 
 const createCardTemplate = (card) => {
   const {filmInfo, comments, userDetails} = card;
+
   return `<article class="film-card">
         <a class="film-card__link">
           <h3 class="film-card__title">${filmInfo.title}</h3>
           <p class="film-card__rating">${filmInfo.total_rating}</p>
           <p class="film-card__info">
-            <span class="film-card__year">${filmInfo.release.date.format('YYYY')}</span>
+            <span class="film-card__year">${filmInfo.release.date}</span>
             <span class="film-card__duration">${filmInfo.runtime}</span>
             <span class="film-card__genre">${filmInfo.genre.join(' ')}</span>
           </p>

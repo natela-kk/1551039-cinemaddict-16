@@ -15,6 +15,7 @@ import {
 import {UpdateType, SortType} from '../const.js';
 import {FilterType} from '../const.js';
 import {handleSiteMenuClick} from '../main.js';
+import LoadingView from '../view/loading-view.js';
 
 const MOVIES_COUNT_PER_STEP = 5;
 
@@ -29,15 +30,17 @@ export default class MovieListPresenter {
   #noMoviesComponent = null;
   #cardsContainerComponent = null;
   #cardsContainer = null;
+  #filterPresenter = null;
 
   scrollCoordinates = [0, 0];
 
+  #loadingComponent = new LoadingView();
   #footerComponent = new FooterView();
   moviePresenter = new Map();
   #renderedMoviesCount = MOVIES_COUNT_PER_STEP;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
-  #filterPresenter = null;
+  #isLoading = true;
 
   constructor(mainContainer, moviesModel, filterModel, filterPresenter) {
     this.#mainContainer = mainContainer;
@@ -61,9 +64,6 @@ export default class MovieListPresenter {
 
   init = () => {
     this.#renderMovieList();
-
-    this.#renderSort();
-
     this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
 
     this.#moviesModel.addObserver(this.#handleModelEvent);
@@ -81,6 +81,10 @@ export default class MovieListPresenter {
     moviePresenter.initPopup(movie);
     this.moviePresenter.set(movie.id, moviePresenter);
   };
+
+  #renderLoading = () => {
+    renderElement(this.#cardsContainer, this.#loadingComponent, RenderPosition.AFTERBEGIN);
+  }
 
   #renderNoMovies = () => {
     const noMoviesComponent = this.#noMoviesComponent;
@@ -107,6 +111,7 @@ export default class MovieListPresenter {
     this.moviePresenter.forEach((presenter) => presenter.destroy());
     this.moviePresenter.clear();
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#loadMoreButtonComponent);
 
     if (this.noMoviesComponent) {
@@ -228,6 +233,11 @@ export default class MovieListPresenter {
         });
         this.renderMoviesContainer();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.renderMoviesContainer();
+        break;
     }
   };
 
@@ -245,6 +255,11 @@ export default class MovieListPresenter {
     const moviesCount = movies.length;
 
     if (moviesCount === 0) {
+      if (this.#isLoading) {
+        this.#renderLoading();
+        return;
+      }
+
       this.#renderNoMovies();
       return;
     }
