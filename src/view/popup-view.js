@@ -6,8 +6,7 @@ import dayjs from 'dayjs';
 import ApiService from '../api-service.js';
 import { AUTHORIZATION, END_POINT } from '../main.js';
 import CommentsModel from '../model/comments-model.js';
-
-{/* <td class="film-details__cell">${filmInfo.release.date.format('DD MMMM YYYY')}</td> */}
+import { getRunTime } from '../mock/utils/utils.js';
 
 let checkedEmotion;
 let closeButton;
@@ -36,11 +35,11 @@ const createPopupTemplate = (movieInfo) => {
         <div class="film-details__info-head">
         <div class="film-details__title-wrap">
               <h3 class="film-details__title">${filmInfo.title}</h3>
-              <p class="film-details__title-original">Original: ${filmInfo.alternative_title}</p>
+              <p class="film-details__title-original">Original: ${filmInfo.alternativeTitle}</p>
               </div>
 
               <div class="film-details__rating">
-              <p class="film-details__total-rating">${filmInfo.total_rating}</p>
+              <p class="film-details__total-rating">${filmInfo.totalRating}</p>
               </div>
               </div>
 
@@ -51,23 +50,23 @@ const createPopupTemplate = (movieInfo) => {
               </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Writers</td>
-            <td class="film-details__cell">${filmInfo.writers}</td>
+            <td class="film-details__cell">${filmInfo.writers.join(', ')}</td>
             </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${filmInfo.actors}</td>
+              <td class="film-details__cell">${filmInfo.actors.join(', ')}</td>
               </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-            <td class="film-details__cell">${filmInfo.release.date}</td>
+            <td class="film-details__cell">${dayjs(filmInfo.release.date).format('DD MMMM YYYY')}</td>
               </tr>
               <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">${filmInfo.runtime}</td>
+            <td class="film-details__cell">${getRunTime(filmInfo.runtime)}</td>
             </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Country</td>
-              <td class="film-details__cell">${filmInfo.release.release_country}</td>
+              <td class="film-details__cell">${filmInfo.release.releaseCountry}</td>
               </tr>
             <tr class="film-details__row">
             <td class="film-details__term">${getGenreWord(filmInfo.genre)}</td>
@@ -212,8 +211,6 @@ export default class PopupView extends SmartView {
   }
 
   setComments(comments) {
-    console.log(comments);
-    console.log(this);
     comments.forEach((comment) => {
       const commentComponent = new CommentView(comment);
       this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
@@ -278,7 +275,7 @@ export default class PopupView extends SmartView {
     if (movie.comment) {
       delete movie.comment;
     }
-    const newComment = generateComment();
+    const newComment = new Object();
 
     movie.comments.push({
       ...newComment,

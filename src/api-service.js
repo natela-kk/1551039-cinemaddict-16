@@ -13,29 +13,28 @@ export default class ApiService {
   }
 
   get movies() {
-    return this.#load({url: 'movies'})
+    return this.#loadMovies({url: 'movies'})
       .then(ApiService.parseResponse);
   }
 
   get comments() {
-    return this.load('')
+    return this.#loadComments('')
       .then(ApiService.parseResponse);
   }
 
   updateMovie = async (movie) => {
-    const response = await this.#load({
+    const response = await this.#loadMovies({
       url: `movies/${movie.id}`,
       method: Method.PUT,
       body: JSON.stringify(this.#adaptToServer(movie)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
-
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
   }
 
-  #load = async ({
+  #loadMovies = async ({
     url,
     method = Method.GET,
     body = null,
@@ -54,7 +53,7 @@ export default class ApiService {
     }
   }
 
-  load = async ({
+  #loadComments = async ({
     url = this.#endPoint,
     method = Method.GET,
     body = null,
@@ -78,16 +77,14 @@ export default class ApiService {
       'film_info': {...movie.filmInfo, 'age_rating': movie.filmInfo.ageRating, 'alternative_title': movie.filmInfo.alternativeTitle, release: {...movie.filmInfo.release, 'release_country': movie.filmInfo.release.releaseCountry}, 'total_rating': movie.filmInfo.totalRating},
       'user_details': {...movie.userDetails, 'already_watched': movie.userDetails.alreadyWatched, 'watching_date': movie.userDetails.watchingDate},
     };
-
     delete adaptedMovie.filmInfo;
     delete adaptedMovie.film_info.ageRating;
     delete adaptedMovie.film_info.alternativeTitle;
     delete adaptedMovie.film_info.release.releaseCountry;
     delete adaptedMovie.film_info.totalRating;
-    delete adaptedMovie.film_info.userDetails;
-    delete adaptedMovie.film_info.user_details;
-    delete adaptedMovie.film_info.user_details.alreadyWatched;
-    delete adaptedMovie.film_info.user_details.watchingDate;
+    delete adaptedMovie.userDetails;
+    delete adaptedMovie.user_details.alreadyWatched;
+    delete adaptedMovie.user_details.watchingDate;
 
     return adaptedMovie;
   }

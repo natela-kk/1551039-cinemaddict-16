@@ -25,7 +25,7 @@ export default class MoviesModel extends AbstractObservable{
     this._notify(UpdateType.INIT);
   }
 
-  updateMovie = (updateType, update) => {
+  updateMovie(updateType, update) {
     const index = this.#movies.findIndex((movie) => movie.id === update.id);
 
     if (index === -1) {
@@ -38,6 +38,10 @@ export default class MoviesModel extends AbstractObservable{
       ...this.#movies.slice(index + 1),
     ];
     this._notify(updateType, update);
+  }
+
+  sendAnUpdate = (updateType, update) => {
+    this.#apiService.updateMovie(update).then(this.updateMovie(updateType, update));
   }
 
   #adaptToClient = (movie) => {

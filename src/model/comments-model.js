@@ -1,5 +1,4 @@
 import AbstractObservable from '../mock/utils/abstract-observable.js';
-import {UpdateType} from '../const.js';
 
 export default class CommentsModel extends AbstractObservable {
     #apiService = null;
@@ -19,8 +18,6 @@ export default class CommentsModel extends AbstractObservable {
         this.#comments = [];
         throw new Error;
       }
-
-      // this._notify(UpdateType.INIT);
     }
 
     addComment = (updateType, update) => {

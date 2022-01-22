@@ -174,7 +174,7 @@ export default class MovieListPresenter {
     const oldPresenter = this.moviePresenter.get(update.id);
 
     if (this.#filterType !== 'all' && oldPresenter) {
-      this.#moviesModel.updateMovie('MINOR', update);
+      this.#moviesModel.sendAnUpdate('MINOR', update);
       const updatedPresenter = this.moviePresenter.get(update.id);
 
       if (updatedPresenter && document.querySelector('.film-details__inner')) {
@@ -183,14 +183,14 @@ export default class MovieListPresenter {
         updatedPresenter.popupMode = 'OPENED';
 
       } else if (document.querySelector('.film-details__inner')) {
-        this.#moviesModel.updateMovie('PATCH_POPUP', update);
+        this.#moviesModel.sendAnUpdate('PATCH_POPUP', update);
       }
 
     } else if (this.#filterType === 'all') {
-      this.#moviesModel.updateMovie('PATCH', update);
+      this.#moviesModel.sendAnUpdate('PATCH', update);
 
     } else if (!oldPresenter) {
-      this.#moviesModel.updateMovie('PATCH_POPUP', update);
+      this.#moviesModel.sendAnUpdate('PATCH_POPUP', update);
     }
 
     if (document.querySelector('.film-details__inner') && this.moviePresenter.get(update.id)) {

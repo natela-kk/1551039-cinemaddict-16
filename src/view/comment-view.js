@@ -1,16 +1,16 @@
 import AbstractView from './abstract-view.js';
+import dayjs from 'dayjs';
 import he from 'he';
-{/* <p class="film-details__comment-text">${he.encode(comment.comment)}</p> */}
 
 const createCommentTemplate = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">
     <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
     </span>
   <div>
-  <p class="film-details__comment-text">${comment.comment}</p>
+  <p class="film-details__comment-text">${he.encode(comment.comment)}</p>
   <p class="film-details__comment-info">
   <span class="film-details__comment-author">${comment.author}</span>
-  <span class="film-details__comment-day">${comment.date}</span>
+  <span class="film-details__comment-day">${dayjs(comment.date).format('YYYY/MM/DD HH:mm')}</span>
   <button class="film-details__comment-delete">Delete</button>
   </p>
   </div>
@@ -32,7 +32,6 @@ export default class CommentView extends AbstractView {
     const deleteButtonElement = this.element.querySelector('.film-details__comment-delete');
     deleteButtonElement.addEventListener('click', (evt) => {
       evt.preventDefault();
-      console.log(this.element);
       popupComponent.commentsModel.deleteComment('PATCH', this);
       const commentToDelete = movieData.comments.find((comment) => comment === this.comment);
       movieData.comments.splice([movieData.comments.indexOf(commentToDelete)], 1);
