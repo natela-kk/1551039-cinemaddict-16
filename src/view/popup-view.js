@@ -1,8 +1,7 @@
 import {mainElement} from '../main.js';
-// import CommentView from './comment-view.js';
+import CommentView from './comment-view.js';
 import {PopupMode} from '../presenter/movie-presenter.js';
 import SmartView from './smart-view.js';
-import {generateComment} from '../mock/structure.js';
 import dayjs from 'dayjs';
 import ApiService from '../api-service.js';
 import { AUTHORIZATION, END_POINT } from '../main.js';
@@ -138,6 +137,7 @@ export default class PopupView extends SmartView {
   comments = null;
   changeData = null;
   scrollCoordinates = [0, 0];
+  commentsModel = null;
 
   constructor(movieInfo, changePopupMode, moviePresenter, changeData) {
     super();
@@ -146,7 +146,6 @@ export default class PopupView extends SmartView {
     this.#moviePresenter = moviePresenter;
     this.#changePopupMode = changePopupMode;
     this.#setInnerHandlers();
-    this.addCommentsList();
   }
 
   get template() {
@@ -199,6 +198,7 @@ export default class PopupView extends SmartView {
 
   postClickHandler(movie, moviePresenter) {
     this.#changePopupMode();
+    this.addCommentsList();
     moviePresenter.popupMode = PopupMode.OPENED;
 
     document.body.classList.add('hide-overflow');
@@ -211,21 +211,19 @@ export default class PopupView extends SmartView {
     document.addEventListener('keydown', this.documentKeydownHandler);
   }
 
-  getComments(comments) {
+  setComments(comments) {
     console.log(comments);
-    this.comments = comments;
-    console.log(this.comments);
+    console.log(this);
+    comments.forEach((comment) => {
+      const commentComponent = new CommentView(comment);
+      this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
+      commentComponent.addRemoveControlEvent(this._data, this);
+    });
   }
 
   addCommentsList() {
-    const commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
-    commentsModel.init(this.getComments);
-    console.log(this.comments);
-    // this._data.comments.forEach((comment) => {
-    //   const commentComponent = new CommentView(comment);
-    //   this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
-    //   commentComponent.addRemoveControlEvent(this._data, this);
-    // });
+    this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
+    this.commentsModel.init().then(this.setComments.bind(this));
   }
 
   setFormSubmitHandler(callback) {
