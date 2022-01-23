@@ -163,7 +163,7 @@ export default class PopupView extends SmartView {
 
     const commentInput = this.element.querySelector('.film-details__comment-input');
     commentInput.value = this._data.comment ? this._data.comment : '';
-    this.addCommentsList();
+    this.setComments(this.#moviePresenter.comments);
     this.element.scrollTo(...this.scrollCoordinates);
   }
 
@@ -228,6 +228,7 @@ export default class PopupView extends SmartView {
   }
 
   addCommentsList() {
+    console.log('сервер');
     this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
     this.commentsModel.init().then(this.setComments.bind(this));
   }
