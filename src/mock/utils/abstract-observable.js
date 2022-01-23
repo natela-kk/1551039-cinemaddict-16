@@ -9,7 +9,7 @@ export default class AbstractObservable {
     this.#observers.delete(observer);
   }
 
-  _notify(event, payload) {
-    this.#observers.forEach((observer) => observer(event, payload));
+  _notify(event, payload, presenter) {
+    this.#observers.forEach((observer) => observer(event, payload, presenter));
   }
 }

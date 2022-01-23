@@ -174,23 +174,23 @@ export default class MovieListPresenter {
     const oldPresenter = this.moviePresenter.get(update.id);
 
     if (this.#filterType !== 'all' && oldPresenter) {
-      this.#moviesModel.sendAnUpdate('MINOR', update);
+      this.#moviesModel.sendUpdate('MINOR', update);
       const updatedPresenter = this.moviePresenter.get(update.id);
 
-      if (updatedPresenter && document.querySelector('.film-details__inner')) {
+      if (updatedPresenter && oldPresenter.popupMode === 'OPENED') {
         replace(updatedPresenter.popupComponent, oldPresenter.popupComponent);
-        updatedPresenter.popupComponent.postClickHandler(update, this.moviePresenter);
+        updatedPresenter.popupComponent.postClickHandler(update, this.moviePresenter, oldPresenter);
         updatedPresenter.popupMode = 'OPENED';
 
-      } else if (document.querySelector('.film-details__inner')) {
-        this.#moviesModel.sendAnUpdate('PATCH_POPUP', update);
+      } else if (oldPresenter.popupMode === 'OPENED') {
+        this.#moviesModel.sendUpdate('PATCH_POPUP', update, oldPresenter);
       }
 
     } else if (this.#filterType === 'all') {
-      this.#moviesModel.sendAnUpdate('PATCH', update);
+      this.#moviesModel.sendUpdate('PATCH', update);
 
     } else if (!oldPresenter) {
-      this.#moviesModel.sendAnUpdate('PATCH_POPUP', update);
+      this.#moviesModel.sendUpdate('PATCH_POPUP', update);
     }
 
     if (document.querySelector('.film-details__inner') && this.moviePresenter.get(update.id)) {
@@ -199,7 +199,7 @@ export default class MovieListPresenter {
     this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   };
 
-  #handleModelEvent = (updateType, data) => {
+  #handleModelEvent = (updateType, data, oldPresenter) => {
     switch (updateType) {
       case UpdateType.PATCH: {
         const newPresenter = this.moviePresenter.get(data.id);
@@ -219,7 +219,7 @@ export default class MovieListPresenter {
         const newPresenter = this.moviePresenter.get(data.id);
         newPresenter.initPopup(data);
         replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
-        newPresenter.popupComponent.postClickHandler(data, moviePresenter);
+        newPresenter.popupComponent.postClickHandler(data, moviePresenter, oldPresenter);
       }
         break;
       case UpdateType.MINOR:

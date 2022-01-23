@@ -133,7 +133,7 @@ const createPopupTemplate = (movieInfo) => {
 export default class PopupView extends SmartView {
   #changePopupMode = null;
   #moviePresenter = null;
-  comments = null;
+  #comments = null;
   changeData = null;
   scrollCoordinates = [0, 0];
   commentsModel = null;
@@ -195,10 +195,18 @@ export default class PopupView extends SmartView {
     this.#moviePresenter.popupMode = PopupMode.CLOSED;
   }
 
-  postClickHandler(movie, moviePresenter) {
+  postClickHandler(movie, moviePresenter, oldPresenter) {
+    if(oldPresenter) {
+      this.#moviePresenter.comments = oldPresenter.comments;
+    }
     this.#changePopupMode();
-    this.addCommentsList();
     moviePresenter.popupMode = PopupMode.OPENED;
+
+    if(this.#moviePresenter.comments === null) {
+      this.addCommentsList();
+    } else {
+      this.setComments(this.#moviePresenter.comments);
+    }
 
     document.body.classList.add('hide-overflow');
 
@@ -211,6 +219,7 @@ export default class PopupView extends SmartView {
   }
 
   setComments(comments) {
+    this.#moviePresenter.comments = comments;
     comments.forEach((comment) => {
       const commentComponent = new CommentView(comment);
       this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
