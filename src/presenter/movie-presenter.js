@@ -17,6 +17,7 @@ export default class MoviePresenter {
   #moviesContainer = null;
   #changeData = null;
   #changePopupMode = null;
+  comments = null;
 
   popupMode = PopupMode.CLOSED;
 

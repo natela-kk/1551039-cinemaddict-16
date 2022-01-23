@@ -2,8 +2,11 @@ import {mainElement} from '../main.js';
 import CommentView from './comment-view.js';
 import {PopupMode} from '../presenter/movie-presenter.js';
 import SmartView from './smart-view.js';
-import {generateComment} from '../mock/structure.js';
 import dayjs from 'dayjs';
+import ApiService from '../api-service.js';
+import { AUTHORIZATION, END_POINT } from '../main.js';
+import CommentsModel from '../model/comments-model.js';
+import { getRunTime } from '../mock/utils/utils.js';
 
 let checkedEmotion;
 let closeButton;
@@ -32,11 +35,11 @@ const createPopupTemplate = (movieInfo) => {
         <div class="film-details__info-head">
         <div class="film-details__title-wrap">
               <h3 class="film-details__title">${filmInfo.title}</h3>
-              <p class="film-details__title-original">Original: ${filmInfo.alternative_title}</p>
+              <p class="film-details__title-original">Original: ${filmInfo.alternativeTitle}</p>
               </div>
 
               <div class="film-details__rating">
-              <p class="film-details__total-rating">${filmInfo.total_rating}</p>
+              <p class="film-details__total-rating">${filmInfo.totalRating}</p>
               </div>
               </div>
 
@@ -47,23 +50,23 @@ const createPopupTemplate = (movieInfo) => {
               </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Writers</td>
-            <td class="film-details__cell">${filmInfo.writers}</td>
+            <td class="film-details__cell">${filmInfo.writers.join(', ')}</td>
             </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${filmInfo.actors}</td>
+              <td class="film-details__cell">${filmInfo.actors.join(', ')}</td>
               </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Release Date</td>
-            <td class="film-details__cell">${filmInfo.release.date.format('DD MMMM YYYY')}</td>
+            <td class="film-details__cell">${dayjs(filmInfo.release.date).format('DD MMMM YYYY')}</td>
               </tr>
               <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">${filmInfo.runtime}</td>
+            <td class="film-details__cell">${getRunTime(filmInfo.runtime)}</td>
             </tr>
             <tr class="film-details__row">
             <td class="film-details__term">Country</td>
-              <td class="film-details__cell">${filmInfo.release.release_country}</td>
+              <td class="film-details__cell">${filmInfo.release.releaseCountry}</td>
               </tr>
             <tr class="film-details__row">
             <td class="film-details__term">${getGenreWord(filmInfo.genre)}</td>
@@ -130,8 +133,10 @@ const createPopupTemplate = (movieInfo) => {
 export default class PopupView extends SmartView {
   #changePopupMode = null;
   #moviePresenter = null;
+  #comments = null;
   changeData = null;
   scrollCoordinates = [0, 0];
+  commentsModel = null;
 
   constructor(movieInfo, changePopupMode, moviePresenter, changeData) {
     super();
@@ -140,7 +145,6 @@ export default class PopupView extends SmartView {
     this.#moviePresenter = moviePresenter;
     this.#changePopupMode = changePopupMode;
     this.#setInnerHandlers();
-    this.addCommentsList(this._data);
   }
 
   get template() {
@@ -159,7 +163,7 @@ export default class PopupView extends SmartView {
 
     const commentInput = this.element.querySelector('.film-details__comment-input');
     commentInput.value = this._data.comment ? this._data.comment : '';
-    this.addCommentsList();
+    this.setComments(this.#moviePresenter.comments);
     this.element.scrollTo(...this.scrollCoordinates);
   }
 
@@ -191,9 +195,18 @@ export default class PopupView extends SmartView {
     this.#moviePresenter.popupMode = PopupMode.CLOSED;
   }
 
-  postClickHandler(movie, moviePresenter) {
+  postClickHandler(movie, moviePresenter, oldPresenter) {
+    if(oldPresenter) {
+      this.#moviePresenter.comments = oldPresenter.comments;
+    }
     this.#changePopupMode();
     moviePresenter.popupMode = PopupMode.OPENED;
+
+    if(this.#moviePresenter.comments === null) {
+      this.addCommentsList();
+    } else {
+      this.setComments(this.#moviePresenter.comments);
+    }
 
     document.body.classList.add('hide-overflow');
 
@@ -205,12 +218,19 @@ export default class PopupView extends SmartView {
     document.addEventListener('keydown', this.documentKeydownHandler);
   }
 
-  addCommentsList() {
-    this._data.comments.forEach((comment) => {
+  setComments(comments) {
+    this.#moviePresenter.comments = comments;
+    comments.forEach((comment) => {
       const commentComponent = new CommentView(comment);
       this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
       commentComponent.addRemoveControlEvent(this._data, this);
     });
+  }
+
+  addCommentsList() {
+    console.log('сервер');
+    this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
+    this.commentsModel.init().then(this.setComments.bind(this));
   }
 
   setFormSubmitHandler(callback) {
@@ -265,7 +285,7 @@ export default class PopupView extends SmartView {
     if (movie.comment) {
       delete movie.comment;
     }
-    const newComment = generateComment();
+    const newComment = new Object();
 
     movie.comments.push({
       ...newComment,
