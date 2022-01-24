@@ -169,7 +169,7 @@ export default class MovieListPresenter {
     }
   }
 
-  handleViewAction = (update, scrollCoordinates) => {
+  handleViewAction = (update, scrollCoordinates, commentToDelete) => {
     this.scrollCoordinates = scrollCoordinates;
     const oldPresenter = this.moviePresenter.get(update.id);
 
@@ -187,7 +187,7 @@ export default class MovieListPresenter {
       }
 
     } else if (this.#filterType === 'all') {
-      this.#moviesModel.sendUpdate('PATCH', update);
+      this.#moviesModel.sendUpdate('PATCH', update, null, commentToDelete);
 
     } else if (!oldPresenter) {
       this.#moviesModel.sendUpdate('PATCH_POPUP', update);
@@ -199,7 +199,7 @@ export default class MovieListPresenter {
     this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   };
 
-  #handleModelEvent = (updateType, data, oldPresenter) => {
+  #handleModelEvent = (updateType, data, oldPresenter, commentToDelete) => {
     switch (updateType) {
       case UpdateType.PATCH: {
         const newPresenter = this.moviePresenter.get(data.id);
@@ -207,7 +207,7 @@ export default class MovieListPresenter {
         newPresenter.initPopup(data);
         if (document.querySelector('.film-details__inner') && document.querySelector('.film-details__inner') !== newPresenter.popupComponent.element.querySelector('.film-details__inner')) {
           replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
-          newPresenter.popupComponent.postClickHandler(data, this.moviePresenter);
+          newPresenter.popupComponent.postClickHandler(data, newPresenter, commentToDelete);
           newPresenter.popupComponent.element.scrollTo(...this.scrollCoordinates);
         }
 

@@ -56,8 +56,9 @@ export default class MoviePresenter {
 
   initPopup = (movie) => {
     this.#movie = movie;
+    console.log(this.#movie);
     const popupComponent = this.popupComponent;
-    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData);
+    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData, this.cardComponent);
 
     if (this.popupMode === PopupMode.OPENED) {
       this.#handlePostClick();
@@ -109,7 +110,9 @@ export default class MoviePresenter {
     );
   };
 
-  handleFormSubmit = (movie) => {
+  handleFormSubmit = (movie, comment) => {
+    console.log(comment);
+    this.popupComponent.commentsModel.addComment(movie, comment);
     this.#changeData(
       movie,
       this.popupComponent.scrollCoordinates,

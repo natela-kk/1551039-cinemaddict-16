@@ -133,17 +133,18 @@ const createPopupTemplate = (movieInfo) => {
 export default class PopupView extends SmartView {
   #changePopupMode = null;
   #moviePresenter = null;
-  #comments = null;
   changeData = null;
   scrollCoordinates = [0, 0];
-  commentsModel = null;
+  #comments = [];
 
-  constructor(movieInfo, changePopupMode, moviePresenter, changeData) {
+  constructor(movieInfo, changePopupMode, moviePresenter, changeData, cardComponent) {
     super();
     this.changeData = changeData;
     this._data = movieInfo;
     this.#moviePresenter = moviePresenter;
     this.#changePopupMode = changePopupMode;
+    this.cardComponent = cardComponent;
+    this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
     this.#setInnerHandlers();
   }
 
@@ -195,16 +196,26 @@ export default class PopupView extends SmartView {
     this.#moviePresenter.popupMode = PopupMode.CLOSED;
   }
 
-  postClickHandler(movie, moviePresenter, oldPresenter) {
+  postClickHandler(movie, moviePresenter, oldPresenter, commentToDelete) {
+    console.log(this.commentsModel.comments);
+    this.commentsModel.comments = this.#moviePresenter.comments;
+    console.log(this.commentsModel.comments);
+    console.log(this.#moviePresenter.comments);
+    if(this.#moviePresenter.comments !== null) {
+      const removedCommentIndex = this.#moviePresenter.comments.findIndex((current) => current.id === commentToDelete);
+      this.#moviePresenter.comments.splice(removedCommentIndex, 1);
+      console.log(this.#moviePresenter.comments);
+    }
+
     if(oldPresenter) {
       this.#moviePresenter.comments = oldPresenter.comments;
     }
     this.#changePopupMode();
     moviePresenter.popupMode = PopupMode.OPENED;
-
     if(this.#moviePresenter.comments === null) {
       this.addCommentsList();
-    } else {
+    } else if (!this.element.querySelector('.film-details__comment')){
+      console.log('postClickHandler');
       this.setComments(this.#moviePresenter.comments);
     }
 
@@ -214,22 +225,35 @@ export default class PopupView extends SmartView {
 
     this.addCloseButtonClickControl(this.closeButtonClickHandler);
     mainElement.appendChild(this.element);
-
     document.addEventListener('keydown', this.documentKeydownHandler);
   }
 
   setComments(comments) {
+    console.log('setComments');
     this.#moviePresenter.comments = comments;
     comments.forEach((comment) => {
-      const commentComponent = new CommentView(comment);
+      const commentComponent = new CommentView(comment, this.cardComponent);
+      this.#comments.push(commentComponent);
       this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
-      commentComponent.addRemoveControlEvent(this._data, this);
+      commentComponent.addRemoveControlEvent(this._data, this, commentComponent.element);
+    });
+  }
+
+  deleteComment(comment) {
+    console.log(comment);
+    console.log(Array.from(document.querySelectorAll('.film-details__comment')));
+    Array.from(document.querySelectorAll('.film-details__comment')).forEach((currentComment) => {
+      console.log(currentComment);
+      console.log(comment);
+      console.log(currentComment === comment);
+      if(currentComment === comment) {
+        currentComment.remove();
+      }
     });
   }
 
   addCommentsList() {
-    console.log('сервер');
-    this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
+    console.log('plhfcnt');
     this.commentsModel.init().then(this.setComments.bind(this));
   }
 
@@ -243,8 +267,15 @@ export default class PopupView extends SmartView {
     if (evt.code === 'Enter' && emoji) {
       evt.preventDefault();
       const commentText = this.element.querySelector('.film-details__comment-input').value;
+      const newComment = {
+        author: 'Mary',
+        comment: commentText,
+        date: dayjs(),
+        emotion: emoji.value,
+        id: '124',
+      };
       this._data = PopupView.parseDataToMovie(this._data, commentText, emoji.value);
-      this._callback.formSubmit(this._data);
+      this._callback.formSubmit(this._data, newComment);
     }
   }
 
