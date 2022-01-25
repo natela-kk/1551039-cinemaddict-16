@@ -35,7 +35,7 @@ export default class CommentView extends AbstractView {
       evt.preventDefault();
       const commentToDelete = movieData.comments.find((comment) => comment === this.comment.id);
 
-      popupComponent.commentsModel.deleteComment(movieData, commentToDelete, 'PATCH');
+      popupComponent.commentsModel.deleteComment(commentToDelete, 'PATCH');
       movieData.comments.splice([movieData.comments.indexOf(commentToDelete)], 1);
       popupComponent.changeData(
         movieData,

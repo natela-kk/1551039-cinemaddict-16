@@ -180,8 +180,6 @@ export default class MovieListPresenter {
 
       if (updatedPresenter && oldPresenter.popupMode === 'OPENED') {
         console.log('182');
-        console.log(oldPresenter);
-        console.log(oldPresenter.comments);
         updatedPresenter.comments = oldPresenter.comments;
         replace(updatedPresenter.popupComponent, oldPresenter.popupComponent);
         updatedPresenter.popupComponent.postClickHandler(update, updatedPresenter, commentToDelete, oldPresenter);
@@ -193,7 +191,7 @@ export default class MovieListPresenter {
       }
 
     } else if (this.#filterType === 'all') {
-      console.log('all, PATCH', commentToDelete);
+      console.log('all, PATCH', commentToDelete, update);
       this.#moviesModel.sendUpdate('PATCH', update, commentToDelete);
 
     } else if (!oldPresenter) {
@@ -231,7 +229,6 @@ export default class MovieListPresenter {
       }
         break;
       case UpdateType.MINOR:
-        console.log(updateType, data, commentToDelete);
         this.clearMoviesContainer();
         this.renderMoviesContainer(commentToDelete);
         break;

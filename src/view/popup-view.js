@@ -141,7 +141,6 @@ export default class PopupView extends SmartView {
     super();
     this.changeData = changeData;
     this._data = movieInfo;
-    console.log(this._data.comments, 'конструктор попапа');
     this.#moviePresenter = moviePresenter;
     this.#changePopupMode = changePopupMode;
     this.cardComponent = cardComponent;
@@ -210,7 +209,6 @@ export default class PopupView extends SmartView {
     }
     this.#changePopupMode();
     moviePresenter.popupMode = PopupMode.OPENED;
-    console.log(this.#moviePresenter.comments);
     if(this.#moviePresenter.comments === null) {
       this.addCommentsList();
     } else if (!this.element.querySelector('.film-details__comment')){
@@ -227,7 +225,7 @@ export default class PopupView extends SmartView {
   }
 
   setComments(comments) {
-    console.log('setComments');
+    console.log(comments);
     this.#moviePresenter.comments = comments;
     comments.forEach((comment) => {
       const commentComponent = new CommentView(comment, this.cardComponent);
@@ -238,7 +236,6 @@ export default class PopupView extends SmartView {
   }
 
   addCommentsList() {
-    console.log('addCommentsList');
     this.commentsModel.init().then(this.setComments.bind(this));
   }
 
@@ -256,7 +253,7 @@ export default class PopupView extends SmartView {
         comment: commentText,
         emotion: emoji.value,
       };
-      this._data = PopupView.parseDataToMovie(this._data, commentText, emoji.value);
+      // this._data = PopupView.parseDataToMovie(this._data, commentText, emoji.value);
       this._callback.formSubmit(this._data, newComment);
     }
   }

@@ -25,6 +25,7 @@ export default class ApiService {
   }
 
   updateMovie = async (movie) => {
+    console.log(movie);
     const response = await this.#loadMovies({
       url: `movies/${movie.id}`,
       method: Method.PUT,
@@ -32,17 +33,15 @@ export default class ApiService {
       headers: new Headers({'Content-Type': 'application/json'}),
     });
     const parsedResponse = await ApiService.parseResponse(response);
-
     return parsedResponse;
   }
 
   addComment = async (movie, comment) => {
-    console.log(comment);
-    console.log(movie.id);
+    console.log('addComment 39');
     const response = await this.#deletePostCommentOnServer({
       url: `https://16.ecmascript.pages.academy/cinemaddict/comments/${movie.id}`,
       method: Method.POST,
-      body: JSON.stringify(this.#adaptToServer(movie, comment)),
+      body: JSON.stringify(comment),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
@@ -71,7 +70,6 @@ export default class ApiService {
       url,
       {method, body, headers},
     );
-    console.log(response);
     try {
       ApiService.checkStatus(response);
       return response;
@@ -118,26 +116,25 @@ export default class ApiService {
     }
   }
 
-  #adaptToServer = (movie, comment) => {
-    console.log(movie.id);
-    const newComment = {...comment, id: movie.id};
-    console.log(newComment);
-
-    const adaptedMovie = {...movie,
-      'film_info': {...movie.filmInfo, 'age_rating': movie.filmInfo.ageRating, 'alternative_title': movie.filmInfo.alternativeTitle, release: {...movie.filmInfo.release, 'release_country': movie.filmInfo.release.releaseCountry}, 'total_rating': movie.filmInfo.totalRating},
-      'user_details': {...movie.userDetails, 'already_watched': movie.userDetails.alreadyWatched, 'watching_date': movie.userDetails.watchingDate},
-      comments: [...movie.comments, newComment]
-    };
-    delete adaptedMovie.filmInfo;
-    delete adaptedMovie.film_info.ageRating;
-    delete adaptedMovie.film_info.alternativeTitle;
-    delete adaptedMovie.film_info.release.releaseCountry;
-    delete adaptedMovie.film_info.totalRating;
-    delete adaptedMovie.userDetails;
-    delete adaptedMovie.user_details.alreadyWatched;
-    delete adaptedMovie.user_details.watchingDate;
-console.log(adaptedMovie);
-    return adaptedMovie;
+  #adaptToServer = (movie) => {
+    // const newComment = {...comment, id: movie.id};
+    // console.log(newComment);
+    if(movie.filmInfo) {
+      const adaptedMovie = {...movie,
+        'film_info': {...movie.filmInfo, 'age_rating': movie.filmInfo.ageRating, 'alternative_title': movie.filmInfo.alternativeTitle, release: {...movie.filmInfo.release, 'release_country': movie.filmInfo.release.releaseCountry}, 'total_rating': movie.filmInfo.totalRating},
+        'user_details': {...movie.userDetails, 'already_watched': movie.userDetails.alreadyWatched, 'watching_date': movie.userDetails.watchingDate},
+      // comments: [...movie.comments, newComment]
+      };
+      delete adaptedMovie.filmInfo;
+      delete adaptedMovie.film_info.ageRating;
+      delete adaptedMovie.film_info.alternativeTitle;
+      delete adaptedMovie.film_info.release.releaseCountry;
+      delete adaptedMovie.film_info.totalRating;
+      delete adaptedMovie.userDetails;
+      delete adaptedMovie.user_details.alreadyWatched;
+      delete adaptedMovie.user_details.watchingDate;
+      return adaptedMovie;
+    }
   }
 
   static parseResponse = (response) => response.json();

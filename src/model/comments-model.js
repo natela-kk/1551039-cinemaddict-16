@@ -21,20 +21,19 @@ export default class CommentsModel extends AbstractObservable {
     }
 
     addComment = async (updatedMovie, comment) => {
-      console.log(updatedMovie, comment);
       try {
         const response = await this.#apiService.addComment(updatedMovie, comment);
-        console.log(response);
-        // const newComment = this.#adaptToClient(response);
-        // const newComment = this.#adaptToClient(response);
-        this.comments = [comment, ...this.comments];
-        // this._notify(updateType, newComment);
+        this.comments = [...response.comments];
+        console.log(this.comments);
+        console.log(response.movie);
+        const adaptedMovie = this.#adaptToClient(response.movie);
+        return adaptedMovie;
       } catch(err) {
         throw new Error('Can\'t add comment');
       }
     }
 
-    deleteComment = async (movie, commentToDelete) => {
+    deleteComment = async (commentToDelete) => {
       const index = this.comments.findIndex((comment) => comment.id === commentToDelete);
       if (index === -1) {
         throw new Error('Can\'t delete unexisting comment');
@@ -52,8 +51,10 @@ export default class CommentsModel extends AbstractObservable {
     }
 
     #adaptToClient = (movie) => {
+      console.log(movie);
       const adaptedMovie = {...movie,
-        filmInfo: {...movie['film_info'], ageRating: movie['film_info']['age_rating'],
+        filmInfo: {...movie['film_info'],
+          ageRating: movie['film_info']['age_rating'],
           alternativeTitle: movie['film_info']['alternative_title'],
           release: {...movie['film_info']['release'],
             releaseCountry: movie['film_info']['release']['release_country']},
@@ -72,7 +73,8 @@ export default class CommentsModel extends AbstractObservable {
       delete adaptedMovie['filmInfo']['total_rating'];
       delete adaptedMovie['userDetails']['already_watched'];
       delete adaptedMovie['userDetails']['watching_date'];
-
+      console.log(adaptedMovie.comments);
+      console.log(this.comments.map((comment) => comment.id));
       return adaptedMovie;
     }
 }
