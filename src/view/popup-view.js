@@ -141,6 +141,7 @@ export default class PopupView extends SmartView {
     super();
     this.changeData = changeData;
     this._data = movieInfo;
+    console.log(this._data.comments, 'конструктор попапа');
     this.#moviePresenter = moviePresenter;
     this.#changePopupMode = changePopupMode;
     this.cardComponent = cardComponent;
@@ -196,15 +197,12 @@ export default class PopupView extends SmartView {
     this.#moviePresenter.popupMode = PopupMode.CLOSED;
   }
 
-  postClickHandler(movie, moviePresenter, oldPresenter, commentToDelete) {
-    console.log(this.commentsModel.comments);
-    this.commentsModel.comments = this.#moviePresenter.comments;
-    console.log(this.commentsModel.comments);
-    console.log(this.#moviePresenter.comments);
-    if(this.#moviePresenter.comments !== null) {
+  postClickHandler(movie, moviePresenter, commentToDelete, oldPresenter) {
+    this.commentsModel.comments = moviePresenter.comments;
+
+    if(this.#moviePresenter.comments !== null && commentToDelete) {
       const removedCommentIndex = this.#moviePresenter.comments.findIndex((current) => current.id === commentToDelete);
       this.#moviePresenter.comments.splice(removedCommentIndex, 1);
-      console.log(this.#moviePresenter.comments);
     }
 
     if(oldPresenter) {
@@ -212,10 +210,10 @@ export default class PopupView extends SmartView {
     }
     this.#changePopupMode();
     moviePresenter.popupMode = PopupMode.OPENED;
+    console.log(this.#moviePresenter.comments);
     if(this.#moviePresenter.comments === null) {
       this.addCommentsList();
     } else if (!this.element.querySelector('.film-details__comment')){
-      console.log('postClickHandler');
       this.setComments(this.#moviePresenter.comments);
     }
 
@@ -235,25 +233,12 @@ export default class PopupView extends SmartView {
       const commentComponent = new CommentView(comment, this.cardComponent);
       this.#comments.push(commentComponent);
       this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
-      commentComponent.addRemoveControlEvent(this._data, this, commentComponent.element);
-    });
-  }
-
-  deleteComment(comment) {
-    console.log(comment);
-    console.log(Array.from(document.querySelectorAll('.film-details__comment')));
-    Array.from(document.querySelectorAll('.film-details__comment')).forEach((currentComment) => {
-      console.log(currentComment);
-      console.log(comment);
-      console.log(currentComment === comment);
-      if(currentComment === comment) {
-        currentComment.remove();
-      }
+      commentComponent.addRemoveControlEvent(this._data, this);
     });
   }
 
   addCommentsList() {
-    console.log('plhfcnt');
+    console.log('addCommentsList');
     this.commentsModel.init().then(this.setComments.bind(this));
   }
 
@@ -264,15 +249,12 @@ export default class PopupView extends SmartView {
 
   formSubmitHandler(evt) {
     const emoji = this.element.querySelector('input[type="radio"]:checked');
-    if (evt.code === 'Enter' && emoji) {
+    if ((evt.code === 'Enter' && (evt.ctrlKey || evt.metaKey)) && emoji) {
       evt.preventDefault();
       const commentText = this.element.querySelector('.film-details__comment-input').value;
       const newComment = {
-        author: 'Mary',
         comment: commentText,
-        date: dayjs(),
         emotion: emoji.value,
-        id: '124',
       };
       this._data = PopupView.parseDataToMovie(this._data, commentText, emoji.value);
       this._callback.formSubmit(this._data, newComment);

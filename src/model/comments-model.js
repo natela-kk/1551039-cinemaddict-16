@@ -20,14 +20,14 @@ export default class CommentsModel extends AbstractObservable {
       }
     }
 
-    addComment = async (update) => {
-      console.log(update);
+    addComment = async (updatedMovie, comment) => {
+      console.log(updatedMovie, comment);
       try {
-        const response = await this.#apiService.addComment(update);
+        const response = await this.#apiService.addComment(updatedMovie, comment);
         console.log(response);
         // const newComment = this.#adaptToClient(response);
         // const newComment = this.#adaptToClient(response);
-        this.comments = [newComment, ...this.comments];
+        this.comments = [comment, ...this.comments];
         // this._notify(updateType, newComment);
       } catch(err) {
         throw new Error('Can\'t add comment');
@@ -35,8 +35,6 @@ export default class CommentsModel extends AbstractObservable {
     }
 
     deleteComment = async (movie, commentToDelete) => {
-      console.log(this.comments);
-      console.log(commentToDelete);
       const index = this.comments.findIndex((comment) => comment.id === commentToDelete);
       if (index === -1) {
         throw new Error('Can\'t delete unexisting comment');
@@ -55,8 +53,15 @@ export default class CommentsModel extends AbstractObservable {
 
     #adaptToClient = (movie) => {
       const adaptedMovie = {...movie,
-        filmInfo: {...movie['film_info'], ageRating: movie['film_info']['age_rating'], alternativeTitle: movie['film_info']['alternative_title'], release: {...movie['film_info']['release'], releaseCountry: movie['film_info']['release']['release_country']}, totalRating: movie['film_info']['total_rating']},
-        userDetails: {...movie['user_details'], alreadyWatched: movie['user_details']['already_watched'], watchingDate: movie['user_details']['watching_date']},
+        filmInfo: {...movie['film_info'], ageRating: movie['film_info']['age_rating'],
+          alternativeTitle: movie['film_info']['alternative_title'],
+          release: {...movie['film_info']['release'],
+            releaseCountry: movie['film_info']['release']['release_country']},
+          totalRating: movie['film_info']['total_rating']},
+
+        userDetails: {...movie['user_details'],
+          alreadyWatched: movie['user_details']['already_watched'],
+          watchingDate: movie['user_details']['watching_date']},
       };
 
       delete adaptedMovie['film_info'];

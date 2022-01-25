@@ -71,14 +71,14 @@ export default class MovieListPresenter {
     this.#filterPresenter.addObservers();
   };
 
-  #renderMovies = (movies) => {
-    movies.forEach((movie) => this.renderMovie(movie));
+  #renderMovies = (movies, commentToDelete) => {
+    movies.forEach((movie) => this.renderMovie(movie, commentToDelete));
   };
 
-  renderMovie = (movie) => {
+  renderMovie = (movie, commentToDelete) => {
     const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
     moviePresenter.initCard(movie);
-    moviePresenter.initPopup(movie);
+    moviePresenter.initPopup(movie, commentToDelete);
     this.moviePresenter.set(movie.id, moviePresenter);
   };
 
@@ -174,23 +174,31 @@ export default class MovieListPresenter {
     const oldPresenter = this.moviePresenter.get(update.id);
 
     if (this.#filterType !== 'all' && oldPresenter) {
-      this.#moviesModel.sendUpdate('MINOR', update);
+      console.log('!all, MINOR', commentToDelete);
+      this.#moviesModel.sendUpdate('MINOR', update, commentToDelete);
       const updatedPresenter = this.moviePresenter.get(update.id);
 
       if (updatedPresenter && oldPresenter.popupMode === 'OPENED') {
+        console.log('182');
+        console.log(oldPresenter);
+        console.log(oldPresenter.comments);
+        updatedPresenter.comments = oldPresenter.comments;
         replace(updatedPresenter.popupComponent, oldPresenter.popupComponent);
-        updatedPresenter.popupComponent.postClickHandler(update, this.moviePresenter, oldPresenter);
+        updatedPresenter.popupComponent.postClickHandler(update, updatedPresenter, commentToDelete, oldPresenter);
         updatedPresenter.popupMode = 'OPENED';
 
       } else if (oldPresenter.popupMode === 'OPENED') {
-        this.#moviesModel.sendUpdate('PATCH_POPUP', update, oldPresenter);
+        console.log('188');
+        this.#moviesModel.sendUpdate('PATCH_POPUP', update, commentToDelete, oldPresenter);
       }
 
     } else if (this.#filterType === 'all') {
-      this.#moviesModel.sendUpdate('PATCH', update, null, commentToDelete);
+      console.log('all, PATCH', commentToDelete);
+      this.#moviesModel.sendUpdate('PATCH', update, commentToDelete);
 
     } else if (!oldPresenter) {
-      this.#moviesModel.sendUpdate('PATCH_POPUP', update);
+      console.log('197');
+      this.#moviesModel.sendUpdate('PATCH_POPUP', update, commentToDelete);
     }
 
     if (document.querySelector('.film-details__inner') && this.moviePresenter.get(update.id)) {
@@ -199,12 +207,12 @@ export default class MovieListPresenter {
     this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   };
 
-  #handleModelEvent = (updateType, data, oldPresenter, commentToDelete) => {
+  #handleModelEvent = (updateType, data, commentToDelete, oldPresenter) => {
     switch (updateType) {
       case UpdateType.PATCH: {
         const newPresenter = this.moviePresenter.get(data.id);
         newPresenter.initCard(data);
-        newPresenter.initPopup(data);
+        newPresenter.initPopup(data, commentToDelete);
         if (document.querySelector('.film-details__inner') && document.querySelector('.film-details__inner') !== newPresenter.popupComponent.element.querySelector('.film-details__inner')) {
           replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
           newPresenter.popupComponent.postClickHandler(data, newPresenter, commentToDelete);
@@ -219,12 +227,13 @@ export default class MovieListPresenter {
         const newPresenter = this.moviePresenter.get(data.id);
         newPresenter.initPopup(data);
         replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
-        newPresenter.popupComponent.postClickHandler(data, moviePresenter, oldPresenter);
+        newPresenter.popupComponent.postClickHandler(data, moviePresenter, commentToDelete, oldPresenter);
       }
         break;
       case UpdateType.MINOR:
+        console.log(updateType, data, commentToDelete);
         this.clearMoviesContainer();
-        this.renderMoviesContainer();
+        this.renderMoviesContainer(commentToDelete);
         break;
       case UpdateType.MAJOR:
         this.clearMoviesContainer({
@@ -250,7 +259,7 @@ export default class MovieListPresenter {
     this.renderMoviesContainer();
   };
 
-  renderMoviesContainer = () => {
+  renderMoviesContainer = (commentToDelete) => {
     const movies = this.movies;
     const moviesCount = movies.length;
 
@@ -266,7 +275,7 @@ export default class MovieListPresenter {
 
     this.#renderSort();
 
-    this.#renderMovies(movies.slice(0, Math.min(moviesCount, this.#renderedMoviesCount)));
+    this.#renderMovies(movies.slice(0, Math.min(moviesCount, this.#renderedMoviesCount)), commentToDelete);
 
     if (moviesCount > this.#renderedMoviesCount) {
       this.#renderLoadMoreButton();

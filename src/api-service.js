@@ -38,8 +38,9 @@ export default class ApiService {
 
   addComment = async (movie, comment) => {
     console.log(comment);
-    const response = await this.#loadComments({
-      url: movie.id,
+    console.log(movie.id);
+    const response = await this.#deletePostCommentOnServer({
+      url: `https://16.ecmascript.pages.academy/cinemaddict/comments/${movie.id}`,
       method: Method.POST,
       body: JSON.stringify(this.#adaptToServer(movie, comment)),
       headers: new Headers({'Content-Type': 'application/json'}),
@@ -51,7 +52,7 @@ export default class ApiService {
   }
 
   deleteComment = async (comment) => {
-    const response = await this.#deleteCommentOnServer({
+    const response = await this.#deletePostCommentOnServer({
       url: `https://16.ecmascript.pages.academy/cinemaddict/comments/${comment}`,
       method: Method.DELETE,
     });
@@ -59,7 +60,7 @@ export default class ApiService {
     return response;
   }
 
-  #deleteCommentOnServer = async ({
+  #deletePostCommentOnServer = async ({
     url,
     method,
     body = null,
@@ -70,6 +71,7 @@ export default class ApiService {
       url,
       {method, body, headers},
     );
+    console.log(response);
     try {
       ApiService.checkStatus(response);
       return response;
@@ -117,9 +119,14 @@ export default class ApiService {
   }
 
   #adaptToServer = (movie, comment) => {
+    console.log(movie.id);
+    const newComment = {...comment, id: movie.id};
+    console.log(newComment);
+
     const adaptedMovie = {...movie,
       'film_info': {...movie.filmInfo, 'age_rating': movie.filmInfo.ageRating, 'alternative_title': movie.filmInfo.alternativeTitle, release: {...movie.filmInfo.release, 'release_country': movie.filmInfo.release.releaseCountry}, 'total_rating': movie.filmInfo.totalRating},
       'user_details': {...movie.userDetails, 'already_watched': movie.userDetails.alreadyWatched, 'watching_date': movie.userDetails.watchingDate},
+      comments: [...movie.comments, newComment]
     };
     delete adaptedMovie.filmInfo;
     delete adaptedMovie.film_info.ageRating;
@@ -129,7 +136,7 @@ export default class ApiService {
     delete adaptedMovie.userDetails;
     delete adaptedMovie.user_details.alreadyWatched;
     delete adaptedMovie.user_details.watchingDate;
-
+console.log(adaptedMovie);
     return adaptedMovie;
   }
 

@@ -30,6 +30,7 @@ export default class MoviePresenter {
 
   initCard = (movie) => {
     this.#movie = movie;
+    console.log(this.#movie.comments);
     const cardComponent = this.cardComponent;
 
     this.cardComponent = new CardsView(this.#movie);
@@ -54,14 +55,14 @@ export default class MoviePresenter {
     }
   };
 
-  initPopup = (movie) => {
+  initPopup = (movie, commentToDelete) => {
     this.#movie = movie;
     console.log(this.#movie);
     const popupComponent = this.popupComponent;
     this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData, this.cardComponent);
 
     if (this.popupMode === PopupMode.OPENED) {
-      this.#handlePostClick();
+      this.#handlePostClick(commentToDelete);
       replace(this.popupComponent, popupComponent);
     }
     this.popupComponent.element.scrollTo(...this.popupComponent.scrollCoordinates);
@@ -119,8 +120,8 @@ export default class MoviePresenter {
     );
   };
 
-  #handlePostClick = () => {
-    this.popupComponent.postClickHandler(this.#movie, this);
+  #handlePostClick = (commentToDelete) => {
+    this.popupComponent.postClickHandler(this.#movie, this, commentToDelete);
   };
 
   resetView = () => {
