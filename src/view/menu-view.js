@@ -78,9 +78,7 @@ export default class MenuView extends AbstractView {
   };
 
   setMenuClickHandler = (callback) => {
-    console.log( document.querySelector('.main-navigation'));
     this._callback.menuClick = callback;
-    console.log(this.element);
     this.element.addEventListener('click', this.#menuClickHandler);
   };
 

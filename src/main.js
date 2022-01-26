@@ -28,7 +28,9 @@ renderElement(headerElement, new AvatarView(), RenderPosition.BEFOREEND);
 
 export const handleSiteMenuClick = (menuItem) => {
   const watchedMovies = filter[FilterType.HISTORY](movieListPresenter.movies);
-  if (menuItem === MenuItem.STATISTICS) {
+  if (menuItem === MenuItem.STATISTICS && document.querySelector('.statistic__chart')) {
+    return;
+  } if (menuItem === MenuItem.STATISTICS) {
     const statsComponent = new StatsView(watchedMovies, 'all-time');
     movieListPresenter.destroy();
     renderElement(mainElement, statsComponent, RenderPosition.BEFOREEND);
@@ -42,11 +44,13 @@ export const handleSiteMenuClick = (menuItem) => {
 
     if (!document.querySelector('.films-list__container')) {
       movieListPresenter.init();
-    } else {
-      movieListPresenter.clearMoviesContainer();
-      movieListPresenter.renderMoviesContainer();
-      filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
     }
+    movieListPresenter.clearMoviesContainer({
+      resetRenderedMoviesCount: true,
+      resetSortType: true
+    });
+    movieListPresenter.renderMoviesContainer();
+    filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   }
 };
 
@@ -59,7 +63,6 @@ export const updateStatistic = (movies, currentFilter) => {
   newStatsComponent.setStaticFilterChange();
 };
 
-filterPresenter.init();
 movieListPresenter.init();
 
 moviesModel.init();

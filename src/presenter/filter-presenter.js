@@ -4,6 +4,7 @@ import {RenderPosition} from '../mock/generate.js';
 import {replace} from '../mock/utils/utils.js';
 import {filter} from '../mock/utils/filter.js';
 import {FilterType, UpdateType} from '../const.js';
+import { handleSiteMenuClick } from '../main.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -50,12 +51,12 @@ export default class FilterPresenter {
 
     this.filterComponent = new MenuView(filters, this.#filterModel.filter);
     this.filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
+    this.filterComponent.setMenuClickHandler(handleSiteMenuClick);
 
     if (prevFilterComponent === null) {
       renderElement(this.#filterContainer, this.filterComponent, RenderPosition.AFTERBEGIN);
       return;
     }
-
     replace(this.filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
   };

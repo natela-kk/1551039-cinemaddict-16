@@ -52,6 +52,7 @@ export default class MovieListPresenter {
   get movies() {
     this.#filterType = this.#filterModel.filter;
     const movies = this.#moviesModel.movies;
+
     const filteredMovies = filter[this.#filterType](movies);
     switch (this.#currentSortType) {
       case SortType.DATE:
@@ -63,9 +64,7 @@ export default class MovieListPresenter {
   }
 
   init = () => {
-    console.log(this.#filterPresenter.filterComponent.element);
     this.#renderMovieList();
-    this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
 
     this.#moviesModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -90,7 +89,7 @@ export default class MovieListPresenter {
   #renderNoMovies = () => {
     const noMoviesComponent = this.#noMoviesComponent;
     this.#noMoviesComponent = new NoMoviesView(this.#filterType);
-    if (noMoviesComponent) {
+    if (noMoviesComponent && noMoviesComponent.element.parentElement) {
       replace(this.#noMoviesComponent, noMoviesComponent);
       return;
     }
@@ -197,12 +196,6 @@ export default class MovieListPresenter {
       this.#moviesModel.sendUpdate('PATCH_POPUP', update, commentToDelete, oldPresenter);
       this.#moviesModel.sendUpdate('MINOR', update, commentToDelete);
     }
-    // ////////эта проверка под вопросом
-    // else if (!oldPresenter) {
-    //   console.log('197');
-    //   this.#moviesModel.sendUpdate('PATCH_POPUP', update, commentToDelete);
-    // }
-    ///////////
 
     if (document.querySelector('.film-details__inner') && this.moviePresenter.get(update.id)) {
       this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...this.scrollCoordinates);
@@ -237,13 +230,6 @@ export default class MovieListPresenter {
         this.clearMoviesContainer();
         this.renderMoviesContainer(commentToDelete);
         break;
-      case UpdateType.MAJOR:
-        this.clearMoviesContainer({
-          resetRenderedMoviesCount: true,
-          resetSortType: true
-        });
-        this.renderMoviesContainer();
-        break;
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
@@ -262,17 +248,20 @@ export default class MovieListPresenter {
   };
 
   renderMoviesContainer = (commentToDelete) => {
+
     const movies = this.movies;
     const moviesCount = movies.length;
-
     if (moviesCount === 0) {
       if (this.#isLoading) {
         this.#renderLoading();
         return;
       }
-
       this.#renderNoMovies();
       return;
+    }
+
+    if(moviesCount > 0 && this.#noMoviesComponent){
+      this.#noMoviesComponent.element.remove();
     }
 
     this.#renderSort();
