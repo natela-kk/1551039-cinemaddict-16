@@ -1,5 +1,5 @@
 import AbstractView from '../../view/abstract-view.js';
-
+import dayjs from 'dayjs';
 
 export const getRunTime = (mins) => {
   const hours = Math.trunc(mins/60);
@@ -25,16 +25,16 @@ export const replace = (newElement, oldElement) => {
 
 
 export const sortMovieDateDown = (movieA, movieB) => {
-  const dateOne = movieA.filmInfo.release.date.$y;
-  const dateTwo = movieB.filmInfo.release.date.$y;
+  const dateOne = dayjs(movieA.filmInfo.release.date).$y;
+  const dateTwo = dayjs(movieB.filmInfo.release.date).$y;
   return dateTwo - dateOne;
 };
 
 
 export const sortMovieRatingDown = (movieA, movieB) => {
-  const dateOne = movieA.filmInfo.total_rating;
-  const dateTwo = movieB.filmInfo.total_rating;
-  return dateTwo - dateOne;
+  const ratingOne = movieA.filmInfo.totalRating;
+  const ratingTwo = movieB.filmInfo.totalRating;
+  return ratingTwo - ratingOne;
 };
 
 export const isFavorite = (favorite, updatedFavorite) => (favorite === updatedFavorite);

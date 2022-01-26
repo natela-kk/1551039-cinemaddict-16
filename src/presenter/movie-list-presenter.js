@@ -63,6 +63,7 @@ export default class MovieListPresenter {
   }
 
   init = () => {
+    console.log(this.#filterPresenter.filterComponent.element);
     this.#renderMovieList();
     this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
 
@@ -117,8 +118,8 @@ export default class MovieListPresenter {
     if (this.noMoviesComponent) {
       remove(this.noMoviesComponent);
     }
-
     this.#renderedMoviesCount = resetRenderedMoviesCount ? MOVIES_COUNT_PER_STEP : Math.min(moviesCount, this.#renderedMoviesCount);
+    this.#renderedMoviesCount = this.#renderedMoviesCount < MOVIES_COUNT_PER_STEP ? MOVIES_COUNT_PER_STEP : this.#renderedMoviesCount;
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
@@ -170,34 +171,38 @@ export default class MovieListPresenter {
   }
 
   handleViewAction = (update, scrollCoordinates, commentToDelete) => {
+
     this.scrollCoordinates = scrollCoordinates;
     const oldPresenter = this.moviePresenter.get(update.id);
 
+
     if (this.#filterType !== 'all' && oldPresenter) {
-      console.log('!all, MINOR', commentToDelete);
       this.#moviesModel.sendUpdate('MINOR', update, commentToDelete);
       const updatedPresenter = this.moviePresenter.get(update.id);
 
-      if (updatedPresenter && oldPresenter.popupMode === 'OPENED') {
-        console.log('182');
+      if (updatedPresenter && document.querySelector('.film-details__inner')) {
         updatedPresenter.comments = oldPresenter.comments;
         replace(updatedPresenter.popupComponent, oldPresenter.popupComponent);
         updatedPresenter.popupComponent.postClickHandler(update, updatedPresenter, commentToDelete, oldPresenter);
         updatedPresenter.popupMode = 'OPENED';
 
-      } else if (oldPresenter.popupMode === 'OPENED') {
-        console.log('188');
+      } else if (document.querySelector('.film-details__inner')) {
         this.#moviesModel.sendUpdate('PATCH_POPUP', update, commentToDelete, oldPresenter);
       }
 
     } else if (this.#filterType === 'all') {
-      console.log('all, PATCH', commentToDelete, update);
       this.#moviesModel.sendUpdate('PATCH', update, commentToDelete);
 
-    } else if (!oldPresenter) {
-      console.log('197');
-      this.#moviesModel.sendUpdate('PATCH_POPUP', update, commentToDelete);
+    } else if (this.#filterType !== 'all' && !oldPresenter) {
+      this.#moviesModel.sendUpdate('PATCH_POPUP', update, commentToDelete, oldPresenter);
+      this.#moviesModel.sendUpdate('MINOR', update, commentToDelete);
     }
+    // ////////эта проверка под вопросом
+    // else if (!oldPresenter) {
+    //   console.log('197');
+    //   this.#moviesModel.sendUpdate('PATCH_POPUP', update, commentToDelete);
+    // }
+    ///////////
 
     if (document.querySelector('.film-details__inner') && this.moviePresenter.get(update.id)) {
       this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...this.scrollCoordinates);
@@ -214,7 +219,6 @@ export default class MovieListPresenter {
         if (document.querySelector('.film-details__inner') && document.querySelector('.film-details__inner') !== newPresenter.popupComponent.element.querySelector('.film-details__inner')) {
           replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
           newPresenter.popupComponent.postClickHandler(data, newPresenter, commentToDelete);
-          newPresenter.popupComponent.element.scrollTo(...this.scrollCoordinates);
         }
 
         break;
@@ -226,6 +230,7 @@ export default class MovieListPresenter {
         newPresenter.initPopup(data);
         replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
         newPresenter.popupComponent.postClickHandler(data, moviePresenter, commentToDelete, oldPresenter);
+        newPresenter.popupComponent.element.scrollTo(...this.scrollCoordinates);
       }
         break;
       case UpdateType.MINOR:

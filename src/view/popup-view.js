@@ -161,6 +161,7 @@ export default class PopupView extends SmartView {
 
     checkedEmotion = this.element.querySelector(`#${checkedEmotionId}`);
     checkedEmotion.checked = true;
+    console.log(checkedEmotion.checked);
 
     const commentInput = this.element.querySelector('.film-details__comment-input');
     commentInput.value = this._data.comment ? this._data.comment : '';
@@ -225,7 +226,6 @@ export default class PopupView extends SmartView {
   }
 
   setComments(comments) {
-    console.log(comments);
     this.#moviePresenter.comments = comments;
     comments.forEach((comment) => {
       const commentComponent = new CommentView(comment, this.cardComponent);
@@ -310,7 +310,6 @@ export default class PopupView extends SmartView {
     this.element.addEventListener('scroll', () => {
       this.scrollCoordinates = [this.element.scrollLeft, this.element.scrollTop];
     });
-
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.emojiChangeHandler.bind(this));
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.commentInputHandler.bind(this));
 

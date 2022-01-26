@@ -110,7 +110,6 @@ export default class MoviePresenter {
   };
 
   handleFormSubmit = (movie, comment) => {
-    console.log(movie);
     this.popupComponent.commentsModel.addComment(movie, comment).then((data) => this.updateCommentList(data));
 
   };

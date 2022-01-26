@@ -1,3 +1,5 @@
+const COMMENT_END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/comments';
+
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
@@ -25,7 +27,6 @@ export default class ApiService {
   }
 
   updateMovie = async (movie) => {
-    console.log(movie);
     const response = await this.#loadMovies({
       url: `movies/${movie.id}`,
       method: Method.PUT,
@@ -37,9 +38,8 @@ export default class ApiService {
   }
 
   addComment = async (movie, comment) => {
-    console.log('addComment 39');
     const response = await this.#deletePostCommentOnServer({
-      url: `https://16.ecmascript.pages.academy/cinemaddict/comments/${movie.id}`,
+      url: `${COMMENT_END_POINT}/${movie.id}`,
       method: Method.POST,
       body: JSON.stringify(comment),
       headers: new Headers({'Content-Type': 'application/json'}),
