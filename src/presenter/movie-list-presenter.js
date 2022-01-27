@@ -170,6 +170,7 @@ export default class MovieListPresenter {
   }
 
   handleViewAction = (update, scrollCoordinates, commentToDelete) => {
+    console.log(update);
 
     this.scrollCoordinates = scrollCoordinates;
     const oldPresenter = this.moviePresenter.get(update.id);

@@ -18,6 +18,7 @@ const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details
 
 const createPopupTemplate = (movieInfo) => {
   const {filmInfo, comments, userDetails, selectedEmoji} = movieInfo;
+  console.log(selectedEmoji, userDetails);
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
   <div class="film-details__top-container">
@@ -148,6 +149,7 @@ export default class PopupView extends SmartView {
     this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
     this.#filterPresenter = filterPresenter;
     this.#setInnerHandlers();
+    this.updateUserInputInfo();
   }
 
   get template() {
@@ -162,12 +164,29 @@ export default class PopupView extends SmartView {
     this.updateData({selectedEmoji: checkedEmotion.value});
 
     checkedEmotion = this.element.querySelector(`#${checkedEmotionId}`);
+    console.log(checkedEmotion);
     checkedEmotion.checked = true;
 
     const commentInput = this.element.querySelector('.film-details__comment-input');
     commentInput.value = this._data.comment ? this._data.comment : '';
     this.setComments(this.#moviePresenter.comments);
     this.element.scrollTo(...this.scrollCoordinates);
+  }
+
+  updateUserInputInfo() {
+    console.log(this._data);
+
+    if(this._data.selectedEmoji) {
+      const checkedEmoji = this.element.querySelector(`#emoji-${this._data.selectedEmoji}`);
+      checkedEmoji.checked = true;
+      console.log(checkedEmoji);
+      console.log('checkedEmoji.checked', checkedEmoji.checked);
+
+    } if(this._data.comment) {
+      const commentInput = this.element.querySelector('.film-details__comment-input');
+      commentInput.value = this._data.comment;
+      console.log(this._data.comment);
+    }
   }
 
   addCloseButtonClickControl(callback) {
@@ -191,7 +210,13 @@ export default class PopupView extends SmartView {
   };
 
   closePopup() {
+    const checkedEmoji = this.element.querySelector('.film-details__add-emoji-label').querySelector('img');
+    if(checkedEmoji) {
+      checkedEmoji.remove();
+    }
     this.element.remove();
+    delete this._data.selectedEmoji;
+    this.element.querySelector('form').reset();
     closeButton.removeEventListener('click', this.closeButtonClickHandler);
     document.removeEventListener('keydown', this.documentKeydownHandler);
     document.body.classList.remove('hide-overflow');
@@ -199,6 +224,7 @@ export default class PopupView extends SmartView {
   }
 
   postClickHandler(movie, moviePresenter, commentToDelete, oldPresenter) {
+    console.log('попап открыт');
     this.commentsModel.comments = moviePresenter.comments;
 
     if(this.#moviePresenter.comments !== null && commentToDelete) {
@@ -224,11 +250,18 @@ export default class PopupView extends SmartView {
     this.addCloseButtonClickControl(this.closeButtonClickHandler);
     mainElement.appendChild(this.element);
     document.addEventListener('keydown', this.documentKeydownHandler);
-    this.#filterPresenter.filterComponent.element.addEventListener('click', this.filterClickHandler.bind(this));
+    document.addEventListener('click', this.documentClickHandler.bind(this));
   }
 
-  filterClickHandler() {
+
+  documentClickHandler() {
+    console.log('клик на документ');
+    console.log(this.cardComponent.element);
+    this.cardComponent.element.addEventListener('click', (evt) => {
+      evt.stopPropagation();
+    });
     this.closePopup();
+
   }
 
   setComments(comments) {
@@ -259,7 +292,6 @@ export default class PopupView extends SmartView {
         comment: commentText,
         emotion: emoji.value,
       };
-      this._data = PopupView.parseDataToMovie(this._data, commentText, emoji.value);
       this._callback.formSubmit(this._data, newComment);
     }
   }
@@ -281,7 +313,7 @@ export default class PopupView extends SmartView {
 
   favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick();
+    this._callback.favoriteClick(this._data);
   }
 
   watchlistClickHandler(evt) {

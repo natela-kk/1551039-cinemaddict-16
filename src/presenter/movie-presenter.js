@@ -70,10 +70,11 @@ export default class MoviePresenter {
     remove(this.cardComponent);
   };
 
-  handleFavoriteClick = () => {
+  handleFavoriteClick = (data) => {
+    console.log(data);
     this.#changeData(
       {
-        ...this.#movie,
+        ...data,
         userDetails: {
           ...this.#movie.userDetails,
           favorite: !this.#movie.userDetails.favorite
