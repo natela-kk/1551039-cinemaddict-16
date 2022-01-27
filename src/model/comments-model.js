@@ -20,18 +20,27 @@ export default class CommentsModel extends AbstractObservable {
       }
     }
 
-    addComment = async (updatedMovie, comment) => {
+    addComment = async (updatedMovie, comment, popup) => {
+      popup.element.querySelector('textarea').disabled = true;
+
       try {
         const response = await this.#apiService.addComment(updatedMovie, comment);
+
         this.comments = [...response.comments];
+
         const adaptedMovie = this.#adaptToClient(response.movie);
+
         return adaptedMovie;
       } catch(err) {
+        popup.element.querySelector('textarea').disabled = false;
+        popup.element.classList.add('shake');
         throw new Error('Can\'t add comment');
       }
     }
 
-    deleteComment = async (commentToDelete) => {
+    deleteComment = async (commentToDelete, deleteButtonElement) => {
+      deleteButtonElement.disabled = true;
+      deleteButtonElement.textContent = 'Deleting...';
       const index = this.comments.findIndex((comment) => comment.id === commentToDelete);
       if (index === -1) {
         throw new Error('Can\'t delete unexisting comment');
@@ -44,12 +53,13 @@ export default class CommentsModel extends AbstractObservable {
           ...this.comments.slice(index + 1),
         ];
       } catch(err) {
+        deleteButtonElement.disabled = false;
+        deleteButtonElement.closest('.film-details__comment').classList.add('shake');
         throw new Error('Can\'t delete comment');
       }
     }
 
     #adaptToClient = (movie) => {
-      console.log(movie);
       const adaptedMovie = {...movie,
         filmInfo: {...movie['film_info'],
           ageRating: movie['film_info']['age_rating'],
@@ -71,8 +81,6 @@ export default class CommentsModel extends AbstractObservable {
       delete adaptedMovie['filmInfo']['total_rating'];
       delete adaptedMovie['userDetails']['already_watched'];
       delete adaptedMovie['userDetails']['watching_date'];
-      console.log(adaptedMovie.comments);
-      console.log(this.comments.map((comment) => comment.id));
       return adaptedMovie;
     }
 }

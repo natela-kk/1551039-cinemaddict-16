@@ -133,11 +133,12 @@ const createPopupTemplate = (movieInfo) => {
 export default class PopupView extends SmartView {
   #changePopupMode = null;
   #moviePresenter = null;
+  #filterPresenter = null;
   changeData = null;
   scrollCoordinates = [0, 0];
   #comments = [];
 
-  constructor(movieInfo, changePopupMode, moviePresenter, changeData, cardComponent) {
+  constructor(movieInfo, changePopupMode, moviePresenter, changeData, cardComponent, filterPresenter) {
     super();
     this.changeData = changeData;
     this._data = movieInfo;
@@ -145,6 +146,7 @@ export default class PopupView extends SmartView {
     this.#changePopupMode = changePopupMode;
     this.cardComponent = cardComponent;
     this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
+    this.#filterPresenter = filterPresenter;
     this.#setInnerHandlers();
   }
 
@@ -161,7 +163,6 @@ export default class PopupView extends SmartView {
 
     checkedEmotion = this.element.querySelector(`#${checkedEmotionId}`);
     checkedEmotion.checked = true;
-    console.log(checkedEmotion.checked);
 
     const commentInput = this.element.querySelector('.film-details__comment-input');
     commentInput.value = this._data.comment ? this._data.comment : '';
@@ -223,6 +224,11 @@ export default class PopupView extends SmartView {
     this.addCloseButtonClickControl(this.closeButtonClickHandler);
     mainElement.appendChild(this.element);
     document.addEventListener('keydown', this.documentKeydownHandler);
+    this.#filterPresenter.filterComponent.element.addEventListener('click', this.filterClickHandler.bind(this));
+  }
+
+  filterClickHandler() {
+    this.closePopup();
   }
 
   setComments(comments) {
@@ -253,7 +259,7 @@ export default class PopupView extends SmartView {
         comment: commentText,
         emotion: emoji.value,
       };
-      // this._data = PopupView.parseDataToMovie(this._data, commentText, emoji.value);
+      this._data = PopupView.parseDataToMovie(this._data, commentText, emoji.value);
       this._callback.formSubmit(this._data, newComment);
     }
   }
@@ -288,21 +294,13 @@ export default class PopupView extends SmartView {
     this._callback.historyClick();
   }
 
-  static parseDataToMovie = (movie, comment, emoji) => {
+  static parseDataToMovie = (movie) => {
     if (movie.selectedEmoji) {
       delete movie.selectedEmoji;
     }
     if (movie.comment) {
       delete movie.comment;
     }
-    const newComment = new Object();
-
-    movie.comments.push({
-      ...newComment,
-      comment: comment,
-      emotion: emoji,
-      date: dayjs().format('YYYY/MM/DD HH:mm')
-    });
     return movie;
   };
 

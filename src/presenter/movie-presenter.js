@@ -54,10 +54,10 @@ export default class MoviePresenter {
     }
   };
 
-  initPopup = (movie, commentToDelete) => {
+  initPopup = (movie, commentToDelete, filterPresenter) => {
     this.#movie = movie;
     const popupComponent = this.popupComponent;
-    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData, this.cardComponent);
+    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData, this.cardComponent, filterPresenter);
 
     if (this.popupMode === PopupMode.OPENED) {
       this.#handlePostClick(commentToDelete);
@@ -110,8 +110,7 @@ export default class MoviePresenter {
   };
 
   handleFormSubmit = (movie, comment) => {
-    this.popupComponent.commentsModel.addComment(movie, comment).then((data) => this.updateCommentList(data));
-
+    this.popupComponent.commentsModel.addComment(movie, comment, this.popupComponent).then((data) => this.updateCommentList(data));
   };
 
   updateCommentList(movie) {

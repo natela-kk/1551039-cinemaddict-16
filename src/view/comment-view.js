@@ -35,14 +35,14 @@ export default class CommentView extends AbstractView {
       evt.preventDefault();
       const commentToDelete = movieData.comments.find((comment) => comment === this.comment.id);
 
-      popupComponent.commentsModel.deleteComment(commentToDelete, 'PATCH');
-      movieData.comments.splice([movieData.comments.indexOf(commentToDelete)], 1);
-      popupComponent.changeData(
-        movieData,
-        popupComponent.scrollCoordinates,
-        commentToDelete,
-      );
-
+      popupComponent.commentsModel.deleteComment(commentToDelete, deleteButtonElement).then(() => {
+        movieData.comments.splice([movieData.comments.indexOf(commentToDelete)], 1);
+        popupComponent.changeData(
+          movieData,
+          popupComponent.scrollCoordinates,
+          commentToDelete,
+        );
+      });
     });
   }
 

@@ -78,7 +78,7 @@ export default class MovieListPresenter {
   renderMovie = (movie, commentToDelete) => {
     const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
     moviePresenter.initCard(movie);
-    moviePresenter.initPopup(movie, commentToDelete);
+    moviePresenter.initPopup(movie, commentToDelete, this.#filterPresenter);
     this.moviePresenter.set(movie.id, moviePresenter);
   };
 
@@ -208,7 +208,7 @@ export default class MovieListPresenter {
       case UpdateType.PATCH: {
         const newPresenter = this.moviePresenter.get(data.id);
         newPresenter.initCard(data);
-        newPresenter.initPopup(data, commentToDelete);
+        newPresenter.initPopup(data, commentToDelete, this.#filterPresenter);
         if (document.querySelector('.film-details__inner') && document.querySelector('.film-details__inner') !== newPresenter.popupComponent.element.querySelector('.film-details__inner')) {
           replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
           newPresenter.popupComponent.postClickHandler(data, newPresenter, commentToDelete);
@@ -220,7 +220,7 @@ export default class MovieListPresenter {
         const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
         this.moviePresenter.set(data.id, moviePresenter);
         const newPresenter = this.moviePresenter.get(data.id);
-        newPresenter.initPopup(data);
+        newPresenter.initPopup(data, null, this.#filterPresenter);
         replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
         newPresenter.popupComponent.postClickHandler(data, moviePresenter, commentToDelete, oldPresenter);
         newPresenter.popupComponent.element.scrollTo(...this.scrollCoordinates);
