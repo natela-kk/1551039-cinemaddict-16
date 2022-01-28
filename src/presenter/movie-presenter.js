@@ -71,7 +71,6 @@ export default class MoviePresenter {
   };
 
   handleFavoriteClick = (data) => {
-    console.log(data);
     this.#changeData(
       {
         ...data,
@@ -84,10 +83,10 @@ export default class MoviePresenter {
     );
   };
 
-  handleWatchlistClick = () => {
+  handleWatchlistClick = (data) => {
     this.#changeData(
       {
-        ...this.#movie,
+        ...data,
         userDetails: {
           ...this.#movie.userDetails,
           watchlist: !this.#movie.userDetails.watchlist
@@ -97,10 +96,10 @@ export default class MoviePresenter {
     );
   };
 
-  handleHistoryClick = () => {
+  handleHistoryClick = (data) => {
     this.#changeData(
       {
-        ...this.#movie,
+        ...data,
         userDetails: {
           ...this.#movie.userDetails,
           alreadyWatched: !this.#movie.userDetails.alreadyWatched

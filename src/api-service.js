@@ -27,6 +27,7 @@ export default class ApiService {
   }
 
   updateMovie = async (movie) => {
+    console.log(movie);
     const response = await this.#loadMovies({
       url: `movies/${movie.id}`,
       method: Method.PUT,
