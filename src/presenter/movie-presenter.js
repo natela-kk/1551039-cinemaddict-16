@@ -126,7 +126,7 @@ export default class MoviePresenter {
   };
 
   resetView = () => {
-    if (this.popupMode !== PopupMode.CLOSED) {
+    if (document.querySelector('.film-details__inner')) {
       this.popupComponent.closePopup(this);
     }
   };

@@ -158,8 +158,11 @@ export default class PopupView extends SmartView {
     evt.preventDefault();
     checkedEmotion = this.element.querySelector('input[type="radio"]:checked');
     const checkedEmotionId = checkedEmotion.id;
+    document.removeEventListener('click', this.documentBindedClickHandler);
 
     this.updateData({selectedEmoji: checkedEmotion.value});
+
+    this.setDocumentClickHandler();
 
     checkedEmotion = this.element.querySelector(`#${checkedEmotionId}`);
     checkedEmotion.checked = true;
@@ -168,6 +171,7 @@ export default class PopupView extends SmartView {
     commentInput.value = this._data.comment ? this._data.comment : '';
     this.setComments(this.#moviePresenter.comments);
     this.element.scrollTo(...this.scrollCoordinates);
+
   }
 
   updateUserInputInfo() {
@@ -211,8 +215,10 @@ export default class PopupView extends SmartView {
         checkedEmoji.querySelector('img').remove();
       }
     }
-    this.element.remove();
     delete this._data.selectedEmoji;
+    delete this._data.comment;
+    this.element.remove();
+
     closeButton.removeEventListener('click', this.closeButtonClickHandler);
     document.removeEventListener('keydown', this.documentKeydownHandler);
     document.removeEventListener('click', this.documentBindedClickHandler);
@@ -220,8 +226,9 @@ export default class PopupView extends SmartView {
     this.#moviePresenter.popupMode = PopupMode.CLOSED;
   }
 
-  postClickHandler(movie, moviePresenter, commentToDelete, oldPresenter, saveInputInfo) {
-    console.log(saveInputInfo);
+  postClickHandler(movie, moviePresenter, commentToDelete, oldPresenter, scrollCoordinates) {
+    this.element.querySelector('form').reset();
+
     this.commentsModel.comments = moviePresenter.comments;
 
     if(this.#moviePresenter.comments !== null && commentToDelete) {
@@ -250,9 +257,9 @@ export default class PopupView extends SmartView {
     moviePresenter.popupMode = PopupMode.OPENED;
 
     if(this.#moviePresenter.comments === null) {
-      this.addCommentsList();
+      this.addCommentsList(scrollCoordinates);
     } else if (!this.element.querySelector('.film-details__comment')){
-      this.setComments(this.#moviePresenter.comments);
+      this.setComments(this.#moviePresenter.comments, scrollCoordinates);
     }
 
     document.body.classList.add('hide-overflow');
@@ -265,26 +272,12 @@ export default class PopupView extends SmartView {
     this.updateUserInputInfo();
 
     document.addEventListener('keydown', this.documentKeydownHandler);
-    this.documentBindedClickHandler = this.documentClickHandler.bind(this);
 
-    const documentAddEventListener = () => {
-      document.addEventListener('click', this.documentBindedClickHandler);
-    };
-    setTimeout(documentAddEventListener, 1);
+    this.setDocumentClickHandler();
+
   }
 
-
-  documentClickHandler(evt) {
-    this.cardComponent.element.addEventListener('click', () => {
-      evt.stopPropagation();
-    });
-    this.element.addEventListener('click', () => {
-      evt.stopPropagation();
-    });
-    this.closePopup();
-  }
-
-  setComments(comments) {
+  setComments(comments, scrollCoordinates) {
     this.#moviePresenter.comments = comments;
     comments.forEach((comment) => {
       const commentComponent = new CommentView(comment, this.cardComponent);
@@ -292,10 +285,13 @@ export default class PopupView extends SmartView {
       this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
       commentComponent.addRemoveControlEvent(this._data, this);
     });
+    if(scrollCoordinates) {
+      this.element.scrollTo(...scrollCoordinates);
+    }
   }
 
-  addCommentsList() {
-    this.commentsModel.init().then(this.setComments.bind(this));
+  addCommentsList(scrollCoordinates) {
+    this.commentsModel.init().then(this.setComments.bind(this), scrollCoordinates);
   }
 
   setFormSubmitHandler(callback) {
@@ -346,15 +342,19 @@ export default class PopupView extends SmartView {
     this._callback.historyClick(this._data);
   }
 
-  static parseDataToMovie = (movie) => {
-    if (movie.selectedEmoji) {
-      delete movie.selectedEmoji;
-    }
-    if (movie.comment) {
-      delete movie.comment;
-    }
-    return movie;
-  };
+  setDocumentClickHandler() {
+    this.documentBindedClickHandler = this.closePopup.bind(this);
+
+    const documentAddEventListener = () => {
+      document.addEventListener('click', this.documentBindedClickHandler);
+    };
+
+    this.element.addEventListener('click', (evt) => {
+      evt.stopPropagation();
+    });
+
+    setTimeout(documentAddEventListener, 1);
+  }
 
   #setInnerHandlers = () => {
     this.element.addEventListener('scroll', () => {

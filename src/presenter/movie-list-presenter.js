@@ -169,12 +169,10 @@ export default class MovieListPresenter {
     }
   }
 
-  handleViewAction = (update, scrollCoordinates, commentToDelete, saveInputInfo) => {
-    console.log(saveInputInfo);
-
+  handleViewAction = (update, scrollCoordinates, commentToDelete) => {
     this.scrollCoordinates = scrollCoordinates;
-    const oldPresenter = this.moviePresenter.get(update.id);
 
+    const oldPresenter = this.moviePresenter.get(update.id);
 
     if (this.#filterType !== 'all' && oldPresenter) {
       this.#moviesModel.sendUpdate('MINOR', update, commentToDelete);
@@ -183,7 +181,7 @@ export default class MovieListPresenter {
       if (updatedPresenter && document.querySelector('.film-details__inner')) {
         updatedPresenter.comments = oldPresenter.comments;
         replace(updatedPresenter.popupComponent, oldPresenter.popupComponent);
-        updatedPresenter.popupComponent.postClickHandler(update, updatedPresenter, commentToDelete, oldPresenter, saveInputInfo);
+        updatedPresenter.popupComponent.postClickHandler(update, updatedPresenter, commentToDelete, oldPresenter);
         updatedPresenter.popupMode = 'OPENED';
 
       } else if (document.querySelector('.film-details__inner')) {
@@ -204,8 +202,7 @@ export default class MovieListPresenter {
     this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   };
 
-  #handleModelEvent = (updateType, data, commentToDelete, saveInputInfo, oldPresenter) => {
-    console.log(saveInputInfo);
+  #handleModelEvent = (updateType, data, commentToDelete, oldPresenter) => {
     switch (updateType) {
       case UpdateType.PATCH: {
         const newPresenter = this.moviePresenter.get(data.id);
@@ -213,7 +210,7 @@ export default class MovieListPresenter {
         newPresenter.initPopup(data, commentToDelete, this.#filterPresenter);
         if (document.querySelector('.film-details__inner') && document.querySelector('.film-details__inner') !== newPresenter.popupComponent.element.querySelector('.film-details__inner')) {
           replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
-          newPresenter.popupComponent.postClickHandler(data, newPresenter, commentToDelete, null, saveInputInfo);
+          newPresenter.popupComponent.postClickHandler(data, newPresenter, commentToDelete);
         }
 
         break;
@@ -222,10 +219,9 @@ export default class MovieListPresenter {
         const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
         this.moviePresenter.set(data.id, moviePresenter);
         const newPresenter = this.moviePresenter.get(data.id);
-        newPresenter.initPopup(data, null, this.#filterPresenter);
+        newPresenter.initPopup(data, commentToDelete, this.#filterPresenter);
         replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
-        newPresenter.popupComponent.postClickHandler(data, moviePresenter, commentToDelete, oldPresenter);
-        newPresenter.popupComponent.element.scrollTo(...this.scrollCoordinates);
+        newPresenter.popupComponent.postClickHandler(data, moviePresenter, commentToDelete, oldPresenter, this.scrollCoordinates);
       }
         break;
       case UpdateType.MINOR:

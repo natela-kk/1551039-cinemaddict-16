@@ -27,7 +27,6 @@ export default class ApiService {
   }
 
   updateMovie = async (movie) => {
-    console.log(movie);
     const response = await this.#loadMovies({
       url: `movies/${movie.id}`,
       method: Method.PUT,
@@ -118,13 +117,10 @@ export default class ApiService {
   }
 
   #adaptToServer = (movie) => {
-    // const newComment = {...comment, id: movie.id};
-    // console.log(newComment);
     if(movie.filmInfo) {
       const adaptedMovie = {...movie,
         'film_info': {...movie.filmInfo, 'age_rating': movie.filmInfo.ageRating, 'alternative_title': movie.filmInfo.alternativeTitle, release: {...movie.filmInfo.release, 'release_country': movie.filmInfo.release.releaseCountry}, 'total_rating': movie.filmInfo.totalRating},
         'user_details': {...movie.userDetails, 'already_watched': movie.userDetails.alreadyWatched, 'watching_date': movie.userDetails.watchingDate},
-      // comments: [...movie.comments, newComment]
       };
       delete adaptedMovie.filmInfo;
       delete adaptedMovie.film_info.ageRating;

@@ -5,7 +5,6 @@ const getWatchedStatus = (userDetails) => userDetails.alreadyWatched ? ('film-de
 const getFavoriteStatus = (userDetails) => userDetails.favorite ? ('film-details__control-button--active') : '';
 
 const createPredicatesTemplate = (movieInfo) => {
-  console.log();
   const {userDetails} = movieInfo;
 
   return (`<section class="film-details__controls">
