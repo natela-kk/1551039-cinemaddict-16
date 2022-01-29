@@ -255,7 +255,6 @@ export default class PopupView extends SmartView {
     }
 
     moviePresenter.popupMode = PopupMode.OPENED;
-
     if(this.#moviePresenter.comments === null) {
       this.addCommentsList(scrollCoordinates);
     } else if (!this.element.querySelector('.film-details__comment')){

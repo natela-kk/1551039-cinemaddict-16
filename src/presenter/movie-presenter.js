@@ -28,7 +28,7 @@ export default class MoviePresenter {
     this.#changePopupMode = changePopupMode;
   }
 
-  initCard = (movie) => {
+  initCard = (movie, renderRemovedCard, firstCard) => {
     this.#movie = movie;
     const cardComponent = this.cardComponent;
 
@@ -44,14 +44,15 @@ export default class MoviePresenter {
       renderElement(this.#moviesContainer, this.cardComponent, RenderPosition.BEFOREEND);
       return;
     }
-
-    if (this.popupMode === PopupMode.CLOSED) {
-      replace(this.cardComponent, cardComponent);
+    if (renderRemovedCard) {
+      renderElement(firstCard, this.cardComponent, RenderPosition.BEFOREBEGIN);
+      return;
     }
-
-    if (this.popupMode === PopupMode.OPENED) {
-      replace(this.cardComponent, cardComponent);
+    if(!cardComponent.element.parentElement) {
+      return;
     }
+    replace(this.cardComponent, cardComponent);
+
   };
 
   initPopup = (movie, commentToDelete, filterPresenter) => {
@@ -127,6 +128,7 @@ export default class MoviePresenter {
 
   resetView = () => {
     if (document.querySelector('.film-details__inner')) {
+      // if(this.PopupMode === 'OPENED') {
       this.popupComponent.closePopup(this);
     }
   };

@@ -175,7 +175,37 @@ export default class MovieListPresenter {
     const oldPresenter = this.moviePresenter.get(update.id);
 
     if (this.#filterType !== 'all' && oldPresenter) {
-      this.#moviesModel.sendUpdate('MINOR', update, commentToDelete);
+      const filteredMovies = this.movies;
+      this.#moviesModel.sendUpdate('PATCH', update, commentToDelete);
+
+      if(filteredMovies > this.movies) {
+        this.moviePresenter.get(update.id).cardComponent.element.remove();
+        if(document.querySelector('.films-list__show-more')) {
+          this.renderMovie(this.movies[Array.from(document.querySelectorAll('.film-card')).length]);
+        }
+      } else if(filteredMovies <  this.movies) {
+        const newPresenter = this.moviePresenter.get(update.id);
+
+        const removedCardIndex = this.movies.findIndex((movie) => movie.id ===  newPresenter.popupComponent._data.id);
+        const renderedMovies = Array.from(document.querySelectorAll('.film-card'));
+        const firstCard = renderedMovies[removedCardIndex];
+
+        const renderRemovedCard = true;
+        newPresenter.initCard(newPresenter.popupComponent._data, renderRemovedCard, firstCard);
+
+        const newRenderedMovies = Array.from(document.querySelectorAll('.film-card'));
+        if(document.querySelector('.films-list__show-more') && newRenderedMovies.length % MOVIES_COUNT_PER_STEP !== 0) {
+          newRenderedMovies[newRenderedMovies.length - 1].remove();
+        }
+
+      } if(this.movies.length === MOVIES_COUNT_PER_STEP) {
+        remove(this.#loadMoreButtonComponent);
+      }
+
+      if(this.movies.length === 0) {
+        this.#renderNoMovies();
+      }
+
       const updatedPresenter = this.moviePresenter.get(update.id);
 
       if (updatedPresenter && document.querySelector('.film-details__inner')) {
@@ -207,6 +237,7 @@ export default class MovieListPresenter {
       case UpdateType.PATCH: {
         const newPresenter = this.moviePresenter.get(data.id);
         newPresenter.initCard(data);
+
         newPresenter.initPopup(data, commentToDelete, this.#filterPresenter);
         if (document.querySelector('.film-details__inner') && document.querySelector('.film-details__inner') !== newPresenter.popupComponent.element.querySelector('.film-details__inner')) {
           replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
