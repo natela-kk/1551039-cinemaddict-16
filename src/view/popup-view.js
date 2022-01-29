@@ -147,7 +147,6 @@ export default class PopupView extends SmartView {
     this.cardComponent = cardComponent;
     this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
     this.#filterPresenter = filterPresenter;
-    this.#setInnerHandlers();
   }
 
   get template() {
@@ -158,11 +157,12 @@ export default class PopupView extends SmartView {
     evt.preventDefault();
     checkedEmotion = this.element.querySelector('input[type="radio"]:checked');
     const checkedEmotionId = checkedEmotion.id;
+    console.log('убрали documentBindedClickHandler');
     document.removeEventListener('click', this.documentBindedClickHandler);
 
     this.updateData({selectedEmoji: checkedEmotion.value});
 
-    this.setDocumentClickHandler();
+    // this.setDocumentClickHandler();
 
     checkedEmotion = this.element.querySelector(`#${checkedEmotionId}`);
     checkedEmotion.checked = true;
@@ -209,6 +209,7 @@ export default class PopupView extends SmartView {
   };
 
   closePopup() {
+    console.log('closePopup');
     if(this.element.querySelector('.film-details__add-emoji-label')) {
       const checkedEmoji = this.element.querySelector('.film-details__add-emoji-label');
       if(checkedEmoji.querySelector('img')) {
@@ -219,6 +220,7 @@ export default class PopupView extends SmartView {
     delete this._data.comment;
     this.element.remove();
 
+    console.log('убрали documentBindedClickHandler, closeButtonClickHandler, documentKeydownHandler');
     closeButton.removeEventListener('click', this.closeButtonClickHandler);
     document.removeEventListener('keydown', this.documentKeydownHandler);
     document.removeEventListener('click', this.documentBindedClickHandler);
@@ -227,6 +229,8 @@ export default class PopupView extends SmartView {
   }
 
   postClickHandler(movie, moviePresenter, commentToDelete, oldPresenter, scrollCoordinates) {
+    this.#setInnerHandlers();
+    console.log('postClickHandler');
     this.element.querySelector('form').reset();
 
     this.commentsModel.comments = moviePresenter.comments;
@@ -265,14 +269,8 @@ export default class PopupView extends SmartView {
 
     this._data = movie;
 
-    this.addCloseButtonClickControl(this.closeButtonClickHandler);
-
     mainElement.appendChild(this.element);
     this.updateUserInputInfo();
-
-    document.addEventListener('keydown', this.documentKeydownHandler);
-
-    this.setDocumentClickHandler();
 
   }
 
@@ -356,6 +354,15 @@ export default class PopupView extends SmartView {
   }
 
   #setInnerHandlers = () => {
+    console.log('setInnerHandlers');
+    console.log('добавили documentKeydownHandler, closeButtonClickHandler, documentBindedClickHandler');
+
+    this.addCloseButtonClickControl(this.closeButtonClickHandler);
+
+    document.addEventListener('keydown', this.documentKeydownHandler);
+
+    this.setDocumentClickHandler();
+
     this.element.addEventListener('scroll', () => {
       this.scrollCoordinates = [this.element.scrollLeft, this.element.scrollTop];
     });

@@ -187,11 +187,9 @@ export default class MovieListPresenter {
         const newPresenter = this.moviePresenter.get(update.id);
 
         const removedCardIndex = this.movies.findIndex((movie) => movie.id ===  newPresenter.popupComponent._data.id);
-        const renderedMovies = Array.from(document.querySelectorAll('.film-card'));
-        const firstCard = renderedMovies[removedCardIndex];
+        const firstCard = Array.from(document.querySelectorAll('.film-card'))[removedCardIndex];
 
-        const renderRemovedCard = true;
-        newPresenter.initCard(newPresenter.popupComponent._data, renderRemovedCard, firstCard);
+        newPresenter.initCard(newPresenter.popupComponent._data, true, firstCard);
 
         const newRenderedMovies = Array.from(document.querySelectorAll('.film-card'));
         if(document.querySelector('.films-list__show-more') && newRenderedMovies.length % MOVIES_COUNT_PER_STEP !== 0) {
