@@ -173,6 +173,8 @@ export default class MovieListPresenter {
     this.scrollCoordinates = scrollCoordinates;
 
     const oldPresenter = this.moviePresenter.get(update.id);
+    oldPresenter.popupComponent.removeDocumentBindedClickHandler();
+    oldPresenter.popupComponent.removeDocumentKeydownHandler();
 
     if (this.#filterType !== 'all' && oldPresenter) {
       const filteredMovies = this.movies;
@@ -206,13 +208,7 @@ export default class MovieListPresenter {
 
       const updatedPresenter = this.moviePresenter.get(update.id);
 
-      if (updatedPresenter && document.querySelector('.film-details__inner')) {
-        updatedPresenter.comments = oldPresenter.comments;
-        replace(updatedPresenter.popupComponent, oldPresenter.popupComponent);
-        updatedPresenter.popupComponent.postClickHandler(update, updatedPresenter, commentToDelete, oldPresenter);
-        updatedPresenter.popupMode = 'OPENED';
-
-      } else if (document.querySelector('.film-details__inner')) {
+      if (!updatedPresenter && document.querySelector('.film-details__inner')) {
         this.#moviesModel.sendUpdate('PATCH_POPUP', update, commentToDelete, oldPresenter);
       }
 
@@ -235,7 +231,6 @@ export default class MovieListPresenter {
       case UpdateType.PATCH: {
         const newPresenter = this.moviePresenter.get(data.id);
         newPresenter.initCard(data);
-
         newPresenter.initPopup(data, commentToDelete, this.#filterPresenter);
         if (document.querySelector('.film-details__inner') && document.querySelector('.film-details__inner') !== newPresenter.popupComponent.element.querySelector('.film-details__inner')) {
           replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));

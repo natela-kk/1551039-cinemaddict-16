@@ -57,13 +57,7 @@ export default class MoviePresenter {
 
   initPopup = (movie, commentToDelete, filterPresenter) => {
     this.#movie = movie;
-    const popupComponent = this.popupComponent;
     this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData, this.cardComponent, filterPresenter);
-
-    if (this.popupMode === PopupMode.OPENED) {
-      this.#handlePostClick(commentToDelete);
-      replace(this.popupComponent, popupComponent);
-    }
     this.popupComponent.element.scrollTo(...this.popupComponent.scrollCoordinates);
   };
 

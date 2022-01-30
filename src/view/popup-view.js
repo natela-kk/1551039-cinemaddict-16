@@ -147,6 +147,7 @@ export default class PopupView extends SmartView {
     this.cardComponent = cardComponent;
     this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
     this.#filterPresenter = filterPresenter;
+    this.#setInnerHandlers();
   }
 
   get template() {
@@ -157,12 +158,10 @@ export default class PopupView extends SmartView {
     evt.preventDefault();
     checkedEmotion = this.element.querySelector('input[type="radio"]:checked');
     const checkedEmotionId = checkedEmotion.id;
-    console.log('убрали documentBindedClickHandler');
-    document.removeEventListener('click', this.documentBindedClickHandler);
-
+    this.removeDocumentBindedClickHandler();
     this.updateData({selectedEmoji: checkedEmotion.value});
 
-    // this.setDocumentClickHandler();
+    this.setDocumentClickHandler();
 
     checkedEmotion = this.element.querySelector(`#${checkedEmotionId}`);
     checkedEmotion.checked = true;
@@ -175,13 +174,11 @@ export default class PopupView extends SmartView {
   }
 
   updateUserInputInfo() {
-
     if(this._data.selectedEmoji) {
       const checkedEmoji = this.element.querySelector(`#emoji-${this._data.selectedEmoji}`);
       checkedEmoji.checked = true;
       const checkedEmojiContainer = this.element.querySelector('.film-details__add-emoji-label');
       checkedEmojiContainer.innerHTML = `<img src="./images/emoji/${this._data.selectedEmoji}.png" width="55" height="55" alt="emoji-${this._data.selectedEmoji}">`;
-
     } if(this._data.comment) {
       const commentInput = this.element.querySelector('.film-details__comment-input');
       commentInput.value = this._data.comment;
@@ -209,7 +206,6 @@ export default class PopupView extends SmartView {
   };
 
   closePopup() {
-    console.log('closePopup');
     if(this.element.querySelector('.film-details__add-emoji-label')) {
       const checkedEmoji = this.element.querySelector('.film-details__add-emoji-label');
       if(checkedEmoji.querySelector('img')) {
@@ -219,18 +215,14 @@ export default class PopupView extends SmartView {
     delete this._data.selectedEmoji;
     delete this._data.comment;
     this.element.remove();
-
-    console.log('убрали documentBindedClickHandler, closeButtonClickHandler, documentKeydownHandler');
-    closeButton.removeEventListener('click', this.closeButtonClickHandler);
-    document.removeEventListener('keydown', this.documentKeydownHandler);
-    document.removeEventListener('click', this.documentBindedClickHandler);
+    this.removeClosePopupHandlers();
     document.body.classList.remove('hide-overflow');
     this.#moviePresenter.popupMode = PopupMode.CLOSED;
   }
 
   postClickHandler(movie, moviePresenter, commentToDelete, oldPresenter, scrollCoordinates) {
-    this.#setInnerHandlers();
-    console.log('postClickHandler');
+    this.setClosePopupHandlers();
+
     this.element.querySelector('form').reset();
 
     this.commentsModel.comments = moviePresenter.comments;
@@ -259,6 +251,7 @@ export default class PopupView extends SmartView {
     }
 
     moviePresenter.popupMode = PopupMode.OPENED;
+
     if(this.#moviePresenter.comments === null) {
       this.addCommentsList(scrollCoordinates);
     } else if (!this.element.querySelector('.film-details__comment')){
@@ -354,15 +347,6 @@ export default class PopupView extends SmartView {
   }
 
   #setInnerHandlers = () => {
-    console.log('setInnerHandlers');
-    console.log('добавили documentKeydownHandler, closeButtonClickHandler, documentBindedClickHandler');
-
-    this.addCloseButtonClickControl(this.closeButtonClickHandler);
-
-    document.addEventListener('keydown', this.documentKeydownHandler);
-
-    this.setDocumentClickHandler();
-
     this.element.addEventListener('scroll', () => {
       this.scrollCoordinates = [this.element.scrollLeft, this.element.scrollTop];
     });
@@ -375,6 +359,26 @@ export default class PopupView extends SmartView {
     this.setWatchlistClickHandler(this.#moviePresenter.handleWatchlistClick);
     this.setHistoryClickHandler(this.#moviePresenter.handleHistoryClick);
   };
+
+  setClosePopupHandlers() {
+    this.addCloseButtonClickControl(this.closeButtonClickHandler);
+    document.addEventListener('keydown', this.documentKeydownHandler);
+    this.setDocumentClickHandler();
+  }
+
+  removeDocumentBindedClickHandler() {
+    document.removeEventListener('click', this.documentBindedClickHandler);
+  }
+
+  removeDocumentKeydownHandler() {
+    document.removeEventListener('keydown', this.documentKeydownHandler);
+  }
+
+  removeClosePopupHandlers() {
+    // this.removeDocumentKeydownHandler();
+    closeButton.removeEventListener('click', this.closeButtonClickHandler);
+    this.removeDocumentBindedClickHandler();
+  }
 
   restoreHandlers = () => {
     this.#setInnerHandlers();
