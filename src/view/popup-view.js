@@ -214,6 +214,7 @@ export default class PopupView extends SmartView {
     }
     delete this._data.selectedEmoji;
     delete this._data.comment;
+    document.querySelector('.film-details').remove();
     this.element.remove();
     this.removeClosePopupHandlers();
     document.body.classList.remove('hide-overflow');
