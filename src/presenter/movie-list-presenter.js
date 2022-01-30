@@ -223,6 +223,7 @@ export default class MovieListPresenter {
     if (document.querySelector('.film-details__inner') && this.moviePresenter.get(update.id)) {
       this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...this.scrollCoordinates);
     }
+    oldPresenter.popupComponent.addDocumentKeydownHandler();
     this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   };
 

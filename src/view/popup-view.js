@@ -370,12 +370,16 @@ export default class PopupView extends SmartView {
     document.removeEventListener('click', this.documentBindedClickHandler);
   }
 
+  addDocumentKeydownHandler() {
+    document.addEventListener('keydown', this.documentKeydownHandler);
+  }
+
   removeDocumentKeydownHandler() {
     document.removeEventListener('keydown', this.documentKeydownHandler);
   }
 
   removeClosePopupHandlers() {
-    // this.removeDocumentKeydownHandler();
+    this.removeDocumentKeydownHandler();
     closeButton.removeEventListener('click', this.closeButtonClickHandler);
     this.removeDocumentBindedClickHandler();
   }
