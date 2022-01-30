@@ -28,7 +28,7 @@ export default class MoviePresenter {
     this.#changePopupMode = changePopupMode;
   }
 
-  initCard = (movie) => {
+  initCard = (movie, renderRemovedCard, firstCard) => {
     this.#movie = movie;
     const cardComponent = this.cardComponent;
 
@@ -44,25 +44,20 @@ export default class MoviePresenter {
       renderElement(this.#moviesContainer, this.cardComponent, RenderPosition.BEFOREEND);
       return;
     }
-
-    if (this.popupMode === PopupMode.CLOSED) {
-      replace(this.cardComponent, cardComponent);
+    if (renderRemovedCard) {
+      renderElement(firstCard, this.cardComponent, RenderPosition.BEFOREBEGIN);
+      return;
     }
-
-    if (this.popupMode === PopupMode.OPENED) {
-      replace(this.cardComponent, cardComponent);
+    if(!cardComponent.element.parentElement) {
+      return;
     }
+    replace(this.cardComponent, cardComponent);
+
   };
 
-  initPopup = (movie) => {
+  initPopup = (movie, commentToDelete, filterPresenter) => {
     this.#movie = movie;
-    const popupComponent = this.popupComponent;
-    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData);
-
-    if (this.popupMode === PopupMode.OPENED) {
-      this.#handlePostClick();
-      replace(this.popupComponent, popupComponent);
-    }
+    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData, this.cardComponent, filterPresenter);
     this.popupComponent.element.scrollTo(...this.popupComponent.scrollCoordinates);
   };
 
@@ -70,10 +65,10 @@ export default class MoviePresenter {
     remove(this.cardComponent);
   };
 
-  handleFavoriteClick = () => {
+  handleFavoriteClick = (data) => {
     this.#changeData(
       {
-        ...this.#movie,
+        ...data,
         userDetails: {
           ...this.#movie.userDetails,
           favorite: !this.#movie.userDetails.favorite
@@ -83,10 +78,10 @@ export default class MoviePresenter {
     );
   };
 
-  handleWatchlistClick = () => {
+  handleWatchlistClick = (data) => {
     this.#changeData(
       {
-        ...this.#movie,
+        ...data,
         userDetails: {
           ...this.#movie.userDetails,
           watchlist: !this.#movie.userDetails.watchlist
@@ -96,10 +91,10 @@ export default class MoviePresenter {
     );
   };
 
-  handleHistoryClick = () => {
+  handleHistoryClick = (data) => {
     this.#changeData(
       {
-        ...this.#movie,
+        ...data,
         userDetails: {
           ...this.#movie.userDetails,
           alreadyWatched: !this.#movie.userDetails.alreadyWatched
@@ -109,19 +104,25 @@ export default class MoviePresenter {
     );
   };
 
-  handleFormSubmit = (movie) => {
+  handleFormSubmit = (movie, comment) => {
+    this.popupComponent.commentsModel.addComment(movie, comment, this.popupComponent).then((data) => this.updateCommentList(data));
+  };
+
+  updateCommentList(movie) {
+    this.popupComponent.setComments(this.popupComponent.commentsModel.comments);
     this.#changeData(
       movie,
       this.popupComponent.scrollCoordinates,
     );
-  };
+  }
 
-  #handlePostClick = () => {
-    this.popupComponent.postClickHandler(this.#movie, this);
+  #handlePostClick = (commentToDelete) => {
+    this.popupComponent.postClickHandler(this.#movie, this, commentToDelete);
   };
 
   resetView = () => {
-    if (this.popupMode !== PopupMode.CLOSED) {
+    if (document.querySelector('.film-details__inner')) {
+      // if(this.PopupMode === 'OPENED') {
       this.popupComponent.closePopup(this);
     }
   };

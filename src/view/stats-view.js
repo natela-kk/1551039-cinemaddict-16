@@ -71,12 +71,14 @@ export default class StatsView extends SmartView {
   }
 
   init() {
-    this.showStatistic();
+    if(this.#movies.length > 0) {
+      this.showStatistic();
+    }
     this.setStaticFilterChange();
   }
 
   getTotalWatchingTime() {
-    const wathedFilmsRuntime = this.#movies.map((current) => Number((current.filmInfo.runtime).replace(/[^0-9]/g, '')));
+    const wathedFilmsRuntime = this.#movies.map((current) => Number((current.filmInfo.runtime)));
 
     return wathedFilmsRuntime.length > 0 ? wathedFilmsRuntime.reduce((a, b) => a + b) : 0;
   }
@@ -111,27 +113,28 @@ export default class StatsView extends SmartView {
   }
 
   filterStatistic(filterName) {
+    const watchedMovies = filter[FilterType.HISTORY](movieListPresenter.movies);
     switch (filterName) {
       case StatisticFilter.TODAY: {
-        this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'day'));
+        this.#movies = watchedMovies.filter((movie) => dayjs(movie.userDetails.watchingDate).isSame(dayjs(), 'day'));
         this.#currentFilter = StatisticFilter.TODAY;
         updateStatistic(this.#movies, this.#currentFilter);
         break;
       }
       case StatisticFilter.WEEK: {
-        this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'week'));
+        this.#movies =watchedMovies.filter((movie) => dayjs(movie.userDetails.watchingDate).isSame(dayjs(), 'week'));
         this.#currentFilter = StatisticFilter.WEEK;
         updateStatistic(this.#movies, this.#currentFilter);
         break;
       }
       case StatisticFilter.MONTH: {
-        this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'month'));
+        this.#movies = watchedMovies.filter((movie) => dayjs(movie.userDetails.watchingDate).isSame(dayjs(), 'month'));
         this.#currentFilter = StatisticFilter.MONTH;
         updateStatistic(this.#movies, this.#currentFilter);
         break;
       }
       case StatisticFilter.YEAR: {
-        this.#movies = movieListPresenter.movies.filter((movie) => movie.userDetails.watching_date.isSame(dayjs(), 'year'));
+        this.#movies = watchedMovies.filter((movie) => dayjs(movie.userDetails.watchingDate).isSame(dayjs(), 'year'));
         this.#currentFilter = StatisticFilter.YEAR;
         updateStatistic(this.#movies, this.#currentFilter);
         break;
@@ -173,9 +176,9 @@ export default class StatsView extends SmartView {
       plugins: [ChartDataLabels],
       type: 'horizontalBar',
       data: {
-        labels: ['Musical', 'Drama', 'Comedy', 'Cartoon', 'Western'],
+        labels: ['Sci-Fi', 'Drama', 'Comedy', 'Horror', 'Adventure', 'Thriller', 'Family', 'Animation'],
         datasets: [{
-          data: [this.getGenreCount('Musical'), this.getGenreCount('Drama'), this.getGenreCount('Comedy'), this.getGenreCount('Cartoon'), this.getGenreCount('Western')],
+          data: [this.getGenreCount('Sci-Fi'), this.getGenreCount('Drama'), this.getGenreCount('Comedy'), this.getGenreCount('Horror'), this.getGenreCount('Adventure'),  this.getGenreCount('Thriller'), this.getGenreCount('Family'), this.getGenreCount('Animation')],
           backgroundColor: '#ffe800',
           hoverBackgroundColor: '#ffe800',
           anchor: 'start',

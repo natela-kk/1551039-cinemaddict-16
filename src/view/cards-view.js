@@ -41,7 +41,6 @@ export default class CardsView extends AbstractView {
   }
 
   get template() {
-    console.log(this.#movieInfo);
     return createCardTemplate(this.#movieInfo);
   }
 
@@ -68,17 +67,17 @@ export default class CardsView extends AbstractView {
 
   favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick();
+    this._callback.favoriteClick(this.#movieInfo);
   }
 
   watchlistClickHandler(evt) {
     evt.preventDefault();
-    this._callback.watchlistClick();
+    this._callback.watchlistClick(this.#movieInfo);
   }
 
   historyClickHandler(evt) {
     evt.preventDefault();
-    this._callback.historyClick();
+    this._callback.historyClick(this.#movieInfo);
   }
 
   postClickHandler(evt) {

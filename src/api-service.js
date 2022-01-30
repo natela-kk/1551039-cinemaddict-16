@@ -1,6 +1,10 @@
+const COMMENT_END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/comments';
+
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 export default class ApiService {
@@ -30,8 +34,48 @@ export default class ApiService {
       headers: new Headers({'Content-Type': 'application/json'}),
     });
     const parsedResponse = await ApiService.parseResponse(response);
+    return parsedResponse;
+  }
+
+  addComment = async (movie, comment) => {
+    const response = await this.#deletePostCommentOnServer({
+      url: `${COMMENT_END_POINT}/${movie.id}`,
+      method: Method.POST,
+      body: JSON.stringify(comment),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  }
+
+  deleteComment = async (comment) => {
+    const response = await this.#deletePostCommentOnServer({
+      url: `https://16.ecmascript.pages.academy/cinemaddict/comments/${comment}`,
+      method: Method.DELETE,
+    });
+
+    return response;
+  }
+
+  #deletePostCommentOnServer = async ({
+    url,
+    method,
+    body = null,
+    headers = new Headers(),
+  }) => {
+    headers.append('Authorization', this.#authorization);
+    const response = await fetch(
+      url,
+      {method, body, headers},
+    );
+    try {
+      ApiService.checkStatus(response);
+      return response;
+    } catch (err) {
+      ApiService.catchError(err);
+    }
   }
 
   #loadMovies = async ({
@@ -73,20 +117,21 @@ export default class ApiService {
   }
 
   #adaptToServer = (movie) => {
-    const adaptedMovie = {...movie,
-      'film_info': {...movie.filmInfo, 'age_rating': movie.filmInfo.ageRating, 'alternative_title': movie.filmInfo.alternativeTitle, release: {...movie.filmInfo.release, 'release_country': movie.filmInfo.release.releaseCountry}, 'total_rating': movie.filmInfo.totalRating},
-      'user_details': {...movie.userDetails, 'already_watched': movie.userDetails.alreadyWatched, 'watching_date': movie.userDetails.watchingDate},
-    };
-    delete adaptedMovie.filmInfo;
-    delete adaptedMovie.film_info.ageRating;
-    delete adaptedMovie.film_info.alternativeTitle;
-    delete adaptedMovie.film_info.release.releaseCountry;
-    delete adaptedMovie.film_info.totalRating;
-    delete adaptedMovie.userDetails;
-    delete adaptedMovie.user_details.alreadyWatched;
-    delete adaptedMovie.user_details.watchingDate;
-
-    return adaptedMovie;
+    if(movie.filmInfo) {
+      const adaptedMovie = {...movie,
+        'film_info': {...movie.filmInfo, 'age_rating': movie.filmInfo.ageRating, 'alternative_title': movie.filmInfo.alternativeTitle, release: {...movie.filmInfo.release, 'release_country': movie.filmInfo.release.releaseCountry}, 'total_rating': movie.filmInfo.totalRating},
+        'user_details': {...movie.userDetails, 'already_watched': movie.userDetails.alreadyWatched, 'watching_date': movie.userDetails.watchingDate},
+      };
+      delete adaptedMovie.filmInfo;
+      delete adaptedMovie.film_info.ageRating;
+      delete adaptedMovie.film_info.alternativeTitle;
+      delete adaptedMovie.film_info.release.releaseCountry;
+      delete adaptedMovie.film_info.totalRating;
+      delete adaptedMovie.userDetails;
+      delete adaptedMovie.user_details.alreadyWatched;
+      delete adaptedMovie.user_details.watchingDate;
+      return adaptedMovie;
+    }
   }
 
   static parseResponse = (response) => response.json();

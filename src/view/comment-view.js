@@ -19,9 +19,10 @@ const createCommentTemplate = (comment) => (`<li class="film-details__comment">
 export default class CommentView extends AbstractView {
   comment = null;
 
-  constructor(comment) {
+  constructor(comment, cardComponent) {
     super();
     this.comment = comment;
+    this.cardComponent = cardComponent;
   }
 
   get template() {
@@ -32,22 +33,17 @@ export default class CommentView extends AbstractView {
     const deleteButtonElement = this.element.querySelector('.film-details__comment-delete');
     deleteButtonElement.addEventListener('click', (evt) => {
       evt.preventDefault();
-      popupComponent.commentsModel.deleteComment('PATCH', this);
-      const commentToDelete = movieData.comments.find((comment) => comment === this.comment);
-      movieData.comments.splice([movieData.comments.indexOf(commentToDelete)], 1);
-      popupComponent.changeData(
-        movieData,
-        popupComponent.scrollCoordinates,
-      );
+      const commentToDelete = movieData.comments.find((comment) => comment === this.comment.id);
+
+      popupComponent.commentsModel.deleteComment(commentToDelete, deleteButtonElement).then(() => {
+        movieData.comments.splice([movieData.comments.indexOf(commentToDelete)], 1);
+        popupComponent.changeData(
+          movieData,
+          popupComponent.scrollCoordinates,
+          commentToDelete,
+        );
+      });
     });
   }
 
-  setCommentsCount(popupComponent, cardComponent) {
-    const popupCommentsCountElement = popupComponent.querySelector('.film-details__comments-count');
-    const comments = popupComponent.querySelectorAll('.film-details__comment');
-    const newValue = comments.length;
-    popupCommentsCountElement.textContent = newValue;
-    const cardCommentsCountElement = cardComponent.element.querySelector('.film-card__comments');
-    cardCommentsCountElement.textContent = `${newValue} comments`;
-  }
 }
