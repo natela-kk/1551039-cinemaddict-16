@@ -203,16 +203,17 @@ export default class PopupView extends SmartView {
   };
 
   closePopup() {
-    if(this.element.querySelector('.film-details__add-emoji-label')) {
-      const checkedEmoji = this.element.querySelector('.film-details__add-emoji-label');
+    const checkedEmoji = this.element.querySelector('.film-details__add-emoji-label');
+    if(checkedEmoji) {
       if(checkedEmoji.querySelector('img')) {
         checkedEmoji.querySelector('img').remove();
       }
     }
     delete this._data.selectedEmoji;
     delete this._data.comment;
-    if(document.querySelector('.film-details')) {
-      document.querySelector('.film-details').remove();
+    const popupSection = document.querySelector('.film-details');
+    if(popupSection) {
+      popupSection.remove();
     }
     this.element.remove();
     this.removeClosePopupHandlers();
@@ -221,8 +222,6 @@ export default class PopupView extends SmartView {
   }
 
   postClickHandler(movie, moviePresenter, commentToDelete, oldPresenter, scrollCoordinates) {
-    this.setClosePopupHandlers();
-
     this.element.querySelector('form').reset();
 
     this.commentsModel.comments = moviePresenter.comments;
@@ -241,6 +240,8 @@ export default class PopupView extends SmartView {
     userInputInfo.comment = movie.comment;
 
     this.#changePopupMode();
+
+    this.setClosePopupHandlers();
 
     if(userInputInfo.selectedEmoji) {
       movie = {...movie, selectedEmoji: userInputInfo.selectedEmoji};
@@ -264,7 +265,6 @@ export default class PopupView extends SmartView {
 
     mainElement.appendChild(this.element);
     this.updateUserInputInfo();
-
   }
 
   setComments(comments, scrollCoordinates) {
