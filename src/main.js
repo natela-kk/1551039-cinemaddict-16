@@ -1,5 +1,5 @@
 import {renderElement} from './mock/render.js';
-import {RenderPosition} from './mock/generate.js';
+import {RenderPosition} from './const.js';
 import AvatarView from './view/user-name-view.js';
 import MovieListPresenter from './presenter/movie-list-presenter.js';
 import MoviesModel from './model/movies-model.js';
@@ -14,7 +14,7 @@ import ApiService from './api-service.js';
 export const AUTHORIZATION = 'Basic ghcfk6r64ft';
 export const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/';
 
-const moviesModel = new MoviesModel(new ApiService(END_POINT, AUTHORIZATION));
+export const moviesModel = new MoviesModel(new ApiService(END_POINT, AUTHORIZATION));
 const headerElement = document.querySelector('.header');
 export const mainElement = document.querySelector('.main');
 

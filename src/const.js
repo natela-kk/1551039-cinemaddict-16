@@ -4,12 +4,6 @@ export const SortType = {
   RATING: 'rating-down',
 };
 
-export const UserAction = {
-  UPDATE_MOVIE: 'UPDATE_MOVIE',
-  ADD_MOVIE: 'ADD_MOVIE',
-  DELETE_MOVIE: 'DELETE_MOVIE',
-};
-
 export const UpdateType = {
   PATCH: 'PATCH',
   PATCH_POPUP: 'PATCH_POPUP',
@@ -38,4 +32,11 @@ export const MenuItem = {
   HISTORY: 'HISTORY',
   FAVORITES: 'FAVORITES',
   STATISTICS: 'STATISTICS',
+};
+
+export const RenderPosition = {
+  BEFOREBEGIN: 'beforebegin',
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+  AFTEREND: 'afterend',
 };

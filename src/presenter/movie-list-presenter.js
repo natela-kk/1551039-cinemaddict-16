@@ -5,7 +5,7 @@ import ButtonView from '../view/button-view.js';
 import FooterView from '../view/footer-view.js';
 import NoMoviesView from '../view/no-movies-view.js';
 import {remove, renderElement} from '../mock/render.js';
-import {RenderPosition} from '../mock/generate.js';
+import {RenderPosition} from '../const.js';
 import MoviePresenter from './movie-presenter.js';
 import {
   replace,
@@ -257,6 +257,7 @@ export default class MovieListPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.renderMoviesContainer();
+        this.#footerComponent.setCount(this.movies.length);
         break;
     }
   };
