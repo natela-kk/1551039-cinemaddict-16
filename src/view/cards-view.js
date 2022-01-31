@@ -2,8 +2,10 @@ import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
 import { getRunTime } from '../mock/utils/utils.js';
 
+const MAX_SYMBOLS_NUMBER = 140;
 
-const getFilmDescription = (description) => description.length > 140 ? `${description.substr(0, 139)}...` : description;
+
+const getFilmDescription = (description) => description.length > MAX_SYMBOLS_NUMBER ? `${description.substr(0, MAX_SYMBOLS_NUMBER - 1)}...` : description;
 
 const getWatchlistStatus = (userDetails) => userDetails.watchlist === true ? ('film-card__controls-item--active') : '';
 const getWatchedStatus = (userDetails) => userDetails.alreadyWatched === true ? ('film-card__controls-item--active') : '';

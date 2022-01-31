@@ -1,6 +1,6 @@
 import {renderElement} from './mock/render.js';
 import {RenderPosition} from './const.js';
-import AvatarView from './view/user-name-view.js';
+import AvatarView from './view/avatar-view.js';
 import MovieListPresenter from './presenter/movie-list-presenter.js';
 import MoviesModel from './model/movies-model.js';
 import FilterModel from './model/filter-model.js';
@@ -47,7 +47,7 @@ export const handleSiteMenuClick = (menuItem) => {
     }
     movieListPresenter.clearMoviesContainer({
       resetRenderedMoviesCount: true,
-      resetSortType: true
+      resetSortType: true,
     });
     movieListPresenter.renderMoviesContainer();
     filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);

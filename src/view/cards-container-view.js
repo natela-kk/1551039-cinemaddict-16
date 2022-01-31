@@ -8,7 +8,7 @@ const createCardsContainerTemplate = () => (`<section class="films">
  </section>
  </section>`);
 
-export default class CradsContainerView extends AbstractView {
+export default class CardsContainerView extends AbstractView {
   get template() {
     return createCardsContainerTemplate();
   }

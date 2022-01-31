@@ -8,7 +8,7 @@ const NoMoviesTextType = {
   [FilterType.FAVORITES]: 'There are no favorite movies now',
 };
 
-const createEmtyListTemplate = (filterType) => {
+const createNoMoviesTemplate = (filterType) => {
   const noTaskMovieValue = NoMoviesTextType[filterType];
   return (`<h2 class="films-list__title">${noTaskMovieValue}</h2>`);
 };
@@ -20,6 +20,6 @@ export default class NoMoviesView extends AbstractView {
   }
 
   get template() {
-    return createEmtyListTemplate(this._data);
+    return createNoMoviesTemplate(this._data);
   }
 }

@@ -122,7 +122,6 @@ export default class MoviePresenter {
 
   resetView = () => {
     if (document.querySelector('.film-details__inner')) {
-      // if(this.PopupMode === 'OPENED') {
       this.popupComponent.closePopup(this);
     }
   };
