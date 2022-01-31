@@ -37,6 +37,8 @@ export const sortMovieRatingDown = (movieA, movieB) => {
   return ratingTwo - ratingOne;
 };
 
-export const isFavorite = (favorite, updatedFavorite) => (favorite === updatedFavorite);
-export const isWatchlistAdded = (favorite, updatedFavorite) => (favorite === updatedFavorite);
-export const isAlreadyWatched = (favorite, updatedFavorite) => (favorite === updatedFavorite);
+export const sortMovieCommmentsDown = (movieA, movieB) => {
+  const commentsNumberOne = movieA.comments.length;
+  const commentsNumberTwo = movieB.comments.length;
+  return commentsNumberTwo - commentsNumberOne;
+};

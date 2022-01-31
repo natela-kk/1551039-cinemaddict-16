@@ -1,6 +1,9 @@
 import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
 import he from 'he';
+import * as relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 const createCommentTemplate = (comment) => (`<li class="film-details__comment">
 <span class="film-details__comment-emoji">
@@ -10,7 +13,7 @@ const createCommentTemplate = (comment) => (`<li class="film-details__comment">
   <p class="film-details__comment-text">${he.encode(comment.comment)}</p>
   <p class="film-details__comment-info">
   <span class="film-details__comment-author">${comment.author}</span>
-  <span class="film-details__comment-day">${dayjs(comment.date).format('YYYY/MM/DD HH:mm')}</span>
+  <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
   <button class="film-details__comment-delete">Delete</button>
   </p>
   </div>

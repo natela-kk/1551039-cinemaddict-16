@@ -5,7 +5,7 @@ import ButtonView from '../view/button-view.js';
 import FooterView from '../view/footer-view.js';
 import NoMoviesView from '../view/no-movies-view.js';
 import {remove, renderElement} from '../mock/render.js';
-import {RenderPosition} from '../mock/generate.js';
+import {RenderPosition} from '../const.js';
 import MoviePresenter from './movie-presenter.js';
 import {
   replace,
@@ -16,6 +16,8 @@ import {UpdateType, SortType} from '../const.js';
 import {FilterType} from '../const.js';
 import {handleSiteMenuClick} from '../main.js';
 import LoadingView from '../view/loading-view.js';
+import ExtraView from '../view/extra-view.js';
+
 
 const MOVIES_COUNT_PER_STEP = 5;
 
@@ -30,7 +32,7 @@ export default class MovieListPresenter {
   #noMoviesComponent = null;
   #cardsContainerComponent = null;
   #cardsContainer = null;
-  #filterPresenter = null;
+  extraComponent = null;
 
   scrollCoordinates = [0, 0];
 
@@ -46,7 +48,7 @@ export default class MovieListPresenter {
     this.#mainContainer = mainContainer;
     this.#moviesModel = moviesModel;
     this.#filterModel = filterModel;
-    this.#filterPresenter = filterPresenter;
+    this.filterPresenter = filterPresenter;
   }
 
   get movies() {
@@ -65,10 +67,10 @@ export default class MovieListPresenter {
 
   init = () => {
     this.#renderMovieList();
-
+    console.log('init');
     this.#moviesModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
-    this.#filterPresenter.addObservers();
+    this.filterPresenter.addObservers();
   };
 
   #renderMovies = (movies, commentToDelete) => {
@@ -78,7 +80,7 @@ export default class MovieListPresenter {
   renderMovie = (movie, commentToDelete) => {
     const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
     moviePresenter.initCard(movie);
-    moviePresenter.initPopup(movie, commentToDelete, this.#filterPresenter);
+    moviePresenter.initPopup(movie, commentToDelete, this.filterPresenter);
     this.moviePresenter.set(movie.id, moviePresenter);
   };
 
@@ -138,7 +140,7 @@ export default class MovieListPresenter {
   removeObservers() {
     this.#moviesModel.removeObserver(this.#handleModelEvent);
     this.#filterModel.removeObserver(this.#handleModelEvent);
-    this.#filterPresenter.removeObservers();
+    this.filterPresenter.removeObservers();
   }
 
   #renderMovieList = () => {
@@ -146,13 +148,16 @@ export default class MovieListPresenter {
     this.#cardsContainer = this.#cardsContainerComponent.element.querySelector('.films-list__container');
 
     renderElement(this.#mainContainer, this.#cardsContainerComponent, RenderPosition.BEFOREEND);
+    console.log(this.movies);
 
     const moviesCount = this.movies.length;
+
     const movies = this.movies.slice(0, Math.min(moviesCount, this.#renderedMoviesCount));
     this.#renderMovies(movies);
     if (moviesCount > MOVIES_COUNT_PER_STEP) {
       this.#renderLoadMoreButton();
     }
+
     renderElement(footer, this.#footerComponent, RenderPosition.BEFOREEND);
   };
 
@@ -224,15 +229,16 @@ export default class MovieListPresenter {
       this.moviePresenter.get(update.id).popupComponent.element.scrollTo(...this.scrollCoordinates);
     }
     oldPresenter.popupComponent.addDocumentKeydownHandler();
-    this.#filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
+    this.filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
   };
 
   #handleModelEvent = (updateType, data, commentToDelete, oldPresenter) => {
     switch (updateType) {
       case UpdateType.PATCH: {
+        console.log('PATCH');
         const newPresenter = this.moviePresenter.get(data.id);
         newPresenter.initCard(data);
-        newPresenter.initPopup(data, commentToDelete, this.#filterPresenter);
+        newPresenter.initPopup(data, commentToDelete, this.filterPresenter);
         if (document.querySelector('.film-details__inner') && document.querySelector('.film-details__inner') !== newPresenter.popupComponent.element.querySelector('.film-details__inner')) {
           replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
           newPresenter.popupComponent.postClickHandler(data, newPresenter, commentToDelete);
@@ -241,10 +247,11 @@ export default class MovieListPresenter {
         break;
       }
       case UpdateType.PATCH_POPUP: {
+        console.log('PATCHPOPUP');
         const moviePresenter = new MoviePresenter(this.#cardsContainer, this, this.handleViewAction, this.handleModeChange);
         this.moviePresenter.set(data.id, moviePresenter);
         const newPresenter = this.moviePresenter.get(data.id);
-        newPresenter.initPopup(data, commentToDelete, this.#filterPresenter);
+        newPresenter.initPopup(data, commentToDelete, this.filterPresenter);
         replace(newPresenter.popupComponent, document.querySelector('.film-details__inner'));
         newPresenter.popupComponent.postClickHandler(data, moviePresenter, commentToDelete, oldPresenter, this.scrollCoordinates);
       }
@@ -257,6 +264,8 @@ export default class MovieListPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.renderMoviesContainer();
+        console.log('265');
+        this.renderExtraElement();
         break;
     }
   };
@@ -296,11 +305,17 @@ export default class MovieListPresenter {
     }
   };
 
+  renderExtraElement() {
+    this.extraComponent = new ExtraView(this.movies, this);
+
+    renderElement(this.#mainContainer, this.extraComponent, RenderPosition.BEFOREEND);
+  }
+
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
     renderElement(this.#cardsContainerComponent, this.#sortComponent, RenderPosition.BEFOREBEGIN);
-  };
+  }
 
   handleModeChange() {
     this.moviePresenter.forEach((presenter) => presenter.resetView());

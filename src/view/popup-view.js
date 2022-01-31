@@ -133,12 +133,10 @@ const createPopupTemplate = (movieInfo) => {
 export default class PopupView extends SmartView {
   #changePopupMode = null;
   #moviePresenter = null;
-  #filterPresenter = null;
   changeData = null;
   scrollCoordinates = [0, 0];
-  #comments = [];
 
-  constructor(movieInfo, changePopupMode, moviePresenter, changeData, cardComponent, filterPresenter) {
+  constructor(movieInfo, changePopupMode, moviePresenter, changeData, cardComponent) {
     super();
     this.changeData = changeData;
     this._data = movieInfo;
@@ -146,7 +144,6 @@ export default class PopupView extends SmartView {
     this.#changePopupMode = changePopupMode;
     this.cardComponent = cardComponent;
     this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
-    this.#filterPresenter = filterPresenter;
     this.#setInnerHandlers();
   }
 
@@ -272,7 +269,6 @@ export default class PopupView extends SmartView {
     this.#moviePresenter.comments = comments;
     comments.forEach((comment) => {
       const commentComponent = new CommentView(comment, this.cardComponent);
-      this.#comments.push(commentComponent);
       this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
       commentComponent.addRemoveControlEvent(this._data, this);
     });

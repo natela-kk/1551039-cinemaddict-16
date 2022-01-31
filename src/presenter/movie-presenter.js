@@ -1,7 +1,7 @@
 import PopupView from '../view/popup-view';
 import CardsView from '../view/cards-view.js';
 import {renderElement, remove} from '../mock/render';
-import {RenderPosition} from '../mock/generate.js';
+import {RenderPosition} from '../const.js';
 import {replace} from '../mock/utils/utils';
 
 export const PopupMode = {
@@ -55,9 +55,9 @@ export default class MoviePresenter {
 
   };
 
-  initPopup = (movie, commentToDelete, filterPresenter) => {
+  initPopup = (movie) => {
     this.#movie = movie;
-    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData, this.cardComponent, filterPresenter);
+    this.popupComponent = new PopupView(this.#movie, this.#changePopupMode.bind(this.#movieListPresenter), this, this.#changeData, this.cardComponent);
     this.popupComponent.element.scrollTo(...this.popupComponent.scrollCoordinates);
   };
 

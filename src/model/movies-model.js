@@ -8,6 +8,7 @@ export default class MoviesModel extends AbstractObservable{
   constructor(apiService) {
     super();
     this.#apiService = apiService;
+    console.log(this.#movies);
   }
 
   get movies() {
@@ -21,7 +22,7 @@ export default class MoviesModel extends AbstractObservable{
     } catch(err) {
       this.#movies = [];
     }
-
+    console.log(this.#movies);
     this._notify(UpdateType.INIT);
   }
 

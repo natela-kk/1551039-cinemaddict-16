@@ -1,5 +1,5 @@
 import {renderElement} from './mock/render.js';
-import {RenderPosition} from './mock/generate.js';
+import {RenderPosition} from './const.js';
 import AvatarView from './view/user-name-view.js';
 import MovieListPresenter from './presenter/movie-list-presenter.js';
 import MoviesModel from './model/movies-model.js';
@@ -14,7 +14,7 @@ import ApiService from './api-service.js';
 export const AUTHORIZATION = 'Basic ghcfk6r64ft';
 export const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict/';
 
-const moviesModel = new MoviesModel(new ApiService(END_POINT, AUTHORIZATION));
+export const moviesModel = new MoviesModel(new ApiService(END_POINT, AUTHORIZATION));
 const headerElement = document.querySelector('.header');
 export const mainElement = document.querySelector('.main');
 
@@ -33,6 +33,7 @@ export const handleSiteMenuClick = (menuItem) => {
   } if (menuItem === MenuItem.STATISTICS) {
     const statsComponent = new StatsView(watchedMovies, 'all-time');
     movieListPresenter.destroy();
+    movieListPresenter.extraComponent.element.remove();
     renderElement(mainElement, statsComponent, RenderPosition.BEFOREEND);
     statsComponent.element.classList.remove('visually-hidden');
     statsComponent.init();
@@ -51,6 +52,9 @@ export const handleSiteMenuClick = (menuItem) => {
     });
     movieListPresenter.renderMoviesContainer();
     filterPresenter.filterComponent.setMenuClickHandler(handleSiteMenuClick);
+    if(!document.querySelector('.films-list--extra')) {
+      movieListPresenter.renderExtraElement();
+    }
   }
 };
 
@@ -62,7 +66,6 @@ export const updateStatistic = (movies, currentFilter) => {
   newStatsComponent.init();
   newStatsComponent.setStaticFilterChange();
 };
-
 movieListPresenter.init();
 
 moviesModel.init();
