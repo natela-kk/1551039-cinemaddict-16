@@ -33,8 +33,7 @@ export default class ApiService {
       body: JSON.stringify(this.#adaptToServer(movie)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
-    const parsedResponse = await ApiService.parseResponse(response);
-    return parsedResponse;
+    return await ApiService.parseResponse(response);
   }
 
   addComment = async (movie, comment) => {
@@ -45,19 +44,13 @@ export default class ApiService {
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
+    return await ApiService.parseResponse(response);
   }
 
-  deleteComment = async (comment) => {
-    const response = await this.#deletePostCommentOnServer({
-      url: `https://16.ecmascript.pages.academy/cinemaddict/comments/${comment}`,
-      method: Method.DELETE,
-    });
-
-    return response;
-  }
+  deleteComment = async (comment) => await this.#deletePostCommentOnServer({
+    url: `https://16.ecmascript.pages.academy/cinemaddict/comments/${comment}`,
+    method: Method.DELETE,
+  })
 
   #deletePostCommentOnServer = async ({
     url,

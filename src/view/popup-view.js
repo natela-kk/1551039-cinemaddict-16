@@ -133,12 +133,10 @@ const createPopupTemplate = (movieInfo) => {
 export default class PopupView extends SmartView {
   #changePopupMode = null;
   #moviePresenter = null;
-  #filterPresenter = null;
   changeData = null;
   scrollCoordinates = [0, 0];
-  #comments = [];
 
-  constructor(movieInfo, changePopupMode, moviePresenter, changeData, cardComponent, filterPresenter) {
+  constructor(movieInfo, changePopupMode, moviePresenter, changeData, cardComponent) {
     super();
     this.changeData = changeData;
     this._data = movieInfo;
@@ -146,7 +144,6 @@ export default class PopupView extends SmartView {
     this.#changePopupMode = changePopupMode;
     this.cardComponent = cardComponent;
     this.commentsModel = new CommentsModel(new ApiService(`${END_POINT}comments/${this._data.id}`, AUTHORIZATION));
-    this.#filterPresenter = filterPresenter;
     this.#setInnerHandlers();
   }
 
@@ -206,15 +203,18 @@ export default class PopupView extends SmartView {
   };
 
   closePopup() {
-    if(this.element.querySelector('.film-details__add-emoji-label')) {
-      const checkedEmoji = this.element.querySelector('.film-details__add-emoji-label');
+    const checkedEmoji = this.element.querySelector('.film-details__add-emoji-label');
+    if(checkedEmoji) {
       if(checkedEmoji.querySelector('img')) {
         checkedEmoji.querySelector('img').remove();
       }
     }
     delete this._data.selectedEmoji;
     delete this._data.comment;
-    document.querySelector('.film-details').remove();
+    const popupSection = document.querySelector('.film-details');
+    if(popupSection) {
+      popupSection.remove();
+    }
     this.element.remove();
     this.removeClosePopupHandlers();
     document.body.classList.remove('hide-overflow');
@@ -222,8 +222,6 @@ export default class PopupView extends SmartView {
   }
 
   postClickHandler(movie, moviePresenter, commentToDelete, oldPresenter, scrollCoordinates) {
-    this.setClosePopupHandlers();
-
     this.element.querySelector('form').reset();
 
     this.commentsModel.comments = moviePresenter.comments;
@@ -242,6 +240,8 @@ export default class PopupView extends SmartView {
     userInputInfo.comment = movie.comment;
 
     this.#changePopupMode();
+
+    this.setClosePopupHandlers();
 
     if(userInputInfo.selectedEmoji) {
       movie = {...movie, selectedEmoji: userInputInfo.selectedEmoji};
@@ -265,14 +265,12 @@ export default class PopupView extends SmartView {
 
     mainElement.appendChild(this.element);
     this.updateUserInputInfo();
-
   }
 
   setComments(comments, scrollCoordinates) {
     this.#moviePresenter.comments = comments;
     comments.forEach((comment) => {
       const commentComponent = new CommentView(comment, this.cardComponent);
-      this.#comments.push(commentComponent);
       this.element.querySelector('.film-details__comments-list').appendChild(commentComponent.element);
       commentComponent.addRemoveControlEvent(this._data, this);
     });
@@ -341,6 +339,10 @@ export default class PopupView extends SmartView {
     };
 
     this.element.addEventListener('click', (evt) => {
+      evt.stopPropagation();
+    });
+
+    this.cardComponent.element.addEventListener('click', (evt) => {
       evt.stopPropagation();
     });
 
