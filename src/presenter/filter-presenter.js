@@ -1,6 +1,6 @@
 import MenuView from '../view/menu-view.js';
 import {remove, renderElement} from '../mock/render.js';
-import {RenderPosition} from '../mock/generate.js';
+import {RenderPosition} from '../const.js';
 import {replace} from '../mock/utils/utils.js';
 import {filter} from '../mock/utils/filter.js';
 import {FilterType, UpdateType} from '../const.js';

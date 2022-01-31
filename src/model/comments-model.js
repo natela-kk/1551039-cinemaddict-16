@@ -28,9 +28,8 @@ export default class CommentsModel extends AbstractObservable {
 
         this.comments = [...response.comments];
 
-        const adaptedMovie = this.#adaptToClient(response.movie);
+        return this.#adaptToClient(response.movie);
 
-        return adaptedMovie;
       } catch(err) {
         popup.element.querySelector('textarea').disabled = false;
         popup.element.classList.add('shake');
